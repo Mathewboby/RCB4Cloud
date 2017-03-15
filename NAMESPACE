@@ -1,2 +1,2 @@
-exportPattern("^[^\\.]")
+export(R.ASReml_RCB_Return)
 
