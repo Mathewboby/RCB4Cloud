@@ -1,17 +1,16 @@
-modelLogic <-function(data,CROP_OBSRVTN_DETAIL_ID,FIELD_ID,FACTOR_1,REP_ID,Abs_R, Abs_C, output.path){
+modelLogic <-function(data,path,CROP_OBSRVTN_DETAIL_ID,FIELD_ID,FACTOR_1,REP_ID,Factortype.name,output.path){
 }
 
 R.ASReml_RCB<-function(data){
 
-  CROP_OBSRVTN_DETAIL_ID="response"
-  FIELD_ID="locationID"
-  FACTOR_1="factor1"
-  REP_ID="repId"
-  Abs_R = "absoluteRange"
-  Abs_C = "absoluteColumn"
+  CROP_OBSRVTN_DETAIL_ID="RESP"
+  FIELD_ID="LOCATION"
+  FACTOR_1="ENTRY"
+  REP_ID="REP"
+  Factortype.name="ENTRY_CATEGORY"
   output.path="./"
 
-  out = R.ASReml_RCB_Return(data,CROP_OBSRVTN_DETAIL_ID,FIELD_ID,FACTOR_1,REP_ID,Abs_R, Abs_C)
+  out = R.ASReml_RCB_Return(data,CROP_OBSRVTN_DETAIL_ID,FIELD_ID,FACTOR_1,REP_ID, Factortype.name)
   #write.csv(out$DIFF_TABLE,file=paste(output.path,"/DIFF_TABLE.csv",sep=""),row.names=F)
 
   #write.table("----------------Modeling output----------------",
@@ -22,7 +21,14 @@ R.ASReml_RCB<-function(data){
   return (out)
 }
 
-R.ASReml_RCB_Return<-function(data){
+R.ASReml_RCB_Return<-function(data,path){
+  
+  
+  check.path <- c("P1", "P2", "P3", "P4", "P5")
+  
+  if (!path %in% check.path) stop("Invalid 'PATH' value")
+  path
+
 
   require(asreml)      #NOT on CRAN
   require(asremlPlus)  #on CRAN
@@ -33,12 +39,11 @@ R.ASReml_RCB_Return<-function(data){
   }
 
   # hard code parameter values
-  CROP_OBSRVTN_DETAIL_ID="response"
-  FIELD_ID="locationID"
-  FACTOR_1="factor1"
-  REP_ID="repId"
-  Abs_R = "absoluteRange"
-  Abs_C = "absoluteColumn"
+  CROP_OBSRVTN_DETAIL_ID="RESP"
+  FIELD_ID="LOCATION"
+  FACTOR_1="ENTRY"
+  REP_ID="REP"
+  Factortype.name="ENTRY_CATEGORY"
   output.path="./"
   alpha=.05
   start.all=Sys.time()
@@ -47,7 +52,7 @@ R.ASReml_RCB_Return<-function(data){
   Out.return$message<-NULL
 
   ### Ensure that all variable names are in the dataset.
-  all.var.names<-c(CROP_OBSRVTN_DETAIL_ID,FIELD_ID,REP_ID,FACTOR_1,Abs_R, Abs_C)
+  all.var.names<-c(CROP_OBSRVTN_DETAIL_ID,FIELD_ID,REP_ID,FACTOR_1,Factortype.name)
   if(sum(all.var.names %in% colnames(data))!=length(all.var.names)){
     not.in<-all.var.names[which(!(all.var.names %in% colnames(data)))]
     message("ERROR: Variable(s) ",not.in," not in data header")
@@ -55,7 +60,7 @@ R.ASReml_RCB_Return<-function(data){
     return(Out.return)
   }
   #keep only needed variables
-  data<-data[,c(CROP_OBSRVTN_DETAIL_ID,FIELD_ID,REP_ID,FACTOR_1)]
+  data<-data[,c(CROP_OBSRVTN_DETAIL_ID,FIELD_ID,REP_ID,FACTOR_1,Factortype.name)]
 
   ### In each column, replace each of the following with "-" for the specified reason
   ##  1)"," because the code needs to parse entry and covariate value by "," later in the code
@@ -63,7 +68,7 @@ R.ASReml_RCB_Return<-function(data){
   ##  2)" " because ASReml does not like spaces
     ## data<-apply(data,2,gsub,pattern=" ",replacement="-")
     ## only replace spaces for Entry Category
-   # data[,Factortype.name]<-gsub(" ","-",data[,Factortype.name])
+    data[,Factortype.name]<-gsub(" ","-",data[,Factortype.name])
   ##  3)":" because this character is reserved for specifying an interaction terms in formulas
   data<-apply(data,2,gsub,pattern=":",replacement="-")
   data<-data.frame(data)
@@ -72,16 +77,16 @@ R.ASReml_RCB_Return<-function(data){
   ### control to ensure it is the first entry in the sorted list,
   ### so that ASReml considers it as the control.
   data[,FACTOR_1]<-as.character(data[,FACTOR_1])                #convert factor to character
-  #control.indecies<-which(data[,Factortype.name]=="CONTROL")  #records that are control
+  control.indecies<-which(data[,Factortype.name]=="CONTROL")  #records that are control
 
-#  if(length(unique(data[control.indecies,FACTOR_1]))>1){
- #   message(paste(FACTOR_1,
-  #                " has more than one level specified as control, only the first will be returned.",
-   #               sep=""))}
+  if(length(unique(data[control.indecies,FACTOR_1]))>1){
+    message(paste(FACTOR_1,
+                  " has more than one level specified as control, only the first will be returned.",
+                  sep=""))}
   ### take the first(and hopefully only) unique control factor name
-  #Control.level<-unique(data[control.indecies,FACTOR_1])[1]
-  #adjusted.control.name<-paste("AAAA",Control.level,sep="")   #prepend A's
-  #data[data[,FACTOR_1]==Control.level,FACTOR_1]<-adjusted.control.name ##Change name in data
+  Control.level<-unique(data[control.indecies,FACTOR_1])[1]
+  adjusted.control.name<-paste("AAAA",Control.level,sep="")   #prepend A's
+  data[data[,FACTOR_1]==Control.level,FACTOR_1]<-adjusted.control.name ##Change name in data
 
   #Convert data types
   data[,CROP_OBSRVTN_DETAIL_ID]<-as.numeric(as.character(data[,CROP_OBSRVTN_DETAIL_ID]))
@@ -98,17 +103,67 @@ R.ASReml_RCB_Return<-function(data){
   message(paste("Running ASReml using:",sep=""),appendLF = TRUE )
 
   ###Specify the fixed, sparse and random formulas:
-  assign("fixed.formula",
-         formula(paste(CROP_OBSRVTN_DETAIL_ID,"~ 1 + ",FACTOR_1, sep="")),
-         envir = .GlobalEnv)
-
-  #intercept, entry, and covariate do not need to be estimated(just need the interaction)
-  #so we specify this sparse formula to ease memory requirments and increase speed(by alot).
-
-  #the below formula resolves to rep nested within location
-  assign("random.formula",
-         formula(paste("~",FIELD_ID,"+",FIELD_ID,":",REP_ID,sep="")),
-         envir = .GlobalEnv)
+  switch(path,
+         P1= {
+           assign("fixed.formula",
+                  formula(paste(CROP_OBSRVTN_DETAIL_ID,"~ 1 + ",FACTOR_1, sep="")),
+                  envir = .GlobalEnv)
+         },
+         P2= {
+           assign("fixed.formula",
+                  formula(paste(CROP_OBSRVTN_DETAIL_ID,"~ 1 + ",FACTOR_1, sep="")),
+                  envir = .GlobalEnv)
+         },
+         P3= {
+           assign("fixed.formula",
+                  formula(paste(CROP_OBSRVTN_DETAIL_ID,"~ 1 ", sep="")),
+                  envir = .GlobalEnv)
+         },
+         P4= {
+           assign("fixed.formula",
+                  formula(paste(CROP_OBSRVTN_DETAIL_ID,"~ 1 + ",FACTOR_1, sep="")),
+                  envir = .GlobalEnv)
+         },
+         P5= {
+           assign("fixed.formula",
+                  formula(paste(CROP_OBSRVTN_DETAIL_ID,"~ 1 ", sep="")),
+                  envir = .GlobalEnv)
+         }
+         
+  )
+  
+  switch(path,
+         P1={
+                  print (" Model1: Single LOC Multi REP BLUE")
+                  assign("random.formula",
+                  formula(paste("~",REP_ID,sep="")),
+                  envir = .GlobalEnv)
+         },
+         P2= {
+                  print (" Model2: Multi LOC Single REP BLUE")
+                  assign("random.formula",
+                  formula(paste("~ ",FIELD_ID,sep="")),
+                  envir = .GlobalEnv)
+         },
+         P3= {
+                  print (" Model3: Multi LOC SINGLE REP BLUP")
+                  assign("random.formula",
+                  formula(paste("~ ", FIELD_ID," + ", FACTOR_1,sep="")),
+                  envir = .GlobalEnv)
+         },
+         P4={
+                  print (" Model3: Multi LOC MULTI REP BLUE")
+                  assign("random.formula",
+                  formula(paste("~",FIELD_ID,"+",FIELD_ID,":",REP_ID,"+", FIELD_ID,":",FACTOR_1,sep="")),
+                  envir = .GlobalEnv)
+         },
+         P5={
+                  print (" Model3: Multi LOC MULTI REP BLLUP")
+                  assign("random.formula",
+                  formula(paste("~",FIELD_ID,"+",FIELD_ID,":",REP_ID,"+",FACTOR_1,"+","FIELD_ID",":","FACTOR_1", sep="")),
+                  envir = .GlobalEnv)
+         }
+  )
 
   ############################################################################################
     # Run R-ASReml, capture output
@@ -163,13 +218,13 @@ R.ASReml_RCB_Return<-function(data){
   LSM$CI_L<-LSM$Yield-qt(1-alpha/2,DDoF)*LSM$SE
   LSM$CI_U<-LSM$Yield+qt(1-alpha/2,DDoF)*LSM$SE
   ##replace adjusted control name with actual control name
-  #levels(LSM$Entry)[levels(LSM$Entry)==adjusted.control.name] <- Control.level
+  levels(LSM$Entry)[levels(LSM$Entry)==adjusted.control.name] <- Control.level
   #write.csv(LSM,"LSMEANS.csv")
   #######################################################################################################
   
   
   Out.return$LSM_TABLE<-LSM
- # Out.return$console$modeling<-modeling.output
+  Out.return$console$modeling<-modeling.output
 
   return(Out.return)
 }
