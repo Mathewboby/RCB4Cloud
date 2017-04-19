@@ -225,7 +225,7 @@ R.ASReml_RCB_Return<-function(data,path){
   
   
   Out.return$LSM_TABLE<-LSM
-  Out.return$console$modeling<-modeling.output
+  #Out.return$console$modeling<-modeling.output
   
   library(jsonlite)
   
