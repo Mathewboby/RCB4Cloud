@@ -7,8 +7,7 @@
 #' @param data_fields A list specifying the environmental variables to be used in fitting the model and the associated column names in the data dataframe.
 #' @return A list with a component for the fit model, the LS means analysis, and the delta means analysis
 #' 
-#' @importMethodsFrom asreml
-#' @importMethodsFrom asremlPlus
+#' @importFrom asreml asreml
 #' @export
 
 R.ASReml_RCB_Return <- function(data, 

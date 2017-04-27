@@ -3,9 +3,14 @@ Title: RCB ANOVA module
 Version: 1.0.2
 Author: Subash Krishnamurthy <sskris1@@monsanto.com>
 Maintainer: Subash Krishnamurthy <subash.krishnamurthy@monsanto.com>
-Depends: R (>= 3.1.0), asremlPlus, Matrix
-Suggests: asreml
+Depends:
+    R (>= 3.1.0),
+    asremlPlus,
+    Matrix
+Suggests:
+    asreml
 Description: R-ASReml based ANOVA Model.
 License: Monsanto Company. All rights reserved.
 LazyData: TRUE
 Packaged: 2017-03-03
+RoxygenNote: 5.0.1
