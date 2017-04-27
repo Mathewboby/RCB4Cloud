@@ -5,10 +5,11 @@ Author: Subash Krishnamurthy <sskris1@@monsanto.com>
 Maintainer: Subash Krishnamurthy <subash.krishnamurthy@monsanto.com>
 Depends:
     R (>= 3.1.0),
+    asreml,
     asremlPlus,
     Matrix
 Suggests:
-    asreml
+    testthat
 Description: R-ASReml based ANOVA Model.
 License: Monsanto Company. All rights reserved.
 LazyData: TRUE

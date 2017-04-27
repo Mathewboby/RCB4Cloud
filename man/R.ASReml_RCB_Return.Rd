@@ -4,7 +4,10 @@
 \alias{R.ASReml_RCB_Return}
 \title{Main function for doing RCBD analysis.}
 \usage{
-R.ASReml_RCB_Return(data, path)
+R.ASReml_RCB_Return(data, analysis_type, alpha = 0.05,
+  data_fields = list(CROP_OBSRVTN_DETAIL_ID = "NUMVALUE", FIELD_ID =
+  "FIELDID", FACTOR_1 = "FACTOR1", REP_ID = "REPID", Factortype.name =
+  "EXPERIMENTALUNITID"))
 }
 \arguments{
 \item{data}{A dataframe with trial observation data. Column names should match those specified as the values in \code{data_fields}.}
