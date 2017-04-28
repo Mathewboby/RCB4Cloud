@@ -9,6 +9,6 @@ test_that("Testing the checkData function", {
     REP_ID = "REPID",
     Factortype.name = "EXPERIMENTALUNITID" )
   test_data <- data.frame ( NUMVALUE = 1, FIELDID = 1, FACTOR1 = 1, REPID = 1 )
-  missing_factor <- "ERROR: Variable(s) EXPERIMENTALUNITID not in data header"
-  expect_equal( checkData(test_data, test_data_fields), missing_factor)
+  
+  expect_message( checkData(test_data, test_data_fields))
 })
