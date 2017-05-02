@@ -213,3 +213,12 @@ deltaAnalysis <- function(RCB.asr, total_df = 150.8){
   
   return(out_data)
 }
+
+#' Function for computing the residual degrees of freedom. 
+#' @param RCB.asr A fitted ASReml object
+#' @export
+#' @importFrom asreml wald.asreml
+computeDF <- function(RCB.asr){
+  degrees_freedom <- wald.asreml( RCB.asr, maxiter = 1)
+  return(degrees_freedom)
+}

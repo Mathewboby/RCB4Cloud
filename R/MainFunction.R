@@ -78,6 +78,9 @@ R.ASReml_RCB_Return <- function(data,
   # LS Means
   Out.return$LSM_TABLE <- lsmAnalysis(RCB.asr, data, alpha)
   
+  # Degrees of freedom
+  degrees_freedom <- computeDF(RCB.asr)
+  
   # Deltas and p-values
   Out.return$Deltas <- deltaAnalysis(RCB.asr)
   
