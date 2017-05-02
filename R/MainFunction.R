@@ -82,7 +82,7 @@ R.ASReml_RCB_Return <- function(data,
   degrees_freedom <- computeDF(RCB.asr)
   
   # Deltas and p-values
-  Out.return$Deltas <- deltaAnalysis(RCB.asr)
+  Out.return$Deltas <- deltaAnalysis(RCB.asr, degrees_freedom)
   
   return(Out.return)
 }
