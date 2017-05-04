@@ -6,7 +6,7 @@
 \usage{
 R.ASReml_RCB_Return(data, analysis_type, alpha = 0.05,
   data_fields = list(CROP_OBSRVTN_DETAIL_ID = "NUMVALUE", FIELD_ID =
-  "FIELDID", FACTOR_1 = "FACTOR1", REP_ID = "REPID", Factortype.name =
+  "FIELDID", FACTOR_1 = "FACTOR1", REP_ID = "REPID", Factortype_name =
   "EXPERIMENTALUNITID"))
 }
 \arguments{

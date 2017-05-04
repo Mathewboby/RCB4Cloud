@@ -9,7 +9,8 @@ Depends:
     asremlPlus,
     Matrix
 Suggests:
-    testthat
+    testthat,
+    lintr
 Description: R-ASReml based ANOVA Model.
 License: Monsanto Company. All rights reserved.
 LazyData: TRUE
