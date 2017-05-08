@@ -15,11 +15,11 @@ R.ASReml_RCB_Return <- function(data,
                                 alpha = .05,
                                 data_fields =
                                   list(
-                                    CROP_OBSRVTN_DETAIL_ID = "NUMVALUE",
-                                    FIELD_ID = "FIELDID",
-                                    FACTOR_1 = "FACTOR1",
-                                    REP_ID = "REPID",
-                                    Factortype_name = "EXPERIMENTALUNITID" )){
+                                    CROP_OBSRVTN_DETAIL_ID = "numValue",
+                                    FIELD_ID = "fieldId",
+                                    FACTOR_1 = "factor1",
+                                    REP_ID = "repId",
+                                    Factortype_name = "experimentalUnitId" )){
 
   # Initialize output variable
   Out_return <- NULL

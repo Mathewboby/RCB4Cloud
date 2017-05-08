@@ -207,7 +207,7 @@ deltaAnalysis <- function(RCB.asr, total_df = 150.8){
   rownames( diffs_out$sed ) <- colnames( diffs_out$sed ) <- correct_order_names
 
   # Output the data as a data table
-  out_data <- merge ( correct_order_names, correct_order_names )
+  out_data <- merge( correct_order_names, correct_order_names )
   names( out_data ) <- c("head", "comp")
   out_data$diff <- as.vector( diffs_out$differences )
   out_data$p.diff <- as.vector( diffs_out$p.differences )
@@ -222,5 +222,5 @@ deltaAnalysis <- function(RCB.asr, total_df = 150.8){
 #' @importFrom asreml wald.asreml
 computeDF <- function(RCB.asr){
   degrees_freedom <- wald.asreml( RCB.asr, maxiter = 1)
-  return(degrees_freedom["FACTOR1","Df"])
+  return(degrees_freedom["FACTOR1", "Df"])
 }
