@@ -148,22 +148,22 @@ setFixedRandomEffects <- function(analysis_type){
 }
 
 #' Computes the LS means analysis
-#' @param RCB.asr A fitted ASReml object
+#' @param RCB_asr A fitted ASReml object
 #' @param data A dataframe that contains the data used to create the ASReml object
 #' @param alpha A number between 0 and 1 specifying the confidence level
 #' @importFrom Matrix sparse.model.matrix rankMatrix
 #' @return A dataframe containing the Entry, Yield, SE, and upper and lower confidence intervals.
 #' @export
-lsmAnalysis <- function(RCB.asr, data, alpha){
+lsmAnalysis <- function(RCB_asr, data, alpha){
   # residual degrees of freedom
   dm <- Matrix::sparse.model.matrix(fixed_formula, data) #sparse design matrix
   #        n   -               # missing_obs              -              rank(X)
   DDoF <- nrow(dm) - sum(is.na(data[, CROP_OBSRVTN_DETAIL_ID])) - Matrix::rankMatrix(x = dm, method = "qr.R")[[1]]
 
   LSM <- data.frame(
-    Entry = RCB.asr$predictions$pvals[[FACTOR_1]],
-    Yield = RCB.asr$predictions$pvals$predicted.value,
-    SE = RCB.asr$predictions$pvals$standard.error)
+    Entry = RCB_asr$predictions$pvals[[FACTOR_1]],
+    Yield = RCB_asr$predictions$pvals$predicted.value,
+    SE = RCB_asr$predictions$pvals$standard.error)
 
   # create the CI
   LSM$CI_L <- LSM$Yield - qt(1 - alpha / 2, DDoF) * LSM$SE
@@ -178,15 +178,15 @@ lsmAnalysis <- function(RCB.asr, data, alpha){
 # TODO:
 # Compute the correct degrees of freedom
 #' Computes the deltas between the treatment means and associated p-values
-#' @param RCB.asr A fitted ASReml object
+#' @param RCB_asr A fitted ASReml object
 #' @param total_df A number specifying the total degrees of freedom to be used in the p-value computations.
 #' @return A dataframe with columns for head, check, difference between the mean, and associated p-value for all combinations of heads and checks.
 #' @importFrom asremlPlus alldiffs predictiondiffs.asreml
 #' @export
-deltaAnalysis <- function(RCB.asr, total_df = 150.8){
+deltaAnalysis <- function(RCB_asr, total_df = 150.8){
 
-  test_diffs <- alldiffs ( predictions = RCB.asr$predictions$pvals,
-                           sed = RCB.asr$predictions$sed,
+  test_diffs <- alldiffs ( predictions = RCB_asr$predictions$pvals,
+                           sed = RCB_asr$predictions$sed,
                            tdf = total_df )
 
   # There is an error/mistake/bug between these two steps. In the above data
@@ -217,10 +217,10 @@ deltaAnalysis <- function(RCB.asr, total_df = 150.8){
 }
 
 #' Function for computing the residual degrees of freedom.
-#' @param RCB.asr A fitted ASReml object
+#' @param RCB_asr A fitted ASReml object
 #' @export
 #' @importFrom asreml wald.asreml
-computeDF <- function(RCB.asr){
-  degrees_freedom <- wald.asreml( RCB.asr, maxiter = 1)
-  return(degrees_freedom["FACTOR1", "Df"])
+computeDF <- function(RCB_asr, FACTOR_1){
+  degrees_freedom <- wald.asreml( RCB_asr, maxiter = 1 )
+  return( degrees_freedom[FACTOR_1, "Df"] )
 }
