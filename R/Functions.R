@@ -158,13 +158,25 @@ lsmAnalysis <- function(RCB_asr, data, alpha){
   # residual degrees of freedom
   dm <- Matrix::sparse.model.matrix(fixed_formula, data) #sparse design matrix
   #        n   -               # missing_obs              -              rank(X)
-  DDoF <- nrow(dm) - sum(is.na(data[, CROP_OBSRVTN_DETAIL_ID])) - Matrix::rankMatrix(x = dm, method = "qr.R")[[1]]
-
+  # DDoF <- nrow(dm) - Matrix::rankMatrix(x = dm, method = "qr.R")[[1]]
+  DDoF <- asreml::wald.asreml(RCB_asr,denDF ="default",data=data)[[1]][2,2]
+  
   LSM <- data.frame(
     Entry = RCB_asr$predictions$pvals[[FACTOR_1]],
     Yield = RCB_asr$predictions$pvals$predicted.value,
-    SE = RCB_asr$predictions$pvals$standard.error)
+    SE = RCB_asr$predictions$pvals$standard.error,
+    df = DDoF
+  )
+  
 
+  ## count N in each Entry level with missing removed.
+  N<-rep(NA,length(LSM$Entry))
+  for (i in 1:length(LSM$Entry)) {
+    N[i]=nrow(data[data[,FACTOR_1]==LSM$Entry[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$Entry[i],CROP_OBSRVTN_DETAIL_ID]))
+  }
+  LSM$N<-N
+  
+  
   # create the CI
   LSM$CI_L <- LSM$Yield - qt(1 - alpha / 2, DDoF) * LSM$SE
   LSM$CI_U <- LSM$Yield + qt(1 - alpha / 2, DDoF) * LSM$SE
@@ -175,6 +187,31 @@ lsmAnalysis <- function(RCB_asr, data, alpha){
   return(LSM)
 }
 
+## for random effect models
+lsmAnalysis_r <- function(RCB_asr, data){
+
+  LSM <- data.frame(
+    Entry = RCB_asr$predictions$pvals[[FACTOR_1]],
+    Yield = RCB_asr$predictions$pvals$predicted.value,
+    SE = RCB_asr$predictions$pvals$standard.error
+  )
+  
+  ## count N in each Entry level with missing removed.
+  N<-rep(NA,length(LSM$Entry))
+  for (i in 1:length(LSM$Entry)) {
+    N[i]=nrow(data[data[,FACTOR_1]==LSM$Entry[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$Entry[i],CROP_OBSRVTN_DETAIL_ID]))
+  }
+  LSM$N<-N
+  
+  
+  ##replace adjusted control name with actual control name
+  if (exists("adjusted_control_name", envir = .GlobalEnv)){
+    levels(LSM$Entry)[levels(LSM$Entry) == adjusted_control_name] <- control_level
+  }
+  return(LSM)
+}
+
+
 # TODO:
 # Compute the correct degrees of freedom
 #' Computes the deltas between the treatment means and associated p-values
@@ -183,9 +220,9 @@ lsmAnalysis <- function(RCB_asr, data, alpha){
 #' @return A dataframe with columns for head, check, difference between the mean, and associated p-value for all combinations of heads and checks.
 #' @importFrom asremlPlus alldiffs predictiondiffs.asreml
 #' @export
-deltaAnalysis <- function(RCB_asr, total_df = 150.8){
+deltaAnalysis <- function(RCB_asr, alpha, total_df){
 
-  test_diffs <- alldiffs ( predictions = RCB_asr$predictions$pvals,
+  test_diffs <- asremlPlus::alldiffs ( predictions = RCB_asr$predictions$pvals,
                            sed = RCB_asr$predictions$sed,
                            tdf = total_df )
 
@@ -197,23 +234,33 @@ deltaAnalysis <- function(RCB_asr, total_df = 150.8){
   # resolved by renaming the rows/columns using the order of the names in
   # the alldiffs function.
 
-  diffs_out <- predictiondiffs.asreml( classify = "FACTOR1",
-                                       alldiffs.obj = test_diffs )
+  diffs_out <- asremlPlus::predictiondiffs.asreml( classify = FACTOR_1,
+                                       alldiffs.obj = test_diffs ,alpha =alpha )
 
   # Fix the potential re-ordering issue
-  correct_order_names <- as.character( diffs_out$predictions$FACTOR1 )
+  correct_order_names <- as.character( diffs_out$predictions[,1] )
   rownames( diffs_out$differences ) <- colnames( diffs_out$differences ) <- correct_order_names
   rownames( diffs_out$p.differences ) <- colnames( diffs_out$p.differences ) <- correct_order_names
   rownames( diffs_out$sed ) <- colnames( diffs_out$sed ) <- correct_order_names
-
+  
   # Output the data as a data table
   out_data <- merge( correct_order_names, correct_order_names )
   names( out_data ) <- c("head", "comp")
   out_data$diff <- as.vector( diffs_out$differences )
   out_data$p.diff <- as.vector( diffs_out$p.differences )
   out_data$sed <- as.vector( diffs_out$sed )
-
-  return(out_data)
+  out_data$df <- rep( total_df,nrow(out_data) ); out_data$df[is.na(out_data[,'p.diff'])] <- NA
+  out_data$t <- as.vector( diffs_out$differences/diffs_out$sed )
+  
+  
+  ## the diagonal shouldn't be NA, set it as p-value = 1
+  diag(diffs_out$p.differences)=1
+  # MSG
+  # msg=agricolae::orderPvalue(treatment=RCB_asr$predictions$pvals[,1],means=RCB_asr$predictions$pvals[,2],alpha=alpha,pvalue=diffs_out$p.differences,console=F)
+  msg=MSG(treatment=RCB_asr$predictions$pvals[,1],means=RCB_asr$predictions$pvals[,2],alpha=alpha,pvalue=diffs_out$p.differences,console=F)
+  
+  
+  return(list('Delta_table'=out_data,'Mean Separation Grouping'=msg))
 }
 
 #' Function for computing the residual degrees of freedom.
@@ -224,3 +271,46 @@ computeDF <- function(RCB_asr, FACTOR_1){
   degrees_freedom <- wald.asreml( RCB_asr, maxiter = 1 )
   return( degrees_freedom[FACTOR_1, "Df"] )
 }
+
+
+#' ANOVA table
+# for model P1,P2,P4
+
+ANOVA_output <- function(asreml.obj,degrees_freedom){
+  anova_<-list()
+  
+  anova_[[1]]=asreml::wald.asreml(asreml.obj)                        ## for fixed effect
+  anova_[[2]]=summary(asreml.obj)$varcomp                      ## for random effect
+  anova_[[1]]$denDF= c(degrees_freedom,'')
+  
+  for (j in 1:length(row.names(anova_[[2]]))) {
+  row.names(anova_[[2]])[j] <- strsplit(row.names(anova_[[2]]),'!')[[j]][1]
+  }
+  row.names(anova_[[2]])[j] <- 'residual'
+  
+  names(anova_) <- c('fixed effect','random effect')
+  return(anova_)  
+  
+}
+
+
+# for model P3,P5
+ANOVA_output_r <- function(asreml.obj){
+ 
+  anova_=summary(asreml.obj)$varcomp                      ## for random effect
+  
+  for (j in 1:length(row.names(anova_))) {
+    row.names(anova_)[j] <- strsplit(row.names(anova_),'!')[[j]][1]
+  }
+  row.names(anova_)[j] <- 'residual'
+  
+  return(anova_)  
+  
+}
+
+
+
+resid_table <- function(asreml.obj,data){
+  cbind(resid(asreml.obj),data[,FIELD_ID],data[,REP_ID])
+}
+
