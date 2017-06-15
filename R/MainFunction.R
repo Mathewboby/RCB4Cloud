@@ -74,16 +74,41 @@ R.ASReml_RCB_Return <- function(data,
   message("finished in ", round(difftime(Sys.time(), start, units = time.scale[1]), digits = 2), " ", time.scale)
   message("Creating output files...", appendLF = FALSE)
 
-  Out_return$console$modeling <- RCB_asr
+  # Out_return$console$modeling <- RCB_asr
 
   # LS Means
-  Out_return$LSM_TABLE <- lsmAnalysis(RCB_asr, data, alpha)
-
+  Out_return$LSM_TABLE <- lsmAnalysis_r(RCB_asr, data)
+  
+  ## ANOVA table
+  Out_return$var_analysis <- ANOVA_output_r(RCB_asr)
+  
+  
+  if (analysis_type %in% c('P1','P2','P4') ) {
+  Out_return$LSM_TABLE <- lsmAnalysis(RCB_asr, data, alpha=alpha)    
+  
   # Degrees of freedom
-  degrees_freedom <- computeDF(RCB_asr, FACTOR_1)
+  degrees_freedom = asreml::wald.asreml( RCB_asr,denDF ="default",data=data)[[1]][,2]  ## a vector including all the fixed effect
 
+  
+  del=deltaAnalysis(RCB_asr,alpha=alpha, degrees_freedom[2])
   # Deltas and p-values
-  Out_return$Deltas <- deltaAnalysis(RCB_asr, degrees_freedom)
+  Out_return$Deltas <- del[[1]]
+  # Mean Separation Grouping
+  mean_sep_group <- del[[2]]$M
+  
+  ## combine LSM_TABLE and MSG
+  Out_return$LSM_TABLE <- cbind(Out_return$LSM_TABLE,mean_sep_group)
+  ## sort by descending order
+  Out_return$LSM_TABLE <- Out_return$LSM_TABLE[order(Out_return$LSM_TABLE$Yield,decreasing = TRUE),]
+  
+  ## ANOVA table
+  Out_return$var_analysis <- ANOVA_output(RCB_asr,degrees_freedom)
+  }
+  
+  ## add residual tables
+  Out_return$resid <- resid_table(RCB_asr,data)
+  colnames(Out_return$resid) <- c('residuals',FIELD_ID,REP_ID)
+  
 
   return(Out_return)
 }
