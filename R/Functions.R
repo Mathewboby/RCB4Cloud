@@ -315,3 +315,82 @@ resid_table <- function(asreml.obj,data){
   cbind(resid(asreml.obj),data[,FIELD_ID],data[,REP_ID])
 }
 
+LastC=function (x) 
+{
+  
+  y <- sub(" +$", "0", x)
+  p1 <- nchar(y)
+  cc <- substr(y, p1, p1)
+  while (cc=='.') {
+  cc <- substr(y, p1, p1)
+  if (cc != '.') break
+  p1=p1-1
+  }
+  
+  cc <- substr(y, p1, nchar(y))
+  return(cc)
+}
+
+
+MSG=function (treatment, means, alpha, pvalue, console) 
+{
+  n <- length(means)
+  z <- data.frame(treatment, means)
+  letras <- c(letters[1:26], LETTERS[1:26],paste(letters,'.',sep=''),paste(LETTERS,'.',sep=''),paste(letters,'..',sep=''),
+              paste(LETTERS,'..',sep=''),paste(letters,'...',sep=''),
+              paste(LETTERS,'...',sep=''),paste(letters,'....',sep=''),paste(LETTERS,'....',sep=''))
+  w <- z[order(z[, 2], decreasing = TRUE), ]
+  M <- rep("", n)
+  k <- 1
+  k1 <- 0
+  j <- 1
+  i <- 1
+  cambio <- n
+  cambio1 <- 0
+  chequeo = 0
+  M[1] <- letras[k]
+  q <- as.numeric(rownames(w))
+  while (j < n) {
+    chequeo <- chequeo + 1
+    if (chequeo > n) 
+      break
+    for (i in j:n) {
+      s <- pvalue[q[i], q[j]] > alpha
+      if (s) {
+        if (LastC(M[i]) != letras[k]) M[i] <- paste(M[i], letras[k], sep = "")
+      }
+      else {
+        k <- k + 1
+        cambio <- i
+        cambio1 <- 0
+        ja <- j
+        for (jj in cambio:n) M[jj] <- paste(M[jj], "", 
+                                            sep = "")
+        M[cambio] <- paste(M[cambio], letras[k], sep = "")
+        for (v in ja:cambio) {
+          if (pvalue[q[v], q[cambio]] <= alpha) {
+            j <- j + 1
+            cambio1 <- 1
+          }
+          else break
+        }
+        break
+      }
+    }
+    if (cambio1 == 0) 
+      j <- j + 1
+  }
+  w <- data.frame(w, stat = M)
+  w <- w[match(treatment,w$treatment),]
+  trt <- as.character(w$treatment)
+  means <- as.numeric(w$means)
+  output <- data.frame(trt, means, M)
+  output1 <- cbind(trt, means)
+  rownames(output1) <- M
+  for (i in 1:n) {
+    if (console) 
+      cat(rownames(output1)[i], "\t", output1[i, 1], "\t", 
+          means[i], "\n")
+  }
+  invisible(output)
+}
