@@ -251,7 +251,8 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
   out_data$sed <- as.vector( diffs_out$sed )
   out_data$df <- rep( total_df,nrow(out_data) ); out_data$df[is.na(out_data[,'p.diff'])] <- NA
   out_data$t <- as.vector( diffs_out$differences/diffs_out$sed )
-  
+  out_data$CI_L <- out_data$diff - qt(1 - alpha / 2, out_data$df) * out_data$sed
+  out_data$CI_U <- out_data$diff + qt(1 - alpha / 2, out_data$df) * out_data$sed
   
   ## the diagonal shouldn't be NA, set it as p-value = 1
   diag(diffs_out$p.differences)=1
