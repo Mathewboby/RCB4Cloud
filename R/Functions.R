@@ -46,6 +46,7 @@ checkData <- function(data, data_fields){
   }
 }
 
+
 #' Reformats data to play nice with ASReml
 #' @inheritParams checkData
 #' @export
@@ -92,6 +93,7 @@ reformatData <- function(data, data_fields){
   return(data)
 }
 
+
 #' Sets the fixed and random formulas based on the analysis type
 #' @inheritParams checkAnalysisType
 #' @export
@@ -135,36 +137,73 @@ setFixedRandomEffects <- function(analysis_type){
                   envir = .GlobalEnv)
          },
          P5 = {
-           print (" Model3: Multi LOC MULTI REP BLLUP")
+           print (" Model3: Multi LOC MULTI REP BLUP")
            assign("fixed_formula",
                   formula(paste(CROP_OBSRVTN_DETAIL_ID, "~ 1 ", sep = "")),
                   envir = .GlobalEnv)
            assign("random_formula",
-                  formula(paste("~", FIELD_ID, "+", FIELD_ID, ":", REP_ID, "+", FACTOR_1, "+", "FIELD_ID", ":",
-                                "FACTOR_1", sep = "")),
+                  formula(paste("~", FIELD_ID, "+", FIELD_ID, ":", REP_ID, "+", FACTOR_1, "+", FIELD_ID, ":",
+                                FACTOR_1, sep = "")),
                   envir = .GlobalEnv)
          }
   )
 }
 
-#' Computes the LS means analysis
-#' @param RCB_asr A fitted ASReml object
+
+
+#' Computes the LS means analysis for model P1, P2 and P4
+#' @param asreml.obj A fitted ASReml object
 #' @param data A dataframe that contains the data used to create the ASReml object
 #' @param alpha A number between 0 and 1 specifying the confidence level
-#' @importFrom Matrix sparse.model.matrix rankMatrix
-#' @return A dataframe containing the Entry, Yield, SE, and upper and lower confidence intervals.
+#' @importFrom asreml wald.asreml
+#' @return A dataframe containing the Entry, Yield, degree of freedom for t-test, SE, total number of observation for the entry after excluding missing data, upper and lower confidence intervals and mean separation grouping
 #' @export
-lsmAnalysis <- function(RCB_asr, data, alpha){
+
+
+lsmAnalysis <- function(asreml.obj, data, alpha){
   # residual degrees of freedom
-  dm <- Matrix::sparse.model.matrix(fixed_formula, data) #sparse design matrix
+  # dm <- Matrix::sparse.model.matrix(fixed_formula, data) #sparse design matrix
   #        n   -               # missing_obs              -              rank(X)
   # DDoF <- nrow(dm) - Matrix::rankMatrix(x = dm, method = "qr.R")[[1]]
-  DDoF <- asreml::wald.asreml(RCB_asr,denDF ="default",data=data)[[1]][2,2]
   
+  
+  
+  ## WARNING: here if you don't specifiy data=data, it will return error, because the "denDF = xx" argument here
+  ##          calls update() in the backgroud to calculate the df for denominator, if you don't specify the "data=data"
+  ##          it will by default search in the global enviroment. With all being said, you need to specify the data name in the local enviroment. 
+  
+  ALL=asreml::wald.asreml(asreml.obj,denDF ="default",ssType= "conditional",data=data)
+  
+  ## for degree of freedom
+  DDoF_ <- ALL[[1]][,2]
+  DDoF <- DDoF_[2]
+  
+  
+  ## for variance component table
+  VAR=summary(asreml.obj)$varcomp
+  
+  for (j in 1:length(rownames(VAR))) {
+      rownames(VAR)[j] <- strsplit(rownames(VAR),'!')[[j]][1]
+  }
+  
+  rownames(VAR)[j] <- 'residual'
+  
+  VAR=VAR[,c(2,5)]
+  colnames(VAR) <- c("variance_estimates","constraint")
+  
+  
+  ## for fix effect ANOVA table
+  AOV <- ALL[[1]]
+  colnames(AOV) <- c("numerator_df","denominator_df","ss_incremental","ss_conditional","Margin","Prob")
+  rownames(AOV)[1] <- "Intercept"
+  
+  
+  
+  ## for LSM table
   LSM <- data.frame(
-    Entry = RCB_asr$predictions$pvals[[FACTOR_1]],
-    Yield = RCB_asr$predictions$pvals$predicted.value,
-    SE = RCB_asr$predictions$pvals$standard.error,
+    Entry = asreml.obj$predictions$pvals[[FACTOR_1]],
+    Yield = asreml.obj$predictions$pvals$predicted.value,
+    SE = asreml.obj$predictions$pvals$standard.error,
     df = DDoF
   )
   
@@ -184,10 +223,18 @@ lsmAnalysis <- function(RCB_asr, data, alpha){
   if (exists("adjusted_control_name", envir = .GlobalEnv)){
     levels(LSM$Entry)[levels(LSM$Entry) == adjusted_control_name] <- control_level
   }
-  return(LSM)
+  return(list(LSM,DDoF_,AOV,VAR))
 }
 
-## for random effect models
+
+
+
+#' Computes the LS means analysis for model P3 and P5
+#' @param asreml.obj A fitted ASReml object
+#' @param data A dataframe that contains the data used to create the ASReml object
+#' @return A dataframe containing the Entry, Yield, SE and total number of observation for the entry after excluding missing data
+#' @export
+
 lsmAnalysis_r <- function(RCB_asr, data){
 
   LSM <- data.frame(
@@ -217,7 +264,8 @@ lsmAnalysis_r <- function(RCB_asr, data){
 #' Computes the deltas between the treatment means and associated p-values
 #' @param RCB_asr A fitted ASReml object
 #' @param total_df A number specifying the total degrees of freedom to be used in the p-value computations.
-#' @return A dataframe with columns for head, check, difference between the mean, and associated p-value for all combinations of heads and checks.
+#' @param alpha A number between 0 and 1 specifying the confidence level
+#' @return A dataframe with columns for head, check, difference between the mean, associated p-value for all combinations of heads and checks, degree of freedom for t-test, test of statistic, lower and upper confidence intervals
 #' @importFrom asremlPlus alldiffs predictiondiffs.asreml
 #' @export
 deltaAnalysis <- function(RCB_asr, alpha, total_df){
@@ -247,9 +295,9 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
   out_data <- merge( correct_order_names, correct_order_names )
   names( out_data ) <- c("head", "comp")
   out_data$diff <- as.vector( diffs_out$differences )
-  out_data$p.diff <- as.vector( diffs_out$p.differences )
+  out_data$p_diff <- as.vector( diffs_out$p.differences )
   out_data$sed <- as.vector( diffs_out$sed )
-  out_data$df <- rep( total_df,nrow(out_data) ); out_data$df[is.na(out_data[,'p.diff'])] <- NA
+  out_data$df <- rep( total_df,nrow(out_data) ); out_data$df[is.na(out_data[,'p_diff'])] <- NA
   out_data$t <- as.vector( diffs_out$differences/diffs_out$sed )
   out_data$CI_L <- out_data$diff - qt(1 - alpha / 2, out_data$df) * out_data$sed
   out_data$CI_U <- out_data$diff + qt(1 - alpha / 2, out_data$df) * out_data$sed
@@ -258,44 +306,52 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
   diag(diffs_out$p.differences)=1
   # MSG
   # msg=agricolae::orderPvalue(treatment=RCB_asr$predictions$pvals[,1],means=RCB_asr$predictions$pvals[,2],alpha=alpha,pvalue=diffs_out$p.differences,console=F)
-  msg=MSG(treatment=RCB_asr$predictions$pvals[,1],means=RCB_asr$predictions$pvals[,2],alpha=alpha,pvalue=diffs_out$p.differences,console=F)
-  
+  # msg=MSG(treatment=as.character(RCB_asr$predictions$pvals[,1])[order(LSM,decreasing =T)],means=LSM[order(LSM,decreasing =T)],alpha=alpha,pvalue=diffs_out$p.differences,console=F)
+  msg=MSG(diffs_out$p.differences,alpha)
   
   return(list('Delta_table'=out_data,'Mean Separation Grouping'=msg))
 }
 
-#' Function for computing the residual degrees of freedom.
-#' @param RCB_asr A fitted ASReml object
+
+
+# computeDF <- function(RCB_asr){
+#   degrees_freedom <- asreml::wald.asreml( RCB_asr,denDF ="default")
+#   return( degrees_freedom)
+# }
+# computeDF <- function(RCB_asr, FACTOR_1){
+#   degrees_freedom <- asreml::wald.asreml( RCB_asr, maxiter = 1 )
+#   return( degrees_freedom[FACTOR_1, "Df"] )
+# }
+
+
+
+# ANOVA table
+
+# ANOVA_output <- function(asreml.obj,degrees_freedom){
+#   anova_<-list()
+#   
+#   anova_[[1]]=asreml::wald.asreml(asreml.obj,)                        ## for fixed effect
+#   anova_[[2]]=summary(asreml.obj)$varcomp                      ## for random effect
+#   anova_[[1]]$denDF= c(degrees_freedom,'')
+#   
+#   for (j in 1:length(row.names(anova_[[2]]))) {
+#   row.names(anova_[[2]])[j] <- strsplit(row.names(anova_[[2]]),'!')[[j]][1]
+#   }
+#   row.names(anova_[[2]])[j] <- 'residual'
+#   
+#   names(anova_) <- c('fixed effect','random effect')
+#   return(anova_)  
+#   
+# }
+
+
+
+
+
+#' Computes the variance component table for model P3 and P5
+#' @param asreml.obj A fitted ASReml object
+#' @return A dataframe with variance component estimates
 #' @export
-#' @importFrom asreml wald.asreml
-computeDF <- function(RCB_asr, FACTOR_1){
-  degrees_freedom <- wald.asreml( RCB_asr, maxiter = 1 )
-  return( degrees_freedom[FACTOR_1, "Df"] )
-}
-
-
-#' ANOVA table
-# for model P1,P2,P4
-
-ANOVA_output <- function(asreml.obj,degrees_freedom){
-  anova_<-list()
-  
-  anova_[[1]]=asreml::wald.asreml(asreml.obj)                        ## for fixed effect
-  anova_[[2]]=summary(asreml.obj)$varcomp                      ## for random effect
-  anova_[[1]]$denDF= c(degrees_freedom,'')
-  
-  for (j in 1:length(row.names(anova_[[2]]))) {
-  row.names(anova_[[2]])[j] <- strsplit(row.names(anova_[[2]]),'!')[[j]][1]
-  }
-  row.names(anova_[[2]])[j] <- 'residual'
-  
-  names(anova_) <- c('fixed effect','random effect')
-  return(anova_)  
-  
-}
-
-
-# for model P3,P5
 ANOVA_output_r <- function(asreml.obj){
  
   anova_=summary(asreml.obj)$varcomp                      ## for random effect
@@ -305,92 +361,104 @@ ANOVA_output_r <- function(asreml.obj){
   }
   row.names(anova_)[j] <- 'residual'
   
+  anova_=anova_[,c(2,5)]
+  colnames(anova_) <- c("variance_estimates","constraint")
+  
   return(anova_)  
   
 }
 
 
 
-resid_table <- function(asreml.obj,data){
+#' Computes the residuals
+#' @param asreml.obj A fitted ASReml object
+#' @param data A dataframe that contains the data used to create the ASReml object
+#' @return A dataframe with residuals align with corresponding location ID and replication ID
+#' @export
+resid_table <- function(asreml.obj,data) {
   cbind(resid(asreml.obj),data[,FIELD_ID],data[,REP_ID])
 }
 
-LastC=function (x) 
-{
+
+#' Computes the blup for random effects
+#' @param asreml.obj A fitted ASReml object
+#' @param analysis_type analysis_type defined by the user in the input argument
+#' @return A dataframe with blup for random effects
+#' @export
+blup_table <- function(asreml.obj,analysis_type) {
   
-  y <- sub(" +$", "0", x)
-  p1 <- nchar(y)
-  cc <- substr(y, p1, p1)
-  while (cc=='.') {
-  cc <- substr(y, p1, p1)
-  if (cc != '.') break
-  p1=p1-1
+  if (analysis_type == 'P5') {
+    
+    bp=rownames(coefficients(asreml.obj)$random)
+    bp1=bp[grep("factor1",bp)]  ## all terms with factor1
+    bp2=bp1[-grep(":",bp1)] ## exclude those with interaction
+    bp2_ind=match(bp2,bp)
+    blup <- coefficients(asreml.obj)$random[bp2_ind,]
+  
+  } else {
+    bp=rownames(coefficients(asreml.obj)$random)
+    bp1=bp[grep("factor1",bp)]  ## all terms with factor1
+    bp1_ind=match(bp1,bp)
+    blup <- coefficients(asreml.obj)$random[bp1_ind,] 
+  
   }
   
-  cc <- substr(y, p1, nchar(y))
-  return(cc)
+  return(blup)
+  
 }
 
 
-MSG=function (treatment, means, alpha, pvalue, console) 
-{
-  n <- length(means)
-  z <- data.frame(treatment, means)
-  letras <- c(letters[1:26], LETTERS[1:26],paste(letters,'.',sep=''),paste(LETTERS,'.',sep=''),paste(letters,'..',sep=''),
-              paste(LETTERS,'..',sep=''),paste(letters,'...',sep=''),
-              paste(LETTERS,'...',sep=''),paste(letters,'....',sep=''),paste(LETTERS,'....',sep=''))
-  w <- z[order(z[, 2], decreasing = TRUE), ]
-  M <- rep("", n)
-  k <- 1
-  k1 <- 0
-  j <- 1
-  i <- 1
-  cambio <- n
-  cambio1 <- 0
-  chequeo = 0
-  M[1] <- letras[k]
-  q <- as.numeric(rownames(w))
-  while (j < n) {
-    chequeo <- chequeo + 1
-    if (chequeo > n) 
-      break
-    for (i in j:n) {
-      s <- pvalue[q[i], q[j]] > alpha
-      if (s) {
-        if (LastC(M[i]) != letras[k]) M[i] <- paste(M[i], letras[k], sep = "")
-      }
-      else {
-        k <- k + 1
-        cambio <- i
-        cambio1 <- 0
-        ja <- j
-        for (jj in cambio:n) M[jj] <- paste(M[jj], "", 
-                                            sep = "")
-        M[cambio] <- paste(M[cambio], letras[k], sep = "")
-        for (v in ja:cambio) {
-          if (pvalue[q[v], q[cambio]] <= alpha) {
-            j <- j + 1
-            cambio1 <- 1
-          }
-          else break
-        }
-        break
-      }
-    }
-    if (cambio1 == 0) 
-      j <- j + 1
+
+
+
+#' Computes the Mean separation grouping for the fixed effect
+#' @param P A symmetric matrix with pairwise comparsion P-value, make sure the diagnoal P-vlaues filled with 1 before parse to calculation
+#' @param alpha A number between 0 and 1 specifying the confidence level
+#' @return A vector of letter assignments for each level of fixed effect 
+#' @importFrom igraph simplify graph.data.frame maximal.cliques
+#' @export
+
+MSG <- function(P,alpha) {
+  a <- P
+  b <- which(a>alpha,arr.ind = TRUE)
+  
+  
+  top <- data.frame(N1=b[,1],N2=b[,2])
+  
+  
+  g3 <- igraph::simplify(igraph::graph.data.frame(top[order(top[[1]]),],directed=FALSE))
+  
+  # plot(g3)
+  
+  cliq <- igraph::maximal.cliques(g3)
+  
+  nn <- length(cliq )
+  temp1 <- rep("",nrow(a))
+  assignment <- c(letters, LETTERS,paste(letters,'.',sep=''),paste(LETTERS,'.',sep=''))
+  
+  
+  cliq2<-list()
+  for (j in 1:nn){
+    cliq2[[j]] <- colnames(a)[cliq[[j]]]
+  }  
+  
+  for (ind in 1:nrow(a)){
+    
+    ## check which list number contains this col name
+    ## this one is problematic, since "1" is in "10" so list number containing "10" but no "1" will still be returned.
+    ## tt <- grep(colnames(a)[ind],cliq2)
+    
+    ## solve the issue above
+    tt=which(sapply(1:length(cliq2), function(x) colnames(a)[ind] %in% cliq2[[x]])==TRUE)
+    
+    
+    temp1[ind]=paste0(assignment[tt],collapse = "")
+    
   }
-  w <- data.frame(w, stat = M)
-  w <- w[match(treatment,w$treatment),]
-  trt <- as.character(w$treatment)
-  means <- as.numeric(w$means)
-  output <- data.frame(trt, means, M)
-  output1 <- cbind(trt, means)
-  rownames(output1) <- M
-  for (i in 1:n) {
-    if (console) 
-      cat(rownames(output1)[i], "\t", output1[i, 1], "\t", 
-          means[i], "\n")
-  }
-  invisible(output)
+  
+  
+  return(temp1)
+  
+  
 }
+
