@@ -211,7 +211,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1548362355817</updated>
-      <workItem from="1548362357234" duration="605000" />
+      <workItem from="1548362357234" duration="1587000" />
     </task>
     <task id="LOCAL-00001" summary="Change to description file for asremlPlus versioning">
       <created>1548362476837</created>
@@ -234,11 +234,25 @@
       <option name="project" value="LOCAL" />
       <updated>1548362778024</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Change to description file for asremlPlus versioning">
+      <created>1548362968816</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1548362968816</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Change to description file for asremlPlus versioning">
+      <created>1548363966947</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1548363966947</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="605000" />
+    <option name="totallyTimeSpent" value="1587000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1920" y="23" width="1680" height="1027" extended-state="0" />
