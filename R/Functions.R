@@ -52,44 +52,55 @@ checkData <- function(data, data_fields){
 #' @export
 reformatData <- function(data, data_fields){
   #keep only needed variables
-  data <- data[, unlist(data_fields)]
-
+  dflds     <- unlist(data_fields)
+  # Separate the numeric response from the factors so it does not get changed by the
+  # gsub statements below.  After the changes to the factor level names, the numeric
+  # the response is recombined with the factors.
+  ResponseY <- data[, dflds[1]]               # Numeric response variable
+  data      <- data[, dflds[2:length(dflds)]] # Data frame of just the factors
+  
   # In each column, replace each of the following with "-" for the specified reason
   # 1) "," because the code needs to parse entry and covariate value by "," later in the code
   # 2) ":" because this character is reserved for specifying an interaction terms in formulas
   # 3) " " because ASReml does not like spaces
+  # The next line was added and excluded.  Some of the factor level names are very long integers.  
+  # Somtimes R does not convert these to character well as it will round them off or truncate them.
+  # The result in this case will reduce the number of factor levels. One way to prevent this is to
+  # prepend a character to the begining of the factor level names.  The following commented out line did this.
+  #data <- as.data.frame(lapply(data,function(z){paste0("z",as.character(z))})) # Prepend 'z' to factor level names to prevent rounding of purely integer names by R
   data <- apply(data, 2, gsub, pattern = ",", replacement = "-")
   data <- apply(data, 2, gsub, pattern = ":", replacement = "-")
   data <- apply(data, 2, gsub, pattern = " ", replacement = "-")
-
-  data <- data.frame(data)
-
+  
+  # Recombine the numeric response variable with the modified factors
+  data            <- as.data.frame(data) # Make sure data is a data frame
+  data[,dflds[1]] <- ResponseY           # Add the numeric response variable to the data frame
+  
   # Convert data types
   data[, FACTOR_1] <- as.character(data[, FACTOR_1])
-
-
+  
   # Adjust control names
   if ("Factortype_name" %in% data_fields){
-    control_indices <- which(data[, Factortype_name] == "CONTROL")
+    control_indices <- which(as.character(data[, Factortype_name]) == "CONTROL")
     if (length(unique(data[control_indices, FACTOR_1])) > 1){
       message(paste(FACTOR_1,
                     " has more than one level specified as control, only the first will be returned.",
                     sep = ""))
-      }
+    }
     # take the first(and hopefully only) unique control factor name
     # append "AAAA" and change name
-    control_level <- unique(data[control_indices, FACTOR_1])[1]
+    control_level         <- unique(data[control_indices, FACTOR_1])[1]
     adjusted_control_name <- paste("AAAA", control_level, sep = "")
     data[data[, FACTOR_1] == control_level, FACTOR_1] <- adjusted_control_name
     assign("control_level", control_level, env = .GlobalEnv)
     assign("adjusted_control_name", adjusted_control_name, env = .GlobalEnv)
   }
-
+  
   data[, CROP_OBSRVTN_DETAIL_ID] <- as.numeric(as.character(data[, CROP_OBSRVTN_DETAIL_ID]))
   data[, FIELD_ID] <- as.factor(data[, FIELD_ID])
   data[, FACTOR_1] <- as.factor(data[, FACTOR_1])
-  data[, REP_ID] <- as.factor(data[, REP_ID])
-
+  data[, REP_ID]   <- as.factor(data[, REP_ID])
+  
   return(data)
 }
 
