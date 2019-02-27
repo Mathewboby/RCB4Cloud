@@ -1,11 +1,11 @@
 Package: RCB
 Title: RCB ANOVA module
-Version: 1.0.2
+Version: 1.0.4
 Author: Subash Krishnamurthy <sskris1@@monsanto.com>
 Maintainer: Subash Krishnamurthy <subash.krishnamurthy@monsanto.com>
 Depends:
     R (>= 3.1.0),
-    asremlPlus,
+    asremlPlus (== 2.0-12),
     Matrix
 Suggests:
     asreml,

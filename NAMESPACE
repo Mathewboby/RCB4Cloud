@@ -2,7 +2,7 @@
 
 export(R.ASReml_RCB_Return)
 export(checkData)
-export(computeDF)
+#export(computeDF)
 export(deltaAnalysis)
 export(lsmAnalysis)
 export(reformatData)
