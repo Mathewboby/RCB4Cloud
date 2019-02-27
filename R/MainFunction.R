@@ -19,7 +19,7 @@ R.ASReml_RCB_Return <- function(data,
                                     FIELD_ID = "fieldId",
                                     FACTOR_1 = "factor1",
                                     REP_ID = "repId",
-                                    Factortype_name = "experimentalUnitId" )){
+                                    Factortype_name = "experimentalUnitId")){
 
   # Initialize output variable
   Out_return <- NULL

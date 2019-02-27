@@ -8,7 +8,7 @@ test_that("Checking the ouput against RCBInputExample for path P4", {
   test_output <- read.xlsx( file.path(system.file("data", package = "RCB"), "RCBInputExample.xlsx"), sheet = "metric" )
 
   # Compare output deltas with the output in test_output
-  package_test <- R.ASReml_RCB_Return(data, "P4")
+  package_test <- R.ASReml_RCB_Return(data, analysis_type = "P4")
   test_output <- test_output[, c("HEAD_ANALYSIS_ENTRY_CONCAT",
                                   "COMPARE_ANALYSIS_ENTRY_CONCAT_1",
                                   "MEAN_DELTA",
@@ -19,7 +19,7 @@ test_that("Checking the ouput against RCBInputExample for path P4", {
                         by.y = c( "head", "comp" ),
                         all.x = FALSE,
                         all.y = FALSE )
-  comp_table[, c("diff", "p.diff", "sed")] <- round(comp_table[, c("diff", "p.diff", "sed")], 4)
+  comp_table[, c("diff", "p.diff", "sed")] <- round(comp_table[, c("diff", "p_diff", "sed")], 4)
 
   expect_equal(comp_table$MEAN_DELTA, comp_table$diff, tolerance = 1.0e-4)
 })
