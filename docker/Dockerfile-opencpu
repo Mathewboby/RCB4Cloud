@@ -1,0 +1,14 @@
+FROM opencpu/base
+
+RUN apt-get update && apt-get install -y --no-install-recommends git libcurl4-openssl-dev
+
+RUN R -e 'install.packages("devtools")'
+
+COPY asreml.lic /root/
+
+ADD RCB4Cloud.tgz /tmp/
+
+RUN R -e 'devtools::install_version("asremlPlus", version="2.0-12", dependencies=TRUE, upgrade = FALSE, repos=c("http://cran.r-project.org", "https://cran.science-at-scale.io"))'
+RUN R -e 'devtools::install("/tmp/RCB4Cloud", dependencies=TRUE, upgrade = FALSE, repos=c("http://cran.r-project.org", "https://cran.science-at-scale.io"))'
+
+RUN rm -rf '/tmp/RCB4Cloud'
