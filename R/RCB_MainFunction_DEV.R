@@ -2,7 +2,7 @@
 # This is the main function for doing RCBD analysis.  It will fit 5 versions of the RCB model.  These are selected by
 # the input argument analysis_type, which can one of five strings: "P1", "P2", "P3", "P4" and "P5.  RCB types
 # P1 and P2 only diffference in which data are used to indicate the blocking factor. In p1 the blocking factor is
-# some sort of replicate ID and in P2 it is some sort of field or location ID.  Models P1, P2 and P4 use BLUE 
+# some sort of replicate ID and in P2 it is some sort of field or location ID.  Models P1, P2 and P4 use BLUE
 # estimation which is most people are familiar with from textbooks.  Models P3 and P5 use BLUP estimation which
 # give mean estimates closer to the over average of the data than BLUE estimates and are preferred in genetics experiments.
 #
@@ -22,17 +22,17 @@
 # ReplicateIDColumnName       sting:   giving the column name of the rep ID variable in DataIn
 # FactorTypeColumnName        sting:   giving the column name of the factor type variable in DataIn: indicates wheter or not a treatment level is a CONTROL or not.
 # SufficientDataThreshold     numeric: giving the lower bound on the number of data values to be analyzed
-# ResponseVariableShouldBeGT0 logical: If TRUE, then response variable values <= 0 are treated as 
+# ResponseVariableShouldBeGT0 logical: If TRUE, then response variable values <= 0 are treated as
 #                                      missing or deactivated data.
-# The output is a named list with several components from the fitted model, 
+# The output is a named list with several components from the fitted model,
 # if analysis_type is "P1", "P2" or "P4", the returned list includes LS table, delta table, ANOVA table for fixed effects,
-# the variance component table and residual table; 
-# if analysis_type is "P3" or "P5", returned list includes LS table, variance component table, residual table and BLUP table for factor1 
+# the variance component table and residual table;
+# if analysis_type is "P3" or "P5", returned list includes LS table, variance component table, residual table and BLUP table for factor1
 
 #' This is the main function for doing RCBD analysis.  It will fit 5 versions of the RCB model.  These are selected by
 #' the input argument analysis_type, which can one of five strings: "P1", "P2", "P3", "P4" and "P5.  RCB types
 #' P1 and P2 only diffference in which data are used to indicate the blocking factor. In p1 the blocking factor is
-#' some sort of replicate ID and in P2 it is some sort of field or location ID.  Models P1, P2 and P4 use BLUE 
+#' some sort of replicate ID and in P2 it is some sort of field or location ID.  Models P1, P2 and P4 use BLUE
 #' estimation which is most people are familiar with from textbooks.  Models P3 and P5 use BLUP estimation which
 #' give mean estimates closer to the over average of the data than BLUE etimates and are preferred in genetics experiments.
 #'
@@ -51,7 +51,7 @@
 #' @param FactorTypeColumnName        a sting giving the column name of the factor type variable in DataIn: indicates wheter or not a treatment level is a CONTROL or not.
 #' @param SufficientDataThreshold     a number giving the lower bound on the number of data values to be analyzed
 #' @param ResponseVariableShouldBeGT0 a logical. If TRUE, then response variable values <= 0 are treated as missing or deactivated data.
-#' @return A list with several components for the fit model, if analysis_type is "P1", "P2" or "P4", returned list includes delta table, LS table, ANOVA table for fixed effects, variance component table and residual table; if analysis_type is "P3" or "P5", returned list includes LS table, variance component table, residual table and BLUP table for factor1 
+#' @return A list with several components for the fit model, if analysis_type is "P1", "P2" or "P4", returned list includes delta table, LS table, ANOVA table for fixed effects, variance component table and residual table; if analysis_type is "P3" or "P5", returned list includes LS table, variance component table, residual table and BLUP table for factor1
 #'
 #' @importFrom asreml asreml
 #' @export
@@ -67,10 +67,12 @@ RCB_ModelFittingFunction <- function(DataIn,
                                 FactorTypeColumnName        = "experimentalUnitId",
                                 SufficientDataThreshold     = 20,
                                 ResponseVariableShouldBeGT0 = TRUE){
-  
+
   #
-  DataIn$RowID <- 1:nrow(DataIn)  # Add a row index for later merging and reordering.
-  
+  if(exists("RowID",where=DataIn)==FALSE){
+    DataIn$RowID <- 1:nrow(DataIn)  # Add a row index for later merging and reordering.
+  }
+
   # Create an intial list of RCB parameters set to their corresponding defaults.
   # Call this named list, ListOfIndividualParameters.
   ListOfIndividualParameters <- list(analysis_type               = analysis_type,
@@ -82,13 +84,13 @@ RCB_ModelFittingFunction <- function(DataIn,
                                      FactorTypeColumnName        = FactorTypeColumnName,
                                      SufficientDataThreshold     = SufficientDataThreshold,
                                      ResponseVariableShouldBeGT0 = ResponseVariableShouldBeGT0)
-  
+
   # Either read in the parameters from a file or use the individual inputs from above.
-  
+
   if(is.null(ListOfRCBParameters)==TRUE){ # A user supplied list of parameters was not given. Therefore use the default individual inputs from above which may have been over written by the user.
     ListOfRCBParameters <- ListOfIndividualParameters
   }
-  
+
   # Check for missing parameters and add them, if needed, with default or individual input values.
   nloip <- names(ListOfIndividualParameters)
   CheckNames <- names(ListOfIndividualParameters) %in% names(ListOfRCBParameters) # This is TRUE for each name in names(ListOfIndividualParameters) which is also in names(ListOfSmartQAQCParameters)
@@ -100,7 +102,7 @@ RCB_ModelFittingFunction <- function(DataIn,
       }
     }
   }
-  # Check for missing parameter values.  If there are some, 
+  # Check for missing parameter values.  If there are some,
   # replace them with the individual input default values.
   Check4Missing <- sapply(ListOfRCBParameters,function(zx){is.null(zx) | is.na(zx) | is.nan(zx)})
   if(any(Check4Missing)==TRUE){
@@ -111,7 +113,7 @@ RCB_ModelFittingFunction <- function(DataIn,
       }
     }
   }
-  
+
   # Set values of the individual parameters in the code below.
   # This is where the inputs are actually made available to the DSR code.
   analysis_type               <- ListOfRCBParameters$analysis_type
@@ -123,7 +125,7 @@ RCB_ModelFittingFunction <- function(DataIn,
   FactorTypeColumnName        <- ListOfRCBParameters$FactorTypeColumnName
   SufficientDataThreshold     <- ListOfRCBParameters$SufficientDataThreshold
   ResponseVariableShouldBeGT0 <- ListOfRCBParameters$ResponseVariableShouldBeGT0
-  
+
   # Check for a misspelled field id column name.
   if(exists("FieldId",where=DataIn)){ # should be "fieldId"
     DataIn$fieldId <- DataIn$FieldId
@@ -143,7 +145,7 @@ RCB_ModelFittingFunction <- function(DataIn,
       }
     }
   }
-  # The following named list is used to make all of the variables available to several functions as well as 
+  # The following named list is used to make all of the variables available to several functions as well as
   # to the Global environment (see lines 99-101 below)
   data_fields <- list(
       CROP_OBSRVTN_DETAIL_ID = ResponseVariableColumnName,
@@ -165,7 +167,7 @@ RCB_ModelFittingFunction <- function(DataIn,
     message(txt4)
     return(DataIn)
   }
-  
+
   # Initialize output variable
   Out_return <- NULL
 
@@ -191,7 +193,7 @@ RCB_ModelFittingFunction <- function(DataIn,
   start      <- Sys.time()
   message(paste("Running ASReml using analysis type:", analysis_type), appendLF = TRUE )
 
- 
+
   # Run R-ASReml, capture output
   RCB_asr  <-  asreml::asreml(
                       fixed     = fixed_formula,
@@ -219,61 +221,61 @@ RCB_ModelFittingFunction <- function(DataIn,
                       pworkspace = 1000 * 1e6 / 8, # approximately 125 million bytes
                       trace      = FALSE)
 
-  
+
   message("finished in ", round(difftime(Sys.time(), start, units = time.scale[1]), digits = 2), " ", time.scale)
   message("Creating output files...", appendLF = TRUE)
 
   # Out_return$console$modeling <- RCB_asr
-  
+
   if (analysis_type %in% c('P3','P5') ) {
   # LS Means
   Out_return$LSM_TABLE <- lsmAnalysis_r(RCB_asr, data)
-  
+
   ## ANOVA table
   Out_return$var_analysis <- ANOVA_output_r(RCB_asr)
-  
+
   ## add residual tables
   Out_return$resid <- resid_table(RCB_asr,data)
   colnames(Out_return$resid) <- c('residuals',FIELD_ID,REP_ID)
-  
+
   ## add blup table for random effects
   Out_return$BLUP <- as.matrix(blup_table(RCB_asr,analysis_type))
   colnames(Out_return$BLUP) <- c('BLUP for random effects')
-  
+
   }
-  
+
   if (analysis_type %in% c('P1','P2','P4') ) {
-  
-  # to use wald.asreml() only once to save computational time  
-  LSM_ALL <- lsmAnalysis(RCB_asr, data, alpha=alpha)    
-  
+
+  # to use wald.asreml() only once to save computational time
+  LSM_ALL <- lsmAnalysis(RCB_asr, data, alpha=alpha)
+
   # basic LSM table
   Out_return$LSM_TABLE <- LSM_ALL[[1]]
   # Degrees of freedom
   degrees_freedom = LSM_ALL[[2]]  ## a vector including all the fixed effect
 
-  
+
   del=deltaAnalysis(RCB_asr,alpha=alpha, degrees_freedom[2])
   # Deltas and p-values
   Out_return$Deltas <- del[[1]]
   # Mean Separation Grouping
   mean_sep_group <- del[[2]]
-  
+
   ## combine LSM_TABLE and MSG
   Out_return$LSM_TABLE <- cbind(Out_return$LSM_TABLE,mean_sep_group)
-  
+
   ## sort by descending order
   Out_return$LSM_TABLE <- Out_return$LSM_TABLE[order(Out_return$LSM_TABLE$Yield,decreasing = TRUE),]
-  
-  
+
+
   ## ANOVA table
   Out_return$aov <- LSM_ALL[[3]]
   Out_return$varcomp <- LSM_ALL[[4]]
-  
+
   ## add residual tables
   Out_return$resid <- resid_table(RCB_asr,data)
   colnames(Out_return$resid) <- c('residuals',FIELD_ID,REP_ID)
-  
+
  }
 
   return(Out_return)

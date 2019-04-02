@@ -6,7 +6,8 @@ suppressMessages(library(aws.s3,   quietly=TRUE))
 suppressMessages(install.packages('dae',repos = "http://cran.wustl.edu/"))
 asremlPlusURL <- "http://cran.wustl.edu//src/contrib/Archive/asremlPlus/asremlPlus_2.0-12.tar.gz"
 suppressMessages(install.packages(asremlPlusURL,repos=NULL,type="source"))
-suppressMessages(library(asremlPlus,    quietly=TRUE))
+suppressMessages(library(asreml,     quietly=TRUE))
+suppressMessages(library(asremlPlus, quietly=TRUE))
 
 # Source code to be tested.
 source('/repos/RCB4Cloud/R/RCB_SupportFunctions.R')
@@ -82,7 +83,7 @@ ro5 <- RCB_ModelFittingFunction(dfyld,
                                 ReplicateIDColumnName       = "repId",
                                 FactorTypeColumnName        = "experimentalUnitId",
                                 SufficientDataThreshold     = 20,
-                                ResponseVariableShouldBeGT0 = TRUE) 
+                                ResponseVariableShouldBeGT0 = TRUE)
 # # compare results with ro1
 # mapply(function(zx,zy){all(zx==zy)},ro1,ro5)
 # sapply(ro1$Deltas,function(zx){sum(is.na(zx))})
@@ -99,9 +100,9 @@ all(ro1$Deltas[,7:9]==ro5$Deltas[,7:9])       # Is FALSE as expected
 all(ro1$LSM_TABLE[,1:5]==ro5$LSM_TABLE[,1:5]) # Is TRUE as expected. Columns 7-9 differ as expected because they are the lower nad upper confidence limits and the compact-letter-display indicating which means cluster together.
 
 
-ro6 <- RCB_ModelFittingFunction(dfyld[1:19,]) # Throws out the following message and return the input data as input in ro6.
+ro6 <- RCB_ModelFittingFunction(dfyld[1:19,]) # Throws out the following message and return the input data in ro6.
 #Error: there are too few data (n<SufficientDataThreshold) to run an RCB model. Data frame has n = 19 rows and SufficientDataThreshold = 20
-
+all(ro6==dfyld[1:19,]) # TRUE as expected.
 
 
 
