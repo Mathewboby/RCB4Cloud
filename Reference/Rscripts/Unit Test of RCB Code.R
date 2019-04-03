@@ -11,7 +11,7 @@ suppressMessages(library(asremlPlus, quietly=TRUE))
 
 # Source code to be tested.
 source('/repos/RCB4Cloud/R/RCB_SupportFunctions.R')
-source('/repos/RCB4Cloud/R/RCB_MainFunction_DEV.R')
+source('/repos/RCB4Cloud/R/RCB_MainFunction.R')
 
 # Set the path to a nice RSA yield data set in S3
 yf<-"/projects/smartQAQC/business-funcs/breeding/regions/rsa/crops/corn/seasons/2017_10/programs/a4/sets/ncb_baab01/observations/yld/runs/1553272601/input.json"
