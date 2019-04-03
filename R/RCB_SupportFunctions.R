@@ -15,7 +15,7 @@ setLicense <- function(){
   }
 }
 
-#' Checks that data conditions are met
+#' Checks that data conditions are met by making sure the data frame has the correctly named columns
 #' @param data A dataframe
 #' @param data_fields A list of column names
 #' @export
@@ -31,15 +31,15 @@ checkData <- function(data, data_fields){
   if (sum(!(required_fields %in% names( data_fields )))){
     missing_fields <- required_fields[!(required_fields %in% names(data_fields))]
     missing_fields <- paste(missing_fields, collapse = ", ")
-    out_message <- paste("ERROR: Missing these required fields in the data_fields list: ", missing_fields)
+    out_message    <- paste("ERROR: Missing these required fields in the data_fields list: ", missing_fields)
     message(out_message)
     return(out_message)
   }
 
   # Check for all the data_fields in the data
   if (sum(!(data_fields %in% colnames(data)))){
-    not.in <- data_fields[which( !(data_fields %in% colnames(data)))]
-    not.in <- paste(not.in, collapse = ", ")
+    not.in      <- data_fields[which( !(data_fields %in% colnames(data)))]
+    not.in      <- paste(not.in, collapse = ", ")
     out_message <- paste("ERROR: Variable(s)", not.in, "not in data header")
     message(out_message)
     return(out_message)
@@ -74,7 +74,7 @@ reformatData <- function(data, data_fields){
   
   # Recombine the numeric response variable with the modified factors
   data            <- as.data.frame(data) # Make sure data is a data frame
-  data[,dflds[1]] <- ResponseY           # Add the numeric response variable to the data frame
+  data[,dflds[1]] <- ResponseY           # Add the numeric response variable back into the data frame
   
   # Convert data types
   data[, FACTOR_1] <- as.character(data[, FACTOR_1])
@@ -89,10 +89,10 @@ reformatData <- function(data, data_fields){
     }
     # take the first(and hopefully only) unique control factor name
     # append "AAAA" and change name
-    control_level         <- unique(data[control_indices, FACTOR_1])[1]
-    adjusted_control_name <- paste("AAAA", control_level, sep = "")
+    control_level                                     <- unique(data[control_indices, FACTOR_1])[1]
+    adjusted_control_name                             <- paste("AAAA", control_level, sep = "")
     data[data[, FACTOR_1] == control_level, FACTOR_1] <- adjusted_control_name
-    assign("control_level", control_level, env = .GlobalEnv)
+    assign("control_level"        , control_level        , env = .GlobalEnv)
     assign("adjusted_control_name", adjusted_control_name, env = .GlobalEnv)
   }
   
