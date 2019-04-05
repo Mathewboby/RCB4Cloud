@@ -3,6 +3,7 @@ set -e
 
 PROJ_REPO="https://github.platforms.engineering/TADS/RCB4Cloud.git"
 PROJECT="RCB4Cloud"
+ENVIRONMENT=$1
 
 if [ -d ${PROJECT} ] ; then 
     rm -rf ${PROJECT}
@@ -19,5 +20,13 @@ fi
 docker build -t rcb .
 
 # tag & push
-docker tag rcb:latest docker-registry.science-at-scale.io/rcb:prod
-docker push docker-registry.science-at-scale.io/rcb:prod
+
+if [ "${ENVIRONMENT}" == "prod" ] ; then
+    echo "PROD image"
+    docker tag rcb:latest docker-registry.science-at-scale.io/rcb:prod
+    docker push docker-registry.science-at-scale.io/rcb:prod
+  else 
+    echo "Non-prod image"
+    docker tag rcb:latest docker-registry.science-at-scale.io/rcb:nonprod
+    docker push docker-registry.science-at-scale.io/rcb:nonprod
+fi
