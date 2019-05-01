@@ -135,13 +135,13 @@ RCB_ModelFittingFunction <- function(DataIn,
   #
   # Check to see if data cleaning algorithms were run on the input data prior to this routine's call.
   #
-  if(exists("IS_DEACTIVATED",where=DataIn)==FALSE){ # Data quality checking algorithms like DSR and smartQAQC create this column.  If it is missing, they were not run.
-    DataIn$IS_DEACTIVATED     <- FALSE  # Create this missing column and set it equal to FALSE indicating all the data are acceptable
+  if(exists("isDeactivated",where=DataIn)==FALSE){ # Data quality checking algorithms like DSR and smartQAQC create this column.  If it is missing, they were not run.
+    DataIn$isDeactivated     <- FALSE  # Create this missing column and set it equal to FALSE indicating all the data are acceptable
     DataIn$DeactivationReason <- "None" # There is no rason to exclude data.
     if(ResponseVariableShouldBeGT0==TRUE){ # In the case IS_DEACTIVTED does not exist, so check the response for negative or zero values if required.
       wLE0 <- which(DataIn[,ResponseVariableColumnName]<=0)
       if(length(wLE0)>0){
-        DataIn$IS_DEACTIVATED[wLE0] <- TRUE # Change the deactiviation status of these rows
+        DataIn$isDeactivated[wLE0] <- TRUE # Change the deactiviation status of these rows
         DataIn$DeactivationReason   <- "RCB_Data<=0"
       }
     }
@@ -155,8 +155,8 @@ RCB_ModelFittingFunction <- function(DataIn,
       REP_ID                 = ReplicateIDColumnName,
       Factortype_name        = FactorTypeColumnName)
 
-  if(exists("IS_DEACTIVATED",where=DataIn)){
-    data <- DataIn[DataIn$IS_DEACTIVATED==FALSE,]
+  if(exists("isDeactivated",where=DataIn)){
+    data <- DataIn[DataIn$isDeactivated==FALSE,]
   }else{
     data <- DataIn
   }
