@@ -154,7 +154,7 @@ setFixedRandomEffects <- function(analysis_type){
                   formula(paste("~ ", FIELD_ID, "+",
                                 FIELD_ID, ":", REP_ID, "+",
                                 FIELD_ID, ":", FACTOR_1, "+",
-                                FACTOR_1, ":", FACTOR_2, ":", FIELD_ID, sep = "")),
+                                FIELD_ID, ":", FACTOR_1, ":", FACTOR_2, sep = "")),
                   envir = .GlobalEnv)
            assign("classify", c("factor1", "factor1:factor2"), envir=.GlobalEnv)
            assign("present", c("factor1", "factor2"), envir=.GlobalEnv)
