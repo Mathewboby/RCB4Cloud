@@ -7,30 +7,30 @@
 # The 20 models are listed and then they are relisted with rough out R and asreml code.
 
 # CRD one-way         BLUE (by location)      [line 40] {author: CL}
-# CRD one-way         BLUE (across locations) [line 51] {author: CL}
+# CRD one-way         BLUE (across locations) [line 49] {author: CL}
 
-# CRD two-way crossed BLUE (by location)      [line 60] {author: MT}
-# CRD two-way crossed BLUE (across locations) [line 73] {author: MT}
+# CRD two-way crossed BLUE (by location)      [line 58] {author: MT}
+# CRD two-way crossed BLUE (across locations) [line 71] {author: MT}
 
-# CRD two-way nested  BLUE (by location)      [line 86] {author: CL}
-# CRD two-way nested  BLUE (across location)  [line 99] {authors: CL, MT}
+# CRD two-way nested  BLUE (by location)      [line 84] {author: CL}
+# CRD two-way nested  BLUE (across location)  [line 97] {authors: CL, MT}
 
-# RCB single   Location  multiple rep  BLUE (P1) (by location)      [line 110] {authors: SK, SJ}
-# RCB multiple locations single   rep  BLUE (P2) (across locations) [line 124] {authors: SK, SJ}
-# RCB multiple locations multiple reps BLUE (P4) (across locations) [line 138] {authors: SK, SJ}
+# RCB single   Location  multiple rep  BLUE (P1) (by location)      [line 108] {authors: SK, SJ}
+# RCB multiple locations single   rep  BLUE (P2) (across locations) [line 119] {authors: SK, SJ}
+# RCB multiple locations multiple reps BLUE (P4) (across locations) [line 130] {authors: SK, SJ}
 
-# RCB multiple locations single   rep  BLUP (P3) (across locations) [line 155] {authors: SK, SJ}
-# RCB multiple locations multiple reps BLUP (P5) (across locations) [line 169] {authors: SK, SJ}
+# RCB multiple locations single   rep  BLUP (P3) (across locations) [line 143] {authors: SK, SJ}
+# RCB multiple locations multiple reps BLUP (P5) (across locations) [line 154] {authors: SK, SJ}
 
 ######### There are differing opions on the formulae for the models given below. ##########
 
-# RCB2 single   location  multiple reps BLUE (by location)          [line 186] {author: SJ & RM}
-# RCB2 multiple locations single   rep  BLUE (across locations)     [line 204] {author: SJ, alternate: RM & GL}
-# RCB2 multiple locations multiple reps BLUE (across locations)     [line 222] {author: SJ, alternate: RM & GL}
+# RCB2 single   location  multiple reps BLUE (by location)          [line 167] {author: SJ & RM}
+# RCB2 multiple locations single   rep  BLUE (across locations)     [line 181] {author: SJ, alternate: RM & GL}
+# RCB2 multiple locations multiple reps BLUE (across locations)     [line 195] {author: SJ, alternate: RM & GL}
 
-# Split-plot single   location  multiple reps BLUE (by location)      [line 249] {author: MT}
-# Split-plot multiple locations single   rep  BLUE (across locations)
-# Split-plot multiple locations multiple reps BLUE (across locations)
+# Split-plot single   location  multiple reps BLUE (by location)      [line 215] {author: MT}
+# Split-plot multiple locations single   rep  BLUE (across locations) [line 233] {author: MT}
+# Split-plot multiple locations multiple reps BLUE (across locations) [line 251] {author: MT}
 
 # GUBD2 single   location  multiple reps BLUE (by location)
 # GUBD2 multiple locations single   rep  BLUE (across locations)
@@ -40,19 +40,17 @@
 # CRD one-way         BLUE (by location)
 ########################################
 
-frml     <- formula(paste0(repsonse_variable_name,"~ 1 + ",
-                           treatment_factor1_name))
 asreml_fixed_formula <- formula(paste0(repsonse_variable_name,"~ 1 + ",
                                        treatment_factor1_name))
 DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
                            treatment_factor1_name))
 
 #############################################
-# CRD one-way         BLUE (across locations)
+# CRD one-way         BLUE (across locations) {same as by-location because there are no blocking factors}
 #############################################
 
-frml     <- formula(paste0(repsonse_variable_name,"~ 1 + ",
-                           treatment_factor1_name))
+asreml_fixed_formula <- formula(paste0(repsonse_variable_name,"~ 1 + ",
+                                       treatment_factor1_name))
 DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
                            treatment_factor1_name))
 
@@ -60,7 +58,7 @@ DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
 # CRD two-way crossed BLUE (by location)
 ########################################
 
-frml     <- formula(paste0(repsonse_variable_name,"~ 1 + ",
+asreml_fixed_formula <- formula(paste0(repsonse_variable_name,"~ 1 + ",
                            treatment_factor1_name," + ",
                            treatment_factor2_name," + ",
                            treatment_factor1_name,":",treatment_factor2_name))
@@ -70,10 +68,10 @@ DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
                            treatment_factor1_name,":",treatment_factor2_name))
 
 #############################################
-# CRD two-way crossed BLUE (across locations)
+# CRD two-way crossed BLUE (across locations) {same as by-location because there are no blocking factors}
 #############################################
 
-frml     <- formula(paste0(repsonse_variable_name,"~ 1 + ",
+asreml_fixed_formula <- formula(paste0(repsonse_variable_name,"~ 1 + ",
                            treatment_factor1_name," + ",
                            treatment_factor2_name," + ",
                            treatment_factor1_name,":",treatment_factor2_name))
@@ -86,20 +84,20 @@ DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
 # CRD two-way nested  BLUE (by location)
 ########################################
 
-frml     <- formula(paste0(repsonse_variable_name,"~ 1 + ",
+asreml_fixed_formula <- formula(paste0(repsonse_variable_name,"~ 1 + ",
                            treatment_factor1_name," + ",
                            treatment_factor1_name,":",treatment_factor2_name))
-# frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
+# asreml_fixed_formula <- formula(paste0(repsonse_variable_name,"~ 1 + ",
 #                        treatment_factor1_name,"/",treatment_factor2_name)) # alternate R-formula
 DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
                            treatment_factor1_name," + ",
                            treatment_factor1_name,":",treatment_factor2_name))
 
 ############################################
-# CRD two-way nested  BLUE (across location)
+# CRD two-way nested  BLUE (across location) {same as by-location because there are no blocking factors}
 ############################################
 
-frml     <- formula(paste0(repsonse_variable_name,"~ 1 + ",
+asreml_fixed_formula <- formula(paste0(repsonse_variable_name,"~ 1 + ",
                            treatment_factor1_name," + ",
                            treatment_factor1_name,":",treatment_factor2_name))
 DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
@@ -107,12 +105,9 @@ DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
                            treatment_factor1_name,":",treatment_factor2_name))
 
 ###########################################################
-# RCB single Location  multiple rep BLUE (P1) (by location)
+# RCB single Location  multiple rep BLUE (P1) (by location) {blocking_factor1_name = something like repId}
 ###########################################################
 
-frml     <- formula(paste0(response_variable_name," ~ 1 + ",
-                           treatment_factor1_name," + ",
-                           blocking_factor1_name))
 asreml_fixed_formula <- formula(paste0(response_variable_name," ~ 1 + ",
                                        treatment_factor1_name))
 asreml_random_formula <- formula(paste0("~ ",blocking_factor1_name))  # TPS blocking_factor1_name = replicate name or rep
@@ -121,12 +116,9 @@ DSR_frml <- formula(paste0(response_variable_name," ~ 1 + ",
                            blocking_factor1_name))
 
 ###################################################################
-# RCB multiple locations single   rep  BLUE (P2) (across locations)
+# RCB multiple locations single   rep  BLUE (P2) (across locations) {blocking_factor1_name = something like locId}
 ###################################################################
 
-frml     <- formula(paste0(response_variable_name," ~ 1 + ",
-                           treatment_factor1_name," + ",
-                           blocking_factor1_name))
 asreml_fixed_formula <- formula(paste0(response_variable_name," ~ 1 + ",
                                        treatment_factor1_name))
 asreml_random_formula <- formula(paste0("~ ",blocking_factor2_name))  # TPS blocking_factor1_name = loc name or something like field id
@@ -135,13 +127,9 @@ DSR_frml <- formula(paste0(response_variable_name," ~ 1 + ",
                            blocking_factor1_name))
 
 ###################################################################
-# RCB multiple locations multiple reps BLUE (P4) (across locations)
+# RCB multiple locations multiple reps BLUE (P4) (across locations) {blocking_factor1_name = something like locId, blocking_factor2_name = something like repId}
 ###################################################################
 
-frml     <- formula(paste0(response_variable_name," ~ 1 + ",
-                           treatment_factor1_name," + ",
-                           blocking_factor1_name," + ",
-                           blocking_factor2_name))
 asreml_fixed_formula <- formula(paste0(response_variable_name," ~ 1 + ",
                                        treatment_factor1_name))
 asreml_random_formula <- formula(paste0("~",blocking_factor1_name," + ",
@@ -155,9 +143,6 @@ DSR_frml <- formula(paste0(response_variable_name," ~ 1 + ",
 # RCB multiple locations single   rep  BLUP (P3) (across locations)
 ###################################################################
 
-frml     <- formula(paste0(response_variable_name," ~ 1 + ",
-                           treatment_factor1_name," + ",
-                           blocking_factor1_name))
 asreml_fixed_formula <- formula(paste0(response_variable_name," ~ 1"))
 asreml_random_formula <- formula(paste0("~",blocking_factor2_name," + ",
                                             treatment_factor1_name))  # TPS blocking_factor1_name = loc name or something like field id
@@ -169,10 +154,6 @@ DSR_frml <- formula(paste0(response_variable_name," ~ 1 + ",
 # RCB multiple locations multiple reps BLUP (P5) (across locations)
 ###################################################################
 
-frml     <- formula(paste0(response_variable_name," ~ 1 + ",
-                           treatment_factor1_name," + ",
-                           blocking_factor1_name," + ",
-                           blocking_factor2_name))
 asreml_fixed_formula <- formula(paste0(response_variable_name," ~ 1"))
 asreml_random_formula <- formula(paste0("~",blocking_factor1_name," + ",
                                         treatment_factor1_name," + ",
@@ -183,13 +164,9 @@ DSR_frml <- formula(paste0(response_variable_name," ~ 1 + ",
                            blocking_factor1_name))
 
 ########################################################
-# RCB2 single location  multiple reps BLUE (by location)
+# RCB2 single location  multiple reps BLUE (by location) {blocking_factor1_name = something like repId}
 ########################################################
 
-frml <- formula(paste0(response_variable_name, " ~ 1 + ",
-                       treatment_factor1_name, " + ",
-                       treatment_factor1_name, ":", treatment_factor2_name, " + ",
-                       blocking_factor1_name))
 asreml_fixed_formula <- formula(paste0(response_variable_name, " ~ 1 + ",
                                        treatment_factor1_name, " + ",
                                        treatment_factor1_name, ":", treatment_factor2_name))
@@ -201,13 +178,9 @@ DSR_frml <- formula(paste0(response_variable_name, " ~ 1 + ",
                        blocking_factor1_name))  # Note: treatment_factor1_name/treatment_factor2_name is expanded internally to treatment_factor1_name + treatment_factor1_name:treatment_factor2_name
 
 ##############################################################
-# RCB2 multiple locations single   rep  BLUE (across location)
+# RCB2 multiple locations single   rep  BLUE (across location) {blocking_factor1_name = something like locId}
 ##############################################################
 
-frml <- formula(paste0(response_variable_name, " ~ 1 + ",
-                       treatment_factor1_name, " + ",
-                       treatment_factor1_name, ":", treatment_factor2_name, " + ",
-                       blocking_factor1_name))
 asreml_fixed_formula <- formula(paste0(response_variable_name, " ~ 1 + ",
                                        treatment_factor1_name, " + ",
                                        treatment_factor1_name, ":", treatment_factor2_name))
@@ -222,13 +195,6 @@ DSR_frml <- formula(paste0(response_variable_name, " ~ 1 + ",
 # RCB2 multiple locations multiple reps BLUE (across location)
 ##############################################################
 
-frml <- formula(paste0(response_variable_name, " ~ 1 + ",
-                       treatment_factor1_name, " + ",
-                       treatment_factor1_name, ":", treatment_factor2_name, " + ",
-                       blocking_factor1_name, " + ",
-                       blocking_factor1_name, ":",blocking_factor2_name, " + ",
-                       blocking_factor1_name, ":",treatment_factor1_name, " + ",
-                       blocking_factor1_name, ":",treatment_factor1_name, ":", treatment_factor2_name))
 asreml_fixed_formula <- formula(paste0(response_variable_name, " ~ 1 + ",
                                        treatment_factor1_name, " + ",
                                        treatment_factor1_name, ":", treatment_factor2_name))
@@ -246,15 +212,9 @@ DSR_frml <- formula(paste0(response_variable_name, " ~ 1 + ",
                            blocking_factor1_name, ":", treatment_factor1_name, ":", treatment_factor2_name))
 
 ##################################################
-# Split-plot single   location  multiple reps BLUE
+# Split-plot single   location  multiple reps BLUE (Blocking_factor1_name = something like repId)
 ##################################################
 
-frml <- formula(paste0(response_variable_name, " ~ 1 + ",
-                       blocking_factor1_name, " + ",
-                       treatment_factor1_name, " + ",
-                       blocking_factor1_name, ":",treatment_factor1_name, " + ",
-                       treatment_factor2_name, " + ",
-                       treatment_factor1_name, ":",treatment_factor2_name))
 asreml_fixed_formula <- formula(pase0(response_variable_name, " ~ 1 + ",
                                       treatment_factor1_name, " + ",
                                       treatment_factor2_name, " + ",
@@ -270,13 +230,62 @@ DSR_frml <- formula(paste0(response_variable_name, " ~ 1 + ",
                        treatment_factor1_name, ":",treatment_factor2_name))
 
 ##################################################
-# Split-plot multiple locations single   rep  BLUE
+# Split-plot multiple locations single   rep  BLUE (Blocking_factor1_name = something like locId)
 ##################################################
 
+asreml_fixed_formula <- formula(pase0(response_variable_name, " ~ 1 + ",
+                                      treatment_factor1_name, " + ",
+                                      treatment_factor2_name, " + ",
+                                      treatment_factor1_name, ":",treatment_factor2_name))
+asreml_random_formula <- formula(paste0("~",
+                                        blocking_factor1_name, " + ",
+                                        blocking_factor1_name, ":",treatment_factor1_name))
+DSR_frml <- formula(paste0(response_variable_name, " ~ 1 + ",
+                           blocking_factor1_name, " + ",
+                           treatment_factor1_name, " + ",
+                           blocking_factor1_name, ":",treatment_factor1_name, " + ",
+                           treatment_factor2_name, " + ",
+                           treatment_factor1_name, ":",treatment_factor2_name))
 
+##################################################
 # Split-plot multiple locations multiple reps BLUE
+##################################################
 
+asreml_fixed_formula <- formula(pase0(response_variable_name, " ~ 1 + ",
+                                      treatment_factor1_name, " + ",
+                                      treatment_factor2_name, " + ",
+                                      treatment_factor1_name, ":", treatment_factor2_name))
+asreml_random_formula <- formula(paste0("~",
+                                        blocking_factor1_name, " + ",
+                                        blocking_factor1_name, ":", treatment_factor1_name, " + ",
+                                        blocking_factor1_name, ":", blocking_factor2_name, " + ",
+                                        blocking_factor1_name, ":", blocking_factor2_name, ":", treatment_factor1_name, " + ",
+                                        blocking_factor1_name, ":", treatment_factor2_name, " + ",
+                                        blocking_factor1_name, ":", blocking_factor2_name, ":", treatment_factor2_name, " + ",
+                                        blocking_factor1_name, ":", treatment_factor1_name, ":", treatment_factor2_name, " + ",
+                                        blocking_factor1_name, ":", blocking_factor2_name, ":", treatment_factor1_name, ":", treatment_factor2_name))
+DSR_frml <- formula(paste0(response_variable_name, " ~ 1 + ",
+                           blocking_factor1_name, " + ",
+                           blocking_factor1_name, ":", blocking_factor2_name, " + ",
+                           treatment_factor1_name, " + ",
+                           blocking_factor1_name, ":", treatment_factor1_name, " + ",
+                           blocking_factor1_name, ":", blocking_factor2_name, ":", treatment_factor1_name, " + ",
+                           treatment_factor2_name, " + ",
+                           treatment_factor1_name, ":", treatment_factor2_name, " + ",
+                           blocking_factor1_name, ":", treatment_factor2_name, " + ",
+                           blocking_factor1_name, ":", blocking_factor2_name, ":", treatment_factor2_name, " + ",
+                           blocking_factor1_name, ":", treatment_factor1_name, ":", treatment_factor2_name, " + ",
+                           blocking_factor1_name, ":", blocking_factor2_name, ":", treatment_factor1_name, ":", treatment_factor2_name))
+
+#############################################
 # GUBD2 single   location  multiple reps BLUE
+#############################################
+
+#############################################
 # GUBD2 multiple locations single   rep  BLUE
+#############################################
+
+#############################################
 # GUBD2 multiple locations multiple reps BLUE
+#############################################
 
