@@ -26,7 +26,7 @@ DSR_frml <- formula(paste0(response_variable_name," ~ 1 + ",
 # Input parameters to a model formula making funciton
 Experiment type, IE. RCB, ...
 Module, IE. DSR, SmartQAQC, RCSM, ...
-
+Estimation Type BLUE or BLUP
 multi-loc = T/F
 multi-rep = T/F
 
