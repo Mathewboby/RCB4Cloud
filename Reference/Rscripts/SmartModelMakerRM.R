@@ -2,7 +2,7 @@
 # Radha Mohanty and Subash Kasyap. Chris Leeds programmed a list of models for DSR.
 # Steve Johnson extended to Subash's list of RCB models to include other models.  Radha Mohanty
 # added formulae for RCB2, GUBD2 and Split-plot designs as currently (14 May 2019) accepted
-# at Bayer (These are standard models with certain terms excluded or set to 0).  This file contains full standard versions of the models.
+# at Bayer (These are standard models with certain terms excluded or set to 0). This file contains the Modified versions of the model as avocated by Grace Liu.
 
 # The 20 models are listed and then they are relisted with rough out R and asreml code.
 
@@ -59,9 +59,9 @@ DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
 ########################################
 
 asreml_fixed_formula <- formula(paste0(repsonse_variable_name,"~ 1 + ",
-                           treatment_factor1_name," + ",
-                           treatment_factor2_name," + ",
-                           treatment_factor1_name,":",treatment_factor2_name))
+                                       treatment_factor1_name," + ",
+                                       treatment_factor2_name," + ",
+                                       treatment_factor1_name,":",treatment_factor2_name))
 DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
                            treatment_factor1_name," + ",
                            treatment_factor2_name," + ",
@@ -72,9 +72,9 @@ DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
 #############################################
 
 asreml_fixed_formula <- formula(paste0(repsonse_variable_name,"~ 1 + ",
-                           treatment_factor1_name," + ",
-                           treatment_factor2_name," + ",
-                           treatment_factor1_name,":",treatment_factor2_name))
+                                       treatment_factor1_name," + ",
+                                       treatment_factor2_name," + ",
+                                       treatment_factor1_name,":",treatment_factor2_name))
 DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
                            treatment_factor1_name," + ",
                            treatment_factor2_name," + ",
@@ -85,8 +85,8 @@ DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
 ########################################
 
 asreml_fixed_formula <- formula(paste0(repsonse_variable_name,"~ 1 + ",
-                           treatment_factor1_name," + ",
-                           treatment_factor1_name,":",treatment_factor2_name))
+                                       treatment_factor1_name," + ",
+                                       treatment_factor1_name,":",treatment_factor2_name))
 # asreml_fixed_formula <- formula(paste0(repsonse_variable_name,"~ 1 + ",
 #                        treatment_factor1_name,"/",treatment_factor2_name)) # alternate R-formula
 DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
@@ -98,8 +98,8 @@ DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
 ############################################
 
 asreml_fixed_formula <- formula(paste0(repsonse_variable_name,"~ 1 + ",
-                           treatment_factor1_name," + ",
-                           treatment_factor1_name,":",treatment_factor2_name))
+                                       treatment_factor1_name," + ",
+                                       treatment_factor1_name,":",treatment_factor2_name))
 DSR_frml <- formula(paste0(repsonse_variable_name,"~ 1 + ",
                            treatment_factor1_name," + ",
                            treatment_factor1_name,":",treatment_factor2_name))
@@ -145,7 +145,7 @@ DSR_frml <- formula(paste0(response_variable_name," ~ 1 + ",
 
 asreml_fixed_formula <- formula(paste0(response_variable_name," ~ 1"))
 asreml_random_formula <- formula(paste0("~",blocking_factor2_name," + ",
-                                            treatment_factor1_name))  # TPS blocking_factor1_name = loc name or something like field id
+                                        treatment_factor1_name))  # TPS blocking_factor1_name = loc name or something like field id
 DSR_frml <- formula(paste0(response_variable_name," ~ 1 + ",
                            treatment_factor1_name," + ",
                            blocking_factor1_name))
@@ -173,9 +173,9 @@ asreml_fixed_formula <- formula(paste0(response_variable_name, " ~ 1 + ",
 asreml_random_formula <- formula(paste0("~",
                                         blocking_factor1_name))
 DSR_frml <- formula(paste0(response_variable_name, " ~ 1 + ",
-                       treatment_factor1_name, " + ",
-                       treatment_factor1_name, ":", treatment_factor2_name, " + ",
-                       blocking_factor1_name))  # Note: treatment_factor1_name/treatment_factor2_name is expanded internally to treatment_factor1_name + treatment_factor1_name:treatment_factor2_name
+                           treatment_factor1_name, " + ",
+                           treatment_factor1_name, ":", treatment_factor2_name, " + ",
+                           blocking_factor1_name))  # Note: treatment_factor1_name/treatment_factor2_name is expanded internally to treatment_factor1_name + treatment_factor1_name:treatment_factor2_name
 
 ##############################################################
 # RCB2 multiple locations single   rep  BLUE (across location) {blocking_factor1_name = something like locId}
@@ -223,11 +223,11 @@ asreml_random_formula <- formula(paste0("~",
                                         blocking_factor1_name, " + ",
                                         blocking_factor1_name, ":",treatment_factor1_name))
 DSR_frml <- formula(paste0(response_variable_name, " ~ 1 + ",
-                       blocking_factor1_name, " + ",
-                       treatment_factor1_name, " + ",
-                       blocking_factor1_name, ":",treatment_factor1_name, " + ",
-                       treatment_factor2_name, " + ",
-                       treatment_factor1_name, ":",treatment_factor2_name))
+                           blocking_factor1_name, " + ",
+                           treatment_factor1_name, " + ",
+                           blocking_factor1_name, ":",treatment_factor1_name, " + ",
+                           treatment_factor2_name, " + ",
+                           treatment_factor1_name, ":",treatment_factor2_name))
 
 ##################################################
 # Split-plot multiple locations single   rep  BLUE (Blocking_factor1_name = something like locId)
