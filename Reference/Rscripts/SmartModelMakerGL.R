@@ -32,10 +32,27 @@
 # Split-plot multiple locations single   rep  BLUE (across locations) [line 233] {author: MT}
 # Split-plot multiple locations multiple reps BLUE (across locations) [line 251] {author: MT}
 
-# GUBD2 single   location  multiple reps BLUE (by location)
-# GUBD2 multiple locations single   rep  BLUE (across locations)
-# GUBD2 multiple locations multiple reps BLUE (across locations)
+# GUBD2 single   location  multiple reps BLUE (by location)           [line 279] {authors: RM, SJ, MT}
+# GUBD2 multiple locations single   rep  BLUE (across locations)      [line 295] {authors: RM, SJ, MT}
+# GUBD2 multiple locations multiple reps BLUE (across locations)      [line 311] {authors: RM, SJ, MT}
+SmartModelMaker <- function(named_list_of_parameters=NULL){
+  source("/repos/DataDescription/R/SupportFunctions.R")
+  If(is.null(named_list_of_parameters)==TRUE){
+    named_list_of_parameters <- DefaultParameterListMaker("RCB")
+    named_list_of_parameters$repsonse_variable_name <- named_list_of_parameters$ResponseVariableColumnName
+    named_list_of_parameters$blocking_factor1_name  <- named_list_of_parameters$FieldIDColumnName
+    named_list_of_parameters$blocking_factor2_name  <- named_list_of_parameters$ReplicateIDColumnName
+    named_list_of_parameters$treatment_factor1_name <- named_list_of_parameters$TreatmentFactorColumnName
+    named_list_of_parameters$treatment_factor2_name <- NULL
+    named_list_of_parameters$model_type        <- "RCB"
+    named_list_of_parameters$module_name       <- "ANOVA"
+    named_list_of_parameters$estimation_method <- "BLUE"
+    named_list_of_parameters$has_multiple_locations         <- FALSE
+    named_list_of_parameters$has_multiple_reps_per_location <- TRUE
+    named_list_of_parameters$analysis_is_local              <- TRUE
 
+  }
+}
 ########################################
 # CRD one-way         BLUE (by location)
 ########################################

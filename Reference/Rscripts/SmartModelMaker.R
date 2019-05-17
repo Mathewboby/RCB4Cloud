@@ -32,9 +32,9 @@
 # Split-plot multiple locations single   rep  BLUE (across locations) [line 233] {author: MT}
 # Split-plot multiple locations multiple reps BLUE (across locations) [line 251] {author: MT}
 
-# GUBD2 single   location  multiple reps BLUE (by location)
-# GUBD2 multiple locations single   rep  BLUE (across locations)
-# GUBD2 multiple locations multiple reps BLUE (across locations)
+# GUBD2 single   location  multiple reps BLUE (by location)           [line 279] {authors: RM, SJ, MT}
+# GUBD2 multiple locations single   rep  BLUE (across locations)      [line 295] {authors: RM, SJ, MT}
+# GUBD2 multiple locations multiple reps BLUE (across locations)      [line 311] {authors: RM, SJ, MT}
 
 ########################################
 # CRD one-way         BLUE (by location)
@@ -278,6 +278,7 @@ DSR_formula <- formula(paste0(response_variable_name, " ~ 1 + ",
 #############################################
 # GUBD2 single   location  multiple reps BLUE {Blocking_factor1_name = something like repId}
 #############################################
+
 asreml_fixed_formula <- formula(pase0(response_variable_name, " ~ 1 + ",
                                       treatment_factor1_name, " + ",
                                       treatment_factor1_name, ":",treatment_factor2_name))
@@ -327,4 +328,21 @@ DSR_formula <- formula(paste0(response_variable_name, " ~ 1 + ",
                            blocking_factor1_name, ":", blocking_factor2_name, ":", treatment_factor1_name, " + ",
                            treatment_factor1_name, ":", treatment_factor2_name, " + ",
                            blocking_factor1_name, ":", treatment_factor1_name, ":", treatment_factor2_name))
+
+# RCB_DefaultParameterList.json
+{"ResponseVariableColumnName":["numValue"],
+  "SetIDColumnName":["TEST_SET"],
+  "FieldIDColumnName":["fieldId"],
+  "TreatmentFactorColumnName":["factor1"],
+  "ReplicateIDColumnName":["repId"],
+  "OutlierPValueThreshold":[0.05],
+  "IQR1_multiplier":[3],
+  "IQR2_multiplier":[2],
+  "summary":[false],
+  "log":[false],
+  "NumberOfIterations":[2],
+  "multi_rep_option":["by field"],
+  "NoVarianceInY_Threshold":[0.0001],
+  "SufficientDataThreshold":[20],
+  "ResponseVariableShouldBeGT0":[true]}
 
