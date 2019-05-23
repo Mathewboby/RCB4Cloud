@@ -14,20 +14,37 @@ source('/repos/RCB4Cloud/R/RCB_SupportFunctions.R')
 source('/repos/RCB4Cloud/R/RCB_MainFunction.R')
 
 # Set the path to a nice RSA yield data set in S3
-yf<-"/projects/smartQAQC/business-funcs/breeding/regions/rsa/crops/corn/seasons/2017_10/programs/a4/sets/ncb_baab01/observations/yld/runs/1553272601/input.json"
+# yf1 <- "/projects/qaqc/business-funcs/breeding/regions/rsa/crops/corn/seasons/2017_10/"
+# yf2 <- "programs/a4/sets/ncb_baab01/observations/yld/runs/9876543210/input.json"
+# yf <- paste0(yf1,yf2)
 
-# Set AWS credentials to access S3
-Sys.setenv("AWS_ACCESS_KEY_ID" = "AKIAIQTLWIZT2Q5NYYOA",
-"AWS_SECRET_ACCESS_KEY" = "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",
-"AWS_DEFAULT_REGION" = "us-east-1")
+# # Set AWS credentials to access S3
+# Sys.setenv("AWS_ACCESS_KEY_ID" = "XXXXXXXXXXXXXXXXXXXX",
+#            "AWS_SECRET_ACCESS_KEY" = "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+#            "AWS_DEFAULT_REGION" = "bbbbbbbbb")
 
-# Read in the JSON-data file from S3
-dfyld <- fromJSON(rawToChar(get_object(object = yf,bucket="trait-analytics-np")))
+# Read in the JSON-data file from S3, which needs S3 credentials made system variables first
+# Old way
+# dfyld <- fromJSON(rawToChar(get_object(object = yf,bucket="trait-analytics-np")))
+# New way
+# dfyld <- as.data.frame(s3read_using(fromJSON,object=paste0("s3://trait-analytics-np",yf)))
+# Write out this file as a JSON-file locally for easier access and to avoid s3 authentication
+# write_json(dfyld,"/repos/RCB4Cloud/Reference/Data/RCB_input_data.json",
+#                  digits=12, pretty=TRUE,auto_unbox=TRUE)
 
 # Read in RCB default parameter list from Dominio
 RCB_DefaultParameterList <- fromJSON("/repos/RCB4Cloud/Reference/Data/RCB_DefaultParameterList.json")
 # Echo guts of RCB_DefaultParameterList
 RCB_DefaultParameterList
+# Read in S3-YLD-data-file for local Domino directory
+dfyld <- as.data.frame(fromJSON("/repos/RCB4Cloud/Reference/Data/RCB_input_data.json"))
+# For testing purposes create the following columns in dfyld
+dfyld$numValue <- dfyld$NUM_VALUE
+dfyld$fieldId  <- dfyld$FIELD_NAME
+dfyld$repId    <- dfyld$BR_REP_ID
+dfyld$factor1  <- dfyld$GERMPLASM_ID # can also use dfyld$TEST_SET_ENTRY_ID or dfyld$entryId
+dfyld$experimentalUnitId <- as.character(dfyld$PLOT_ID)
+
 
 # Run RCB model with updated code
 
@@ -47,11 +64,11 @@ ro3 <- RCB_ModelFittingFunction(dfyld,
 ro4 <- RCB_ModelFittingFunction(dfyld,
                                 analysis_type               = "P2",
                                 alpha                       = 0.1,
-                                ResponseVariableColumnName  = "numValue",
-                                FieldIDColumnName           = "fieldId",
-                                TreatmentFactorColumnName   = "factor1",
-                                ReplicateIDColumnName       = "repId",
-                                FactorTypeColumnName        = "experimentalUnitId",
+                                ResponseVariableColumnName  = "NUM_VALUE",
+                                FieldIDColumnName           = "FIELD_NAME",
+                                TreatmentFactorColumnName   = "GERMPLASM_ID",
+                                ReplicateIDColumnName       = "BR_REP_ID",
+                                FactorTypeColumnName        = "PLOT_ID",
                                 SufficientDataThreshold     = 20,
                                 ResponseVariableShouldBeGT0 = TRUE) # Input data frame and other parameters excluding paramter list
 # The next three chunks of code verify that all 4 outputs match.
