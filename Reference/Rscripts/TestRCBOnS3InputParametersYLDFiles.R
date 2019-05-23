@@ -10,9 +10,9 @@ source('/repos/RCB4Cloud/R/RCB_SupportFunctions.R')
 source('/repos/RCB4Cloud/R/RCB_MainFunction.R')
 
 # Input aws credentials
-Sys.setenv("AWS_ACCESS_KEY_ID" = "AKIAIQTLWIZT2Q5NYYOA",
-           "AWS_SECRET_ACCESS_KEY" = "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",
-           "AWS_DEFAULT_REGION" = "us-east-1")
+Sys.setenv("AWS_ACCESS_KEY_ID" = "XXXXXXXXXXXXXXXXXXXX",
+           "AWS_SECRET_ACCESS_KEY" = "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+           "AWS_DEFAULT_REGION" = "bbbbbbbbb")
 
 S3BucketName <- "trait-analytics-np"
 #RCBdataList  <- rawToChar(get_object(object="/projects/RecordsOfFilesWritten/YLDTestFiles.csv",bucket=S3BucketName))
