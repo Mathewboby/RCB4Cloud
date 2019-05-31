@@ -1,0 +1,1 @@
+{"response_variable_name":["NUM_VALUE"],"treatment_factor_names":["ANALYSIS_GROUP1_CONCAT","ANALYSIS_ENTRY_CONCAT"],"blocking_factor_names":["TRACK_ID"],"estimation_method":["BLUE"],"experiment_type":["RCBD2"],"module_name":["ANOVA"]}
