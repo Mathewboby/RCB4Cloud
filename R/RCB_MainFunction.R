@@ -75,7 +75,6 @@ RCB_ModelFittingFunction <- function(DataIn,
   # }
   curr.names <- names(DataIn)
   for(cn in curr.names){
-    print(cn)
     new.name <- gsub(" ", "", cn)
     new.name <- gsub(pattern='[[:punct:]]', replacement = "", x = new.name)
 
@@ -83,11 +82,12 @@ RCB_ModelFittingFunction <- function(DataIn,
     if(new.name != cn){
       DataIn[cn] <- NULL
     }
-    print(new.name)
   }
   for(p in 1:length(ListOfRCBParameters)){
-    ListOfRCBParameters[p] <- gsub(" ", "", ListOfRCBParameters[p])
-    ListOfRCBParameters[p] <- gsub('[[:punct:]]', "", ListOfRCBParameters[p])
+    if(typeof(ListOfRCBParameters[[p]]) == 'character'){
+      ListOfRCBParameters[[p]] <- gsub(' ', "", ListOfRCBParameters[[p]])
+      ListOfRCBParameters[[p]] <- gsub('[[:punct:]]', "", ListOfRCBParameters[[p]])
+    }
   }
 
   # Create an intial list of RCB parameters set to their corresponding defaults.
@@ -176,7 +176,6 @@ RCB_ModelFittingFunction <- function(DataIn,
   }else{
     data <- DataIn
   }
-  print(names(data))
   if(nrow(data)<SufficientDataThreshold){ # This is currently a fixed limit determined by commitee.  It should be based on the number of treatment levels and blocks
     txt1 <- "Error: there are too few data (n<SufficientDataThreshold) to run an RCB model. Data frame has n = "
     txt2 <- paste0(txt1,nrow(data))
@@ -191,11 +190,9 @@ RCB_ModelFittingFunction <- function(DataIn,
 
   # Sets the ASReml license path if it is not set already
   setLicense()
-  print('bravo')
 
   # Check inputs
   checkAnalysisType(analysis_type)
-  print('alpha')
   checkData(data, data_fields)
 
   # Add the data fields to the global environment
@@ -207,13 +204,11 @@ RCB_ModelFittingFunction <- function(DataIn,
   data <- reformatData(data, data_fields)
   # Set fixed and random effects from analysis type
   setFixedRandomEffects(analysis_type)
-  # for timing
+# for timing
   time.scale <- ifelse(nrow(data) < 4000, "secs", "mins")
   start      <- Sys.time()
   message(paste("Running ASReml using analysis type:", analysis_type), appendLF = TRUE )
 
-  print('charlie')
-print(head(data))
   # Run R-ASReml, capture output
   RCB_asr  <-  asreml::asreml(
                       fixed     = fixed_formula,
@@ -241,7 +236,6 @@ print(head(data))
                       pworkspace = 1000 * 1e6 / 8, # approximately 125 million bytes
                       trace      = FALSE)
 
-  print('delta')
 
   message("finished in ", round(difftime(Sys.time(), start, units = time.scale[1]), digits = 2), " ", time.scale)
   message("Creating output files...", appendLF = TRUE)
