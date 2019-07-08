@@ -20,7 +20,6 @@ setLicense <- function(){
 #' @param data_fields A list of column names
 #' @export
 checkData <- function(data, data_fields){
-
   # Check for all required fields in data_fields list
   required_fields <- c ( "CROP_OBSRVTN_DETAIL_ID",
                          "FIELD_ID",
@@ -35,7 +34,6 @@ checkData <- function(data, data_fields){
     message(out_message)
     return(out_message)
   }
-
   # Check for all the data_fields in the data
   if (sum(!(data_fields %in% colnames(data)))){
     not.in      <- data_fields[which( !(data_fields %in% colnames(data)))]
@@ -58,27 +56,26 @@ reformatData <- function(data, data_fields){
   # the response is recombined with the factors.
   ResponseY <- data[, dflds[1]]               # Numeric response variable
   data      <- data[, dflds[2:length(dflds)]] # Data frame of just the factors
-  
   # In each column, replace each of the following with "-" for the specified reason
   # 1) "," because the code needs to parse entry and covariate value by "," later in the code
   # 2) ":" because this character is reserved for specifying an interaction terms in formulas
   # 3) " " because ASReml does not like spaces
-  # The next line was added and excluded.  Some of the factor level names are very long integers.  
+  # The next line was added and excluded.  Some of the factor level names are very long integers.
   # Somtimes R does not convert these to character well as it will round them off or truncate them.
   # The result in this case will reduce the number of factor levels. One way to prevent this is to
   # prepend a character to the begining of the factor level names.  The following commented out line did this.
   #data <- as.data.frame(lapply(data,function(z){paste0("z",as.character(z))})) # Prepend 'z' to factor level names to prevent rounding of purely integer names by R
   data <- apply(data, 2, gsub, pattern = ",", replacement = "-")
   data <- apply(data, 2, gsub, pattern = ":", replacement = "-")
-  data <- apply(data, 2, gsub, pattern = " ", replacement = "-")
-  
+  data <- apply(data, 2, gsub, pattern = " ", replacement = "")
+
   # Recombine the numeric response variable with the modified factors
   data            <- as.data.frame(data) # Make sure data is a data frame
   data[,dflds[1]] <- ResponseY           # Add the numeric response variable back into the data frame
-  
+
   # Convert data types
   data[, FACTOR_1] <- as.character(data[, FACTOR_1])
-  
+
   # Adjust control names
   if ("Factortype_name" %in% data_fields){
     control_indices <- which(as.character(data[, Factortype_name]) == "CONTROL")
@@ -95,12 +92,12 @@ reformatData <- function(data, data_fields){
     assign("control_level"        , control_level        , env = .GlobalEnv)
     assign("adjusted_control_name", adjusted_control_name, env = .GlobalEnv)
   }
-  
+
   data[, CROP_OBSRVTN_DETAIL_ID] <- as.numeric(as.character(data[, CROP_OBSRVTN_DETAIL_ID]))
   data[, FIELD_ID] <- as.factor(data[, FIELD_ID])
   data[, FACTOR_1] <- as.factor(data[, FACTOR_1])
   data[, REP_ID]   <- as.factor(data[, REP_ID])
-  
+
   return(data)
 }
 
@@ -176,40 +173,40 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
   # dm <- Matrix::sparse.model.matrix(fixed_formula, data) #sparse design matrix
   #        n   -               # missing_obs              -              rank(X)
   # DDoF <- nrow(dm) - Matrix::rankMatrix(x = dm, method = "qr.R")[[1]]
-  
-  
-  
+
+
+
   ## WARNING: here if you don't specifiy data=data, it will return error, because the "denDF = xx" argument here
   ##          calls update() in the backgroud to calculate the df for denominator, if you don't specify the "data=data"
-  ##          it will by default search in the global enviroment. With all being said, you need to specify the data name in the local enviroment. 
-  
+  ##          it will by default search in the global enviroment. With all being said, you need to specify the data name in the local enviroment.
+
   ALL=asreml::wald.asreml(asreml.obj,denDF ="default",ssType= "conditional",data=data)
-  
+
   ## for degree of freedom
   DDoF_ <- ALL[[1]][,2]
   DDoF <- DDoF_[2]
-  
-  
+
+
   ## for variance component table
   VAR=summary(asreml.obj)$varcomp
-  
+
   for (j in 1:length(rownames(VAR))) {
       rownames(VAR)[j] <- strsplit(rownames(VAR),'!')[[j]][1]
   }
-  
+
   rownames(VAR)[j] <- 'residual'
-  
+
   VAR=VAR[,c(2,5)]
   colnames(VAR) <- c("variance_estimates","constraint")
-  
-  
+
+
   ## for fix effect ANOVA table
   AOV <- ALL[[1]]
   colnames(AOV) <- c("numerator_df","denominator_df","ss_incremental","ss_conditional","Margin","Prob")
   rownames(AOV)[1] <- "Intercept"
-  
-  
-  
+
+
+
   ## for LSM table
   LSM <- data.frame(
     Entry = asreml.obj$predictions$pvals[[FACTOR_1]],
@@ -217,7 +214,7 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
     SE = asreml.obj$predictions$pvals$standard.error,
     df = DDoF
   )
-  
+
 
   ## count N in each Entry level with missing removed.
   N<-rep(NA,length(LSM$Entry))
@@ -225,8 +222,8 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
     N[i]=nrow(data[data[,FACTOR_1]==LSM$Entry[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$Entry[i],CROP_OBSRVTN_DETAIL_ID]))
   }
   LSM$N<-N
-  
-  
+
+
   # create the CI
   LSM$CI_L <- LSM$Yield - qt(1 - alpha / 2, DDoF) * LSM$SE
   LSM$CI_U <- LSM$Yield + qt(1 - alpha / 2, DDoF) * LSM$SE
@@ -253,15 +250,15 @@ lsmAnalysis_r <- function(RCB_asr, data){
     Yield = RCB_asr$predictions$pvals$predicted.value,
     SE = RCB_asr$predictions$pvals$standard.error
   )
-  
+
   ## count N in each Entry level with missing removed.
   N<-rep(NA,length(LSM$Entry))
   for (i in 1:length(LSM$Entry)) {
     N[i]=nrow(data[data[,FACTOR_1]==LSM$Entry[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$Entry[i],CROP_OBSRVTN_DETAIL_ID]))
   }
   LSM$N<-N
-  
-  
+
+
   ##replace adjusted control name with actual control name
   if (exists("adjusted_control_name", envir = .GlobalEnv)){
     levels(LSM$Entry)[levels(LSM$Entry) == adjusted_control_name] <- control_level
@@ -301,7 +298,7 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
   rownames( diffs_out$differences ) <- colnames( diffs_out$differences ) <- correct_order_names
   rownames( diffs_out$p.differences ) <- colnames( diffs_out$p.differences ) <- correct_order_names
   rownames( diffs_out$sed ) <- colnames( diffs_out$sed ) <- correct_order_names
-  
+
   # Output the data as a data table
   out_data <- merge( correct_order_names, correct_order_names )
   names( out_data ) <- c("head", "comp")
@@ -312,14 +309,14 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
   out_data$t <- as.vector( diffs_out$differences/diffs_out$sed )
   out_data$CI_L <- out_data$diff - qt(1 - alpha / 2, out_data$df) * out_data$sed
   out_data$CI_U <- out_data$diff + qt(1 - alpha / 2, out_data$df) * out_data$sed
-  
+
   ## the diagonal shouldn't be NA, set it as p-value = 1
   diag(diffs_out$p.differences)=1
   # MSG
   # msg=agricolae::orderPvalue(treatment=RCB_asr$predictions$pvals[,1],means=RCB_asr$predictions$pvals[,2],alpha=alpha,pvalue=diffs_out$p.differences,console=F)
   # msg=MSG(treatment=as.character(RCB_asr$predictions$pvals[,1])[order(LSM,decreasing =T)],means=LSM[order(LSM,decreasing =T)],alpha=alpha,pvalue=diffs_out$p.differences,console=F)
   msg=MSG(diffs_out$p.differences,alpha)
-  
+
   return(list('Delta_table'=out_data,'Mean Separation Grouping'=msg))
 }
 
@@ -340,19 +337,19 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
 
 # ANOVA_output <- function(asreml.obj,degrees_freedom){
 #   anova_<-list()
-#   
+#
 #   anova_[[1]]=asreml::wald.asreml(asreml.obj,)                        ## for fixed effect
 #   anova_[[2]]=summary(asreml.obj)$varcomp                      ## for random effect
 #   anova_[[1]]$denDF= c(degrees_freedom,'')
-#   
+#
 #   for (j in 1:length(row.names(anova_[[2]]))) {
 #   row.names(anova_[[2]])[j] <- strsplit(row.names(anova_[[2]]),'!')[[j]][1]
 #   }
 #   row.names(anova_[[2]])[j] <- 'residual'
-#   
+#
 #   names(anova_) <- c('fixed effect','random effect')
-#   return(anova_)  
-#   
+#   return(anova_)
+#
 # }
 
 
@@ -364,19 +361,19 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
 #' @return A dataframe with variance component estimates
 #' @export
 ANOVA_output_r <- function(asreml.obj){
- 
+
   anova_=summary(asreml.obj)$varcomp                      ## for random effect
-  
+
   for (j in 1:length(row.names(anova_))) {
     row.names(anova_)[j] <- strsplit(row.names(anova_),'!')[[j]][1]
   }
   row.names(anova_)[j] <- 'residual'
-  
+
   anova_=anova_[,c(2,5)]
   colnames(anova_) <- c("variance_estimates","constraint")
-  
-  return(anova_)  
-  
+
+  return(anova_)
+
 }
 
 
@@ -397,25 +394,25 @@ resid_table <- function(asreml.obj,data) {
 #' @return A dataframe with blup for random effects
 #' @export
 blup_table <- function(asreml.obj,analysis_type) {
-  
+
   if (analysis_type == 'P5') {
-    
+
     bp=rownames(coefficients(asreml.obj)$random)
     bp1=bp[grep("factor1",bp)]  ## all terms with factor1
     bp2=bp1[-grep(":",bp1)] ## exclude those with interaction
     bp2_ind=match(bp2,bp)
     blup <- coefficients(asreml.obj)$random[bp2_ind,]
-  
+
   } else {
     bp=rownames(coefficients(asreml.obj)$random)
     bp1=bp[grep("factor1",bp)]  ## all terms with factor1
     bp1_ind=match(bp1,bp)
-    blup <- coefficients(asreml.obj)$random[bp1_ind,] 
-  
+    blup <- coefficients(asreml.obj)$random[bp1_ind,]
+
   }
-  
+
   return(blup)
-  
+
 }
 
 
@@ -425,51 +422,51 @@ blup_table <- function(asreml.obj,analysis_type) {
 #' Computes the Mean separation grouping for the fixed effect
 #' @param P A symmetric matrix with pairwise comparsion P-value, make sure the diagnoal P-vlaues filled with 1 before parse to calculation
 #' @param alpha A number between 0 and 1 specifying the confidence level
-#' @return A vector of letter assignments for each level of fixed effect 
+#' @return A vector of letter assignments for each level of fixed effect
 #' @importFrom igraph simplify graph.data.frame maximal.cliques
 #' @export
 
 MSG <- function(P,alpha) {
   a <- P
   b <- which(a>alpha,arr.ind = TRUE)
-  
-  
+
+
   top <- data.frame(N1=b[,1],N2=b[,2])
-  
-  
+
+
   g3 <- igraph::simplify(igraph::graph.data.frame(top[order(top[[1]]),],directed=FALSE))
-  
+
   # plot(g3)
-  
+
   cliq <- igraph::maximal.cliques(g3)
-  
+
   nn <- length(cliq )
   temp1 <- rep("",nrow(a))
   assignment <- c(letters, LETTERS,paste(letters,'.',sep=''),paste(LETTERS,'.',sep=''))
-  
-  
+
+
   cliq2<-list()
   for (j in 1:nn){
     cliq2[[j]] <- colnames(a)[cliq[[j]]]
-  }  
-  
+  }
+
   for (ind in 1:nrow(a)){
-    
+
     ## check which list number contains this col name
     ## this one is problematic, since "1" is in "10" so list number containing "10" but no "1" will still be returned.
     ## tt <- grep(colnames(a)[ind],cliq2)
-    
+
     ## solve the issue above
     tt=which(sapply(1:length(cliq2), function(x) colnames(a)[ind] %in% cliq2[[x]])==TRUE)
-    
-    
+
+
     temp1[ind]=paste0(assignment[tt],collapse = "")
-    
+
   }
-  
-  
+
+
   return(temp1)
-  
-  
+
+
 }
 

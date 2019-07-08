@@ -70,8 +70,24 @@ RCB_ModelFittingFunction <- function(DataIn,
                                 ResponseVariableShouldBeGT0 = TRUE){
 
   #
-  if(exists("RowID",where=DataIn)==FALSE){
-    DataIn$RowID <- 1:nrow(DataIn)  # Add a row index for later merging and reordering.
+  # if(exists("entryId",where=DataIn)==FALSE){
+  #   DataIn$entryId <- 1:nrow(DataIn)  # Add a row index for later merging and reordering.
+  # }
+  curr.names <- names(DataIn)
+  for(cn in curr.names){
+    print(cn)
+    new.name <- gsub(" ", "", cn)
+    new.name <- gsub(pattern='[[:punct:]]', replacement = "", x = new.name)
+
+    DataIn[new.name] <- DataIn[cn]
+    if(new.name != cn){
+      DataIn[cn] <- NULL
+    }
+    print(new.name)
+  }
+  for(p in 1:length(ListOfRCBParameters)){
+    ListOfRCBParameters[p] <- gsub(" ", "", ListOfRCBParameters[p])
+    ListOfRCBParameters[p] <- gsub('[[:punct:]]', "", ListOfRCBParameters[p])
   }
 
   # Create an intial list of RCB parameters set to their corresponding defaults.
@@ -128,21 +144,22 @@ RCB_ModelFittingFunction <- function(DataIn,
   ResponseVariableShouldBeGT0 <- ListOfRCBParameters$ResponseVariableShouldBeGT0
 
   # Check for a misspelled field id column name.
-  if(exists("FieldId",where=DataIn)){ # should be "fieldId"
-    DataIn$fieldId <- DataIn$FieldId
-    DataIn$FieldId <- NULL
-  }
+  # if(exists("FieldId",where=DataIn)){ # should be "fieldId"
+  #   DataIn$fieldId <- DataIn$FieldId
+  #   DataIn$FieldId <- NULL
+  # }
   #
   # Check to see if data cleaning algorithms were run on the input data prior to this routine's call.
   #
+
   if(exists("isDeactivated",where=DataIn)==FALSE){ # Data quality checking algorithms like DSR and smartQAQC create this column.  If it is missing, they were not run.
     DataIn$isDeactivated     <- FALSE  # Create this missing column and set it equal to FALSE indicating all the data are acceptable
-    DataIn$DeactivationReason <- "None" # There is no rason to exclude data.
+    DataIn$reasonDeactivated <- "None" # There is no rason to exclude data.
     if(ResponseVariableShouldBeGT0==TRUE){ # In the case IS_DEACTIVTED does not exist, so check the response for negative or zero values if required.
       wLE0 <- which(DataIn[,ResponseVariableColumnName]<=0)
       if(length(wLE0)>0){
         DataIn$isDeactivated[wLE0] <- TRUE # Change the deactiviation status of these rows
-        DataIn$DeactivationReason   <- "RCB_Data<=0"
+        DataIn$reasonDeactivated   <- "RCB_Data<=0"
       }
     }
   }
@@ -154,12 +171,12 @@ RCB_ModelFittingFunction <- function(DataIn,
       FACTOR_1               = TreatmentFactorColumnName,
       REP_ID                 = ReplicateIDColumnName,
       Factortype_name        = FactorTypeColumnName)
-
   if(exists("isDeactivated",where=DataIn)){
     data <- DataIn[DataIn$isDeactivated==FALSE,]
   }else{
     data <- DataIn
   }
+  print(names(data))
   if(nrow(data)<SufficientDataThreshold){ # This is currently a fixed limit determined by commitee.  It should be based on the number of treatment levels and blocks
     txt1 <- "Error: there are too few data (n<SufficientDataThreshold) to run an RCB model. Data frame has n = "
     txt2 <- paste0(txt1,nrow(data))
@@ -174,9 +191,11 @@ RCB_ModelFittingFunction <- function(DataIn,
 
   # Sets the ASReml license path if it is not set already
   setLicense()
+  print('bravo')
 
   # Check inputs
   checkAnalysisType(analysis_type)
+  print('alpha')
   checkData(data, data_fields)
 
   # Add the data fields to the global environment
@@ -184,17 +203,17 @@ RCB_ModelFittingFunction <- function(DataIn,
          function(x) assign(names(data_fields)[[x]], value = data_fields[[x]], envir = .GlobalEnv))
 
   # Manipulate data
-  data <- reformatData(data, data_fields)
 
+  data <- reformatData(data, data_fields)
   # Set fixed and random effects from analysis type
   setFixedRandomEffects(analysis_type)
-
   # for timing
   time.scale <- ifelse(nrow(data) < 4000, "secs", "mins")
   start      <- Sys.time()
   message(paste("Running ASReml using analysis type:", analysis_type), appendLF = TRUE )
 
-
+  print('charlie')
+print(head(data))
   # Run R-ASReml, capture output
   RCB_asr  <-  asreml::asreml(
                       fixed     = fixed_formula,
@@ -222,6 +241,7 @@ RCB_ModelFittingFunction <- function(DataIn,
                       pworkspace = 1000 * 1e6 / 8, # approximately 125 million bytes
                       trace      = FALSE)
 
+  print('delta')
 
   message("finished in ", round(difftime(Sys.time(), start, units = time.scale[1]), digits = 2), " ", time.scale)
   message("Creating output files...", appendLF = TRUE)
