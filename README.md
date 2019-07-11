@@ -1,6 +1,6 @@
 # RCB
 
-This is a package for doing analysis (BLUPs, BLUEs, deltas, p-values, etc.) for data from an RCBD experiment.
+This is for the the smart model package that does analytics for a general family of linear mixed models (BLUE and BLUP) catering to to a multiple designs and experiment types including RCB, RCB2, GUBD2, and split plot that are implemented in version 1 of the deployment. 
 
 Revert changes to NAMESPACE and reformatData function to test jenkins job and build process.
 
