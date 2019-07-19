@@ -17,3 +17,4 @@ params.in <- fromJSON('Reference/Data/parameters.json')
 
 results <- RCB_ModelFittingFunction(data.in, params.in)
 
+write_json(results, 'Reference/Data/output.json')

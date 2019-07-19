@@ -1,1 +1,0 @@
-{"analysis_type":["P2"],"alpha":[0.1],"ResponseVariableColumnName":["numValue"],"FieldIDColumnName":["fieldId"],"TreatmentFactorColumnName":["factor1"],"ReplicateIDColumnName":["repId"],"FactorTypeColumnName":["experimentalUnitId"],"SufficientDataThreshold":[20],"ResponseVariableShouldBeGT0":[true]}

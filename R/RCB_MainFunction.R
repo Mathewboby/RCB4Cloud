@@ -16,10 +16,10 @@
 #                                         match the following argument names.
 # analysis_type               string:  specifying the type of analysis to be conducted.
 # alpha                       numeric: between 0 and 1 specifying the confidence level
-# ResponseVariableColumnName  sting:   giving the column name of the response variable in DataIn
-# FieldIDColumnName           sting:   giving the column name of the field ID variable in DataIn
-# TreatmentFactorColumnName   sting:   giving the column name of the treatment variable in DataIn
-# ReplicateIDColumnName       sting:   giving the column name of the rep ID variable in DataIn
+# value  sting:   giving the column name of the response variable in DataIn
+# subSiteId           sting:   giving the column name of the field ID variable in DataIn
+# factorLevelId   sting:   giving the column name of the treatment variable in DataIn
+# repId       sting:   giving the column name of the rep ID variable in DataIn
 # FactorTypeColumnName        sting:   giving the column name of the factor type variable in DataIn: indicates wheter or not a treatment level is a CONTROL or not.
 # SufficientDataThreshold     numeric: giving the lower bound on the number of data values to be analyzed
 # ResponseVariableShouldBeGT0 logical: If TRUE, then response variable values <= 0 are treated as
@@ -44,10 +44,13 @@
 #' @param ListOfRCBParameters         a named list giving values for the following nine arguments.
 #' @param analysis_type               a string specifying the type of analysis to be conducted.
 #' @param alpha                       a number between 0 and 1 specifying the confidence level and comparison significance
-#' @param ResponseVariableColumnName  a sting giving the column name of the response variable in DataIn
-#' @param FieldIDColumnName           a sting giving the column name of the field ID variable in DataIn
-#' @param TreatmentFactorColumnName   a sting giving the column name of the treatment variable in DataIn
-#' @param ReplicateIDColumnName       a sting giving the column name of the rep ID variable in DataIn
+#' @param value  a sting giving the column name of the response variable in DataIn
+#' @param subSiteId           a sting giving the column name of the field ID variable in DataIn
+#' @param factorLevelId   a sting giving the column name of the treatment variable in DataIn
+#' @param repId       a sting giving the column name of the rep ID variable in DataIn
+#' @param locationId
+#' @param questionCode
+#' @param isDeactivated
 #' @param FactorTypeColumnName        a sting giving the column name of the factor type variable in DataIn: indicates wheter or not a treatment level is a CONTROL or not.
 #' @param SufficientDataThreshold     a number giving the lower bound on the number of data values to be analyzed
 #' @param ResponseVariableShouldBeGT0 a logical. If TRUE, then response variable values <= 0 are treated as missing or deactivated data.
@@ -61,10 +64,10 @@ RCB_ModelFittingFunction <- function(DataIn,
                                 ListOfRCBParameters         = NULL,
                                 analysis_type               = "P2",
                                 alpha                       = 0.1,
-                                ResponseVariableColumnName  = "numValue",
-                                FieldIDColumnName           = "fieldId",
-                                TreatmentFactorColumnName   = "factor1",
-                                ReplicateIDColumnName       = "repId",
+                                value  = "numValue",
+                                subSiteId           = "fieldId",
+                                factorLevelId   = "factor1",
+                                repId       = "repId",
                                 FactorTypeColumnName        = "experimentalUnitId",
                                 SufficientDataThreshold     = 20,
                                 ResponseVariableShouldBeGT0 = TRUE){
@@ -73,6 +76,7 @@ RCB_ModelFittingFunction <- function(DataIn,
   # if(exists("entryId",where=DataIn)==FALSE){
   #   DataIn$entryId <- 1:nrow(DataIn)  # Add a row index for later merging and reordering.
   # }
+
   curr.names <- names(DataIn)
   for(cn in curr.names){
     new.name <- gsub(" ", "", cn)
@@ -94,10 +98,10 @@ RCB_ModelFittingFunction <- function(DataIn,
   # Call this named list, ListOfIndividualParameters.
   ListOfIndividualParameters <- list(analysis_type               = analysis_type,
                                      alpha                       = alpha,
-                                     ResponseVariableColumnName  = ResponseVariableColumnName,
-                                     FieldIDColumnName           = FieldIDColumnName,
-                                     TreatmentFactorColumnName   = TreatmentFactorColumnName,
-                                     ReplicateIDColumnName       = ReplicateIDColumnName,
+                                     value  = value,
+                                     subSiteId           = subSiteId,
+                                     factorLevelId   = factorLevelId,
+                                     repId       = repId,
                                      FactorTypeColumnName        = FactorTypeColumnName,
                                      SufficientDataThreshold     = SufficientDataThreshold,
                                      ResponseVariableShouldBeGT0 = ResponseVariableShouldBeGT0)
@@ -135,46 +139,55 @@ RCB_ModelFittingFunction <- function(DataIn,
   # This is where the inputs are actually made available to the DSR code.
   analysis_type               <- ListOfRCBParameters$analysis_type
   alpha                       <- ListOfRCBParameters$alpha
-  ResponseVariableColumnName  <- ListOfRCBParameters$ResponseVariableColumnName
-  FieldIDColumnName           <- ListOfRCBParameters$FieldIDColumnName
-  TreatmentFactorColumnName   <- ListOfRCBParameters$TreatmentFactorColumnName
-  ReplicateIDColumnName       <- ListOfRCBParameters$ReplicateIDColumnName
+  value  <- ListOfRCBParameters$value
+  subSiteId           <- ListOfRCBParameters$subSiteId
+  factorLevelId   <- ListOfRCBParameters$factorLevelId
+  repId       <- ListOfRCBParameters$repId
   FactorTypeColumnName        <- ListOfRCBParameters$FactorTypeColumnName
   SufficientDataThreshold     <- ListOfRCBParameters$SufficientDataThreshold
   ResponseVariableShouldBeGT0 <- ListOfRCBParameters$ResponseVariableShouldBeGT0
 
-  # Check for a misspelled field id column name.
-  # if(exists("FieldId",where=DataIn)){ # should be "fieldId"
-  #   DataIn$fieldId <- DataIn$FieldId
-  #   DataIn$FieldId <- NULL
-  # }
-  #
+  DataIn$holdRepId <- DataIn[,ListOfRCBParameters$repId]
+  temp <- paste(DataIn[,ListOfRCBParameters$repId],
+                DataIn[,ListOfRCBParameters$locationId], sep = "_")
+  DataIn[,ListOfRCBParameters$repId] <- temp
+
+  obs.name <-  unique(DataIn[,ListOfRCBParameters$questionCode])
+  entry.name <- ListOfRCBParameters$factorLevelId
+
+  print(paste0('analyzing ', obs.name))
+  if(length(obs.name) > 1){
+    print('multiple question codes detected')
+  }
   # Check to see if data cleaning algorithms were run on the input data prior to this routine's call.
   #
 
-  if(exists("isDeactivated",where=DataIn)==FALSE){ # Data quality checking algorithms like DSR and smartQAQC create this column.  If it is missing, they were not run.
-    DataIn$isDeactivated     <- FALSE  # Create this missing column and set it equal to FALSE indicating all the data are acceptable
-    DataIn$reasonDeactivated <- "None" # There is no rason to exclude data.
-    if(ResponseVariableShouldBeGT0==TRUE){ # In the case IS_DEACTIVTED does not exist, so check the response for negative or zero values if required.
-      wLE0 <- which(DataIn[,ResponseVariableColumnName]<=0)
-      if(length(wLE0)>0){
-        DataIn$isDeactivated[wLE0] <- TRUE # Change the deactiviation status of these rows
-        DataIn$reasonDeactivated   <- "RCB_Data<=0"
-      }
+  # if(exists("isDeactivated",where=DataIn)==FALSE){ # Data quality checking algorithms like DSR and smartQAQC create this column.  If it is missing, they were not run.
+  #   DataIn$isDeactivated     <- FALSE  # Create this missing column and set it equal to FALSE indicating all the data are acceptable
+  #   DataIn$reasonDeactivated <- "None" # There is no rason to exclude data.
+  # }
+
+  if(ResponseVariableShouldBeGT0==TRUE){ # In the case IS_DEACTIVTED does not exist, so check the response for negative or zero values if required.
+    wLE0 <- which(DataIn[,value]<=0)
+    if(length(wLE0)>0){
+      DataIn$isDeactivated[wLE0] <- TRUE # Change the deactiviation status of these rows
+      DataIn$reasonDeactivated   <- "RCB_Data<=0"
     }
   }
   # The following named list is used to make all of the variables available to several functions as well as
   # to the Global environment (see lines 99-101 below)
   data_fields <- list(
-      CROP_OBSRVTN_DETAIL_ID = ResponseVariableColumnName,
-      FIELD_ID               = FieldIDColumnName,
-      FACTOR_1               = TreatmentFactorColumnName,
-      REP_ID                 = ReplicateIDColumnName,
+      CROP_OBSRVTN_DETAIL_ID = value,
+      FIELD_ID               = subSiteId,
+      FACTOR_1               = factorLevelId,
+      REP_ID                 = repId,
       Factortype_name        = FactorTypeColumnName)
+
   if(exists("isDeactivated",where=DataIn)){
     data <- DataIn[DataIn$isDeactivated==FALSE,]
   }else{
     data <- DataIn
+    print('deactivation not found')
   }
   if(nrow(data)<SufficientDataThreshold){ # This is currently a fixed limit determined by commitee.  It should be based on the number of treatment levels and blocks
     txt1 <- "Error: there are too few data (n<SufficientDataThreshold) to run an RCB model. Data frame has n = "
@@ -280,8 +293,7 @@ RCB_ModelFittingFunction <- function(DataIn,
   Out_return$LSM_TABLE <- cbind(Out_return$LSM_TABLE,mean_sep_group)
 
   ## sort by descending order
-  Out_return$LSM_TABLE <- Out_return$LSM_TABLE[order(Out_return$LSM_TABLE$Yield,decreasing = TRUE),]
-
+  Out_return$LSM_TABLE <- Out_return$LSM_TABLE[order(Out_return$LSM_TABLE$temp.obs.name,decreasing = TRUE),]
 
   ## ANOVA table
   Out_return$aov <- LSM_ALL[[3]]
@@ -292,6 +304,9 @@ RCB_ModelFittingFunction <- function(DataIn,
   colnames(Out_return$resid) <- c('residuals',FIELD_ID,REP_ID)
 
  }
+
+  names(Out_return$LSM_TABLE)[which(names(Out_return$LSM_TABLE) == 'temp.entry.name')] <- entry.name
+  names(Out_return$LSM_TABLE)[which(names(Out_return$LSM_TABLE) == 'temp.obs.name')] <- obs.name
 
   return(Out_return)
 }

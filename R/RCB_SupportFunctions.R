@@ -136,7 +136,7 @@ setFixedRandomEffects <- function(analysis_type){
                   envir = .GlobalEnv)
          },
          P4 = {
-           print (" Model3: Multi LOC MULTI REP BLUE")
+           print (" Model4: Multi LOC MULTI REP BLUE")
            assign("fixed_formula",
                   formula(paste(CROP_OBSRVTN_DETAIL_ID, "~ 1 + ", FACTOR_1, sep = "")),
                   envir = .GlobalEnv)
@@ -145,7 +145,7 @@ setFixedRandomEffects <- function(analysis_type){
                   envir = .GlobalEnv)
          },
          P5 = {
-           print (" Model3: Multi LOC MULTI REP BLUP")
+           print (" Model5: Multi LOC MULTI REP BLUP")
            assign("fixed_formula",
                   formula(paste(CROP_OBSRVTN_DETAIL_ID, "~ 1 ", sep = "")),
                   envir = .GlobalEnv)
@@ -205,31 +205,28 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
   colnames(AOV) <- c("numerator_df","denominator_df","ss_incremental","ss_conditional","Margin","Prob")
   rownames(AOV)[1] <- "Intercept"
 
-
-
   ## for LSM table
   LSM <- data.frame(
-    Entry = asreml.obj$predictions$pvals[[FACTOR_1]],
-    Yield = asreml.obj$predictions$pvals$predicted.value,
+    temp.entry.name = asreml.obj$predictions$pvals[[FACTOR_1]],
+    temp.obs.name = asreml.obj$predictions$pvals$predicted.value,
     SE = asreml.obj$predictions$pvals$standard.error,
     df = DDoF
   )
 
-
   ## count N in each Entry level with missing removed.
-  N<-rep(NA,length(LSM$Entry))
-  for (i in 1:length(LSM$Entry)) {
-    N[i]=nrow(data[data[,FACTOR_1]==LSM$Entry[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$Entry[i],CROP_OBSRVTN_DETAIL_ID]))
+  N<-rep(NA,length(LSM$temp.entry.name))
+  for (i in 1:length(LSM$temp.entry.name)) {
+    N[i]=nrow(data[data[,FACTOR_1]==LSM$temp.entry.name[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$temp.entry.name[i],CROP_OBSRVTN_DETAIL_ID]))
   }
   LSM$N<-N
 
 
   # create the CI
-  LSM$CI_L <- LSM$Yield - qt(1 - alpha / 2, DDoF) * LSM$SE
-  LSM$CI_U <- LSM$Yield + qt(1 - alpha / 2, DDoF) * LSM$SE
+  LSM$CI_L <- LSM$temp.obs.name - qt(1 - alpha / 2, DDoF) * LSM$SE
+  LSM$CI_U <- LSM$temp.obs.name + qt(1 - alpha / 2, DDoF) * LSM$SE
   ##replace adjusted control name with actual control name
   if (exists("adjusted_control_name", envir = .GlobalEnv)){
-    levels(LSM$Entry)[levels(LSM$Entry) == adjusted_control_name] <- control_level
+    levels(LSM$temp.entry.name)[levels(LSM$temp.entry.name) == adjusted_control_name] <- control_level
   }
   return(list(LSM,DDoF_,AOV,VAR))
 }
@@ -240,28 +237,28 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
 #' Computes the LS means analysis for model P3 and P5
 #' @param asreml.obj A fitted ASReml object
 #' @param data A dataframe that contains the data used to create the ASReml object
-#' @return A dataframe containing the Entry, Yield, SE and total number of observation for the entry after excluding missing data
+#' @return A dataframe containing the Entry, temp.obs.name, SE and total number of observation for the entry after excluding missing data
 #' @export
 
 lsmAnalysis_r <- function(RCB_asr, data){
 
   LSM <- data.frame(
-    Entry = RCB_asr$predictions$pvals[[FACTOR_1]],
-    Yield = RCB_asr$predictions$pvals$predicted.value,
+    temp.entry.name = RCB_asr$predictions$pvals[[FACTOR_1]],
+    temp.obs.name = RCB_asr$predictions$pvals$predicted.value,
     SE = RCB_asr$predictions$pvals$standard.error
   )
 
   ## count N in each Entry level with missing removed.
-  N<-rep(NA,length(LSM$Entry))
-  for (i in 1:length(LSM$Entry)) {
-    N[i]=nrow(data[data[,FACTOR_1]==LSM$Entry[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$Entry[i],CROP_OBSRVTN_DETAIL_ID]))
+  N<-rep(NA,length(LSM$temp.obs.name))
+  for (i in 1:length(LSM$temp.obs.name)) {
+    N[i]=nrow(data[data[,FACTOR_1]==LSM$temp.obs.name[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$temp.obs.name[i],CROP_OBSRVTN_DETAIL_ID]))
   }
   LSM$N<-N
 
 
   ##replace adjusted control name with actual control name
   if (exists("adjusted_control_name", envir = .GlobalEnv)){
-    levels(LSM$Entry)[levels(LSM$Entry) == adjusted_control_name] <- control_level
+    levels(LSM$temp.obs.name)[levels(LSM$temp.obs.name) == adjusted_control_name] <- control_level
   }
   return(LSM)
 }
