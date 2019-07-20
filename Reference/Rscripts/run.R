@@ -12,7 +12,7 @@ suppressMessages(library(asremlPlus, quietly=TRUE))
 source('/repos/RCB4Cloud/R/RCB_SupportFunctions.R')
 source('/repos/RCB4Cloud/R/RCB_MainFunction.R')
 
-data.in <- fromJSON('Reference/Data/input.json')
+data.in <- fromJSON('Reference/Data/input-broke.json')
 params.in <- fromJSON('Reference/Data/parameters.json')
 
 results <- RCB_ModelFittingFunction(data.in, params.in)

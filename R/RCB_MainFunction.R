@@ -224,8 +224,9 @@ RCB_ModelFittingFunction <- function(DataIn,
   time.scale <- ifelse(nrow(data) < 4000, "secs", "mins")
   start      <- Sys.time()
   message(paste("Running ASReml using analysis type:", analysis_type), appendLF = TRUE )
-
-  # Run R-ASReml, capture output
+print(table(data$FIELDNAME))
+print(table(data$BRREPID))
+# Run R-ASReml, capture output
   RCB_asr  <-  asreml::asreml(
                       fixed     = fixed_formula,
                       random    = random_formula,
@@ -250,7 +251,9 @@ RCB_ModelFittingFunction <- function(DataIn,
                                         xform      = list()),
                       workspace  = 1000 * 1e6 / 8, # approximately 125 million bytes
                       pworkspace = 1000 * 1e6 / 8, # approximately 125 million bytes
-                      trace      = FALSE)
+                      trace      = FALSE,
+                      na.method.Y = "omit",
+                      na.method.X = "omit")
 
 
   message("finished in ", round(difftime(Sys.time(), start, units = time.scale[1]), digits = 2), " ", time.scale)
