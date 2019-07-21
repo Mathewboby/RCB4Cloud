@@ -159,9 +159,13 @@ RCB_ModelFittingFunction <- function(DataIn,
   entry.name <- ListOfRCBParameters$factorLevelId
 
   print(paste0('analyzing ', obs.name))
+
   if(length(obs.name) > 1){
-    print('multiple question codes detected')
+    err <- 'multiple question codes detected'
+    Out_return <- list(LSM_TABLE = NA, Deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
+    return(Out_return)
   }
+
   # Check to see if data cleaning algorithms were run on the input data prior to this routine's call.
   #
 
@@ -224,8 +228,7 @@ RCB_ModelFittingFunction <- function(DataIn,
   time.scale <- ifelse(nrow(data) < 4000, "secs", "mins")
   start      <- Sys.time()
   message(paste("Running ASReml using analysis type:", analysis_type), appendLF = TRUE )
-print(table(data$FIELDNAME))
-print(table(data$BRREPID))
+
 # Run R-ASReml, capture output
   RCB_asr  <-  asreml::asreml(
                       fixed     = fixed_formula,
@@ -288,7 +291,11 @@ print(table(data$BRREPID))
   # Degrees of freedom
   degrees_freedom = LSM_ALL[[2]]  ## a vector including all the fixed effect
 
-
+  if(is.na(degrees_freedom[2])){
+    err <- 'failed delta analysis:  undefined degrees of freedom'
+    Out_return <- list(LSM_TABLE = NA, Deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
+    return(Out_return)
+    }
   del=deltaAnalysis(RCB_asr,alpha=alpha, degrees_freedom[2])
   # Deltas and p-values
   Out_return$Deltas <- del[[1]]

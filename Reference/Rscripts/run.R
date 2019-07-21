@@ -7,14 +7,12 @@ asremlPlusURL <- "http://cran.wustl.edu//src/contrib/Archive/asremlPlus/asremlPl
 suppressMessages(install.packages(asremlPlusURL,repos=NULL,type="source"))
 suppressMessages(library(asreml,     quietly=TRUE))
 suppressMessages(library(asremlPlus, quietly=TRUE))
-
+options(digits = 20)
 # Source code to be tested.
 source('/repos/RCB4Cloud/R/RCB_SupportFunctions.R')
 source('/repos/RCB4Cloud/R/RCB_MainFunction.R')
 
-data.in <- fromJSON('Reference/Data/input-broke.json')
+data.in <- fromJSON('Reference/Data/input.json')
 params.in <- fromJSON('Reference/Data/parameters.json')
 
 results <- RCB_ModelFittingFunction(data.in, params.in)
-
-write_json(results, 'Reference/Data/output.json')
