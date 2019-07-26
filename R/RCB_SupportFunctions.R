@@ -65,8 +65,8 @@ reformatData <- function(data, data_fields){
   # The result in this case will reduce the number of factor levels. One way to prevent this is to
   # prepend a character to the begining of the factor level names.  The following commented out line did this.
   #data <- as.data.frame(lapply(data,function(z){paste0("z",as.character(z))})) # Prepend 'z' to factor level names to prevent rounding of purely integer names by R
-  data <- apply(data, 2, gsub, pattern = ",", replacement = "-")
-  data <- apply(data, 2, gsub, pattern = ":", replacement = "-")
+  data <- apply(data, 2, gsub, pattern = ",", replacement = "_")
+  data <- apply(data, 2, gsub, pattern = ":", replacement = "_")
   data <- apply(data, 2, gsub, pattern = " ", replacement = "")
 
   # Recombine the numeric response variable with the modified factors
@@ -197,68 +197,64 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
   rownames(VAR)[j] <- 'residual'
 
   VAR=VAR[,c(2,5)]
-  colnames(VAR) <- c("variance_estimates","constraint")
+  colnames(VAR) <- c("varianceEstimates","constraint")
 
 
   ## for fix effect ANOVA table
   AOV <- ALL[[1]]
-  colnames(AOV) <- c("numerator_df","denominator_df","ss_incremental","ss_conditional","Margin","Prob")
-  rownames(AOV)[1] <- "Intercept"
+  colnames(AOV) <- c("degreesFreedomNumerator","degreesFreedomDenominator","ssIncremental","ssConditional","margin","probability")
+  rownames(AOV)[1] <- "intercept"
 
   ## for LSM table
   LSM <- data.frame(
-    temp.entry.name = asreml.obj$predictions$pvals[[FACTOR_1]],
-    temp.obs.name = asreml.obj$predictions$pvals$predicted.value,
-    SE = asreml.obj$predictions$pvals$standard.error,
-    df = DDoF
+    factorLevelId = asreml.obj$predictions$pvals[[FACTOR_1]],
+    value = asreml.obj$predictions$pvals$predicted.value,
+    standardError = asreml.obj$predictions$pvals$standard.error,
+    degreesFreedom = DDoF
   )
 
   ## count N in each Entry level with missing removed.
-  N<-rep(NA,length(LSM$temp.entry.name))
-  for (i in 1:length(LSM$temp.entry.name)) {
-    N[i]=nrow(data[data[,FACTOR_1]==LSM$temp.entry.name[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$temp.entry.name[i],CROP_OBSRVTN_DETAIL_ID]))
+  N<-rep(NA,length(LSM$factorLevelId))
+  for (i in 1:length(LSM$factorLevelId)) {
+    N[i]=nrow(data[data[,FACTOR_1]==LSM$factorLevelId[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$factorLevelId[i],CROP_OBSRVTN_DETAIL_ID]))
   }
-  LSM$N<-N
-
+  LSM$n <- N
 
   # create the CI
-  LSM$CI_L <- LSM$temp.obs.name - qt(1 - alpha / 2, DDoF) * LSM$SE
-  LSM$CI_U <- LSM$temp.obs.name + qt(1 - alpha / 2, DDoF) * LSM$SE
+  LSM$lowerConfidenceInterval <- LSM$value - qt(1 - alpha / 2, DDoF) * LSM$standardError
+  LSM$upperConfidenceInterval <- LSM$value + qt(1 - alpha / 2, DDoF) * LSM$standardError
   ##replace adjusted control name with actual control name
   if (exists("adjusted_control_name", envir = .GlobalEnv)){
-    levels(LSM$temp.entry.name)[levels(LSM$temp.entry.name) == adjusted_control_name] <- control_level
+    levels(LSM$factorLevelId)[levels(LSM$factorLevelId) == adjusted_control_name] <- control_level
   }
-  return(list(LSM,DDoF_,AOV,VAR))
+  return(list(LSM, DDoF_, AOV, VAR))
 }
-
-
-
 
 #' Computes the LS means analysis for model P3 and P5
 #' @param asreml.obj A fitted ASReml object
 #' @param data A dataframe that contains the data used to create the ASReml object
-#' @return A dataframe containing the Entry, temp.obs.name, SE and total number of observation for the entry after excluding missing data
+#' @return A dataframe containing the Entry, value, SE and total number of observation for the entry after excluding missing data
 #' @export
 
 lsmAnalysis_r <- function(RCB_asr, data){
 
   LSM <- data.frame(
-    temp.entry.name = RCB_asr$predictions$pvals[[FACTOR_1]],
-    temp.obs.name = RCB_asr$predictions$pvals$predicted.value,
+    factorLevelId = RCB_asr$predictions$pvals[[FACTOR_1]],
+    value = RCB_asr$predictions$pvals$predicted.value,
     SE = RCB_asr$predictions$pvals$standard.error
   )
 
   ## count N in each Entry level with missing removed.
-  N<-rep(NA,length(LSM$temp.obs.name))
-  for (i in 1:length(LSM$temp.obs.name)) {
-    N[i]=nrow(data[data[,FACTOR_1]==LSM$temp.obs.name[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$temp.obs.name[i],CROP_OBSRVTN_DETAIL_ID]))
+  N<-rep(NA,length(LSM$value))
+  for (i in 1:length(LSM$value)) {
+    N[i]=nrow(data[data[,FACTOR_1]==LSM$value[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$value[i],CROP_OBSRVTN_DETAIL_ID]))
   }
   LSM$N<-N
 
 
   ##replace adjusted control name with actual control name
   if (exists("adjusted_control_name", envir = .GlobalEnv)){
-    levels(LSM$temp.obs.name)[levels(LSM$temp.obs.name) == adjusted_control_name] <- control_level
+    levels(LSM$value)[levels(LSM$value) == adjusted_control_name] <- control_level
   }
   return(LSM)
 }
@@ -298,14 +294,14 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
 
   # Output the data as a data table
   out_data <- merge( correct_order_names, correct_order_names )
-  names( out_data ) <- c("head", "comp")
-  out_data$diff <- as.vector( diffs_out$differences )
-  out_data$p_diff <- as.vector( diffs_out$p.differences )
-  out_data$sed <- as.vector( diffs_out$sed )
-  out_data$df <- rep( total_df,nrow(out_data) ); out_data$df[is.na(out_data[,'p_diff'])] <- NA
+  names( out_data ) <- c("head", "comparison")
+  out_data$differences <- as.vector( diffs_out$differences )
+  out_data$probabilityDifferences <- as.vector( diffs_out$p.differences )
+  out_data$standardErrorDifferences <- as.vector( diffs_out$sed )
+  out_data$degreesFreedom <- rep( total_df,nrow(out_data) ); out_data$df[is.na(out_data[,'probabilityDifferences'])] <- NA
   out_data$t <- as.vector( diffs_out$differences/diffs_out$sed )
-  out_data$CI_L <- out_data$diff - qt(1 - alpha / 2, out_data$df) * out_data$sed
-  out_data$CI_U <- out_data$diff + qt(1 - alpha / 2, out_data$df) * out_data$sed
+  out_data$lowerConfidenceInterval <- out_data$differences - qt(1 - alpha / 2, out_data$df) * out_data$standardErrorDifferences
+  out_data$upperConfidenceInterval <- out_data$differences + qt(1 - alpha / 2, out_data$df) * out_data$standardErrorDifferences
 
   ## the diagonal shouldn't be NA, set it as p-value = 1
   diag(diffs_out$p.differences)=1
@@ -358,22 +354,16 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
 #' @return A dataframe with variance component estimates
 #' @export
 ANOVA_output_r <- function(asreml.obj){
-
-  anova_=summary(asreml.obj)$varcomp                      ## for random effect
-
+  ## for random effect
+  anova_=summary(asreml.obj)$varcomp
   for (j in 1:length(row.names(anova_))) {
     row.names(anova_)[j] <- strsplit(row.names(anova_),'!')[[j]][1]
   }
   row.names(anova_)[j] <- 'residual'
-
   anova_=anova_[,c(2,5)]
   colnames(anova_) <- c("variance_estimates","constraint")
-
   return(anova_)
-
 }
-
-
 
 #' Computes the residuals
 #' @param asreml.obj A fitted ASReml object
@@ -384,37 +374,26 @@ resid_table <- function(asreml.obj,data) {
   cbind(resid(asreml.obj),data[,FIELD_ID],data[,REP_ID])
 }
 
-
 #' Computes the blup for random effects
 #' @param asreml.obj A fitted ASReml object
 #' @param analysis_type analysis_type defined by the user in the input argument
 #' @return A dataframe with blup for random effects
 #' @export
 blup_table <- function(asreml.obj,analysis_type) {
-
   if (analysis_type == 'P5') {
-
     bp=rownames(coefficients(asreml.obj)$random)
     bp1=bp[grep("factor1",bp)]  ## all terms with factor1
     bp2=bp1[-grep(":",bp1)] ## exclude those with interaction
     bp2_ind=match(bp2,bp)
     blup <- coefficients(asreml.obj)$random[bp2_ind,]
-
   } else {
     bp=rownames(coefficients(asreml.obj)$random)
     bp1=bp[grep("factor1",bp)]  ## all terms with factor1
     bp1_ind=match(bp1,bp)
     blup <- coefficients(asreml.obj)$random[bp1_ind,]
-
   }
-
   return(blup)
-
 }
-
-
-
-
 
 #' Computes the Mean separation grouping for the fixed effect
 #' @param P A symmetric matrix with pairwise comparsion P-value, make sure the diagnoal P-vlaues filled with 1 before parse to calculation
@@ -426,44 +405,58 @@ blup_table <- function(asreml.obj,analysis_type) {
 MSG <- function(P,alpha) {
   a <- P
   b <- which(a>alpha,arr.ind = TRUE)
-
-
   top <- data.frame(N1=b[,1],N2=b[,2])
-
-
   g3 <- igraph::simplify(igraph::graph.data.frame(top[order(top[[1]]),],directed=FALSE))
-
-  # plot(g3)
-
   cliq <- igraph::maximal.cliques(g3)
-
   nn <- length(cliq )
   temp1 <- rep("",nrow(a))
   assignment <- c(letters, LETTERS,paste(letters,'.',sep=''),paste(LETTERS,'.',sep=''))
-
-
   cliq2<-list()
   for (j in 1:nn){
     cliq2[[j]] <- colnames(a)[cliq[[j]]]
   }
-
   for (ind in 1:nrow(a)){
-
     ## check which list number contains this col name
     ## this one is problematic, since "1" is in "10" so list number containing "10" but no "1" will still be returned.
     ## tt <- grep(colnames(a)[ind],cliq2)
-
     ## solve the issue above
     tt=which(sapply(1:length(cliq2), function(x) colnames(a)[ind] %in% cliq2[[x]])==TRUE)
-
-
     temp1[ind]=paste0(assignment[tt],collapse = "")
-
   }
-
-
   return(temp1)
-
-
 }
 
+checkParameters <- function(params.default, params.input){
+  # Create an intial list of RCB parameters set to their corresponding defaults.
+  # Call this named list, params.default.
+
+  # Either read in the parameters from a file or use the individual inputs from above.
+
+  if(is.null(params.input)==TRUE){ # A user supplied list of parameters was not given. Therefore use the default individual inputs from above which may have been over written by the user.
+    params.input <- params.default
+  }
+
+  # Check for missing parameters and add them, if needed, with default or individual input values.
+  nloip <- names(params.default)
+  CheckNames <- names(params.default) %in% names(params.input) # This is TRUE for each name in names(params.default) which is also in names(ListOfSmartQAQCParameters)
+  if(any(CheckNames==FALSE)){
+    wcn <- which(CheckNames==FALSE) # Get the indicies of the missing parameters
+    if(length(wcn)>0){
+      for(jj in wcn){
+        params.input[[ nloip[jj] ]] <- params.default[[ nloip[jj] ]]
+      }
+    }
+  }
+  # Check for missing parameter values.  If there are some,
+  # replace them with the individual input default values.
+  Check4Missing <- sapply(params.input,function(zx){is.null(zx) | is.na(zx) | is.nan(zx)})
+  if(any(Check4Missing)==TRUE){
+    wcm  <- which(Check4Missing==TRUE) # Get the indicies of the missing parameters values
+    if(length(wcm)>0){
+      for(kk in wcm){ # Loop over the indices of the missing parameters
+        params.input[[kk]] <- params.default[[kk]] # Replace the missing value with the individual default value.
+      }
+    }
+  }
+  return(params.input)
+}

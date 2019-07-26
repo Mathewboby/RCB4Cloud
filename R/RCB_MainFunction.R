@@ -1,6 +1,6 @@
 #####################################################################################################################
 # This is the main function for doing RCBD analysis.  It will fit 5 versions of the RCB model.  These are selected by
-# the input argument analysis_type, which can one of five strings: "P1", "P2", "P3", "P4" and "P5.  RCB types
+# the input argument analysisType, which can one of five strings: "P1", "P2", "P3", "P4" and "P5.  RCB types
 # P1 and P2 only diffference in which data are used to indicate the blocking factor. In p1 the blocking factor is
 # some sort of replicate ID and in P2 it is some sort of field or location ID.  Models P1, P2 and P4 use BLUE
 # estimation which is most people are familiar with from textbooks.  Models P3 and P5 use BLUP estimation which
@@ -14,23 +14,23 @@
 #                                        as the values in the column name variables below.
 # ListOfRCBParameters         named list: (default is NULL) giving values for the next nine parameters. The list names should
 #                                         match the following argument names.
-# analysis_type               string:  specifying the type of analysis to be conducted.
+# analysisType               string:  specifying the type of analysis to be conducted.
 # alpha                       numeric: between 0 and 1 specifying the confidence level
 # value  sting:   giving the column name of the response variable in DataIn
 # subSiteId           sting:   giving the column name of the field ID variable in DataIn
 # factorLevelId   sting:   giving the column name of the treatment variable in DataIn
 # repId       sting:   giving the column name of the rep ID variable in DataIn
-# FactorTypeColumnName        sting:   giving the column name of the factor type variable in DataIn: indicates wheter or not a treatment level is a CONTROL or not.
-# SufficientDataThreshold     numeric: giving the lower bound on the number of data values to be analyzed
-# ResponseVariableShouldBeGT0 logical: If TRUE, then response variable values <= 0 are treated as
+# TODO: handle control type indicating wheter or not a treatment level is a CONTROL or not.
+# sufficientDataThreshold     numeric: giving the lower bound on the number of data values to be analyzed
+# positiveValueCheck logical: If TRUE, then response variable values <= 0 are treated as
 #                                      missing or deactivated data.
 # The output is a named list with several components from the fitted model,
-# if analysis_type is "P1", "P2" or "P4", the returned list includes LS table, delta table, ANOVA table for fixed effects,
+# if analysisType is "P1", "P2" or "P4", the returned list includes LS table, delta table, ANOVA table for fixed effects,
 # the variance component table and residual table;
-# if analysis_type is "P3" or "P5", returned list includes LS table, variance component table, residual table and BLUP table for factor1
+# if analysisType is "P3" or "P5", returned list includes LS table, variance component table, residual table and BLUP table for factor1
 
 #' This is the main function for doing RCBD analysis.  It will fit 5 versions of the RCB model.  These are selected by
-#' the input argument analysis_type, which can one of five strings: "P1", "P2", "P3", "P4" and "P5.  RCB types
+#' the input argument analysisType, which can one of five strings: "P1", "P2", "P3", "P4" and "P5.  RCB types
 #' P1 and P2 only diffference in which data are used to indicate the blocking factor. In p1 the blocking factor is
 #' some sort of replicate ID and in P2 it is some sort of field or location ID.  Models P1, P2 and P4 use BLUE
 #' estimation which is most people are familiar with from textbooks.  Models P3 and P5 use BLUP estimation which
@@ -41,8 +41,8 @@
 #' and the nine individual input arguments.  This is done to accomodate different function calling methods in other code.
 #'
 #' @param DataIn                      a dataframe with observation data. Column names should match those specified below in the column name arguments.
-#' @param ListOfRCBParameters         a named list giving values for the following nine arguments.
-#' @param analysis_type               a string specifying the type of analysis to be conducted.
+#' @param params.input         a named list giving values for the following nine arguments.
+#' @param analysisType               a string specifying the type of analysis to be conducted.
 #' @param alpha                       a number between 0 and 1 specifying the confidence level and comparison significance
 #' @param value  a sting giving the column name of the response variable in DataIn
 #' @param subSiteId           a sting giving the column name of the field ID variable in DataIn
@@ -51,156 +51,97 @@
 #' @param locationId
 #' @param questionCode
 #' @param isDeactivated
-#' @param FactorTypeColumnName        a sting giving the column name of the factor type variable in DataIn: indicates wheter or not a treatment level is a CONTROL or not.
-#' @param SufficientDataThreshold     a number giving the lower bound on the number of data values to be analyzed
-#' @param ResponseVariableShouldBeGT0 a logical. If TRUE, then response variable values <= 0 are treated as missing or deactivated data.
-#' @return A list with several components for the fit model, if analysis_type is "P1", "P2" or "P4", returned list includes delta table, LS table, ANOVA table for fixed effects, variance component table and residual table; if analysis_type is "P3" or "P5", returned list includes LS table, variance component table, residual table and BLUP table for factor1
+#' @param entryId
+#' @param sufficientDataThreshold     a number giving the lower bound on the number of data values to be analyzed
+#' @param positiveValueCheck a logical. If TRUE, then response variable values <= 0 are treated as missing or deactivated data.
+#' @return A list with several components for the fit model, if analysisType is "P1", "P2" or "P4", returned list includes delta table, LS table, ANOVA table for fixed effects, variance component table and residual table; if analysisType is "P3" or "P5", returned list includes LS table, variance component table, residual table and BLUP table for factor1
 #'
-#' @importFrom asreml asreml
+# @importFrom asreml asreml - may not need this
 #' @export
 
 # Old function name was 'R.ASReml_RCB_Return'
 RCB_ModelFittingFunction <- function(DataIn,
-                                ListOfRCBParameters         = NULL,
-                                analysis_type               = "P2",
-                                alpha                       = 0.1,
-                                value  = "numValue",
-                                subSiteId           = "fieldId",
-                                factorLevelId   = "factor1",
-                                repId       = "repId",
-                                locationId = "locationId",
-                                questionCode = "TRAIT",
-                                isDeactivated = "isDeactivated",
-                                FactorTypeColumnName        = "experimentalUnitId",
-                                SufficientDataThreshold     = 20,
-                                ResponseVariableShouldBeGT0 = TRUE){
+                                params.input         = NULL,
+                                params.default =
+                                  list(analysisType               = "P2",
+                                       alpha                       = 0.1,
+                                       value                       = "NUM_VALUE",
+                                       subSiteId                   = "FIELD_NAME",
+                                       factorLevelId               = "GERMPLASM_ID",
+                                       repId                       = "BR_REP_ID",
+                                       locationId                  = "locationId",
+                                       questionCode                = "TRAIT",
+                                       isDeactivated               = "isDeactivated",
+                                       entryId                     = "entryId",
+                                       sufficientDataThreshold     = 20,
+                                       positiveValueCheck = TRUE)){
 
+  # handle punctuation in column names
+  # curr.names <- names(DataIn)
+  # for(cn in curr.names){
+  #   new.name <- gsub(" ", "", cn)
+  #   new.name <- gsub(pattern='[[:punct:]]', replacement = "", x = new.name)
   #
-  # if(exists("entryId",where=DataIn)==FALSE){
-  #   DataIn$entryId <- 1:nrow(DataIn)  # Add a row index for later merging and reordering.
+  #   DataIn[new.name] <- DataIn[cn]
+  #   if(new.name != cn){
+  #     DataIn[cn] <- NULL
+  #   }
+  # }
+  #
+  # for(p in 1:length(params.input)){
+  #   if(typeof(params.input[[p]]) == 'character'){
+  #     params.input[[p]] <- gsub(' ', "", params.input[[p]])
+  #     params.input[[p]] <- gsub('[[:punct:]]', "", params.input[[p]])
+  #   }
   # }
 
-  curr.names <- names(DataIn)
-  for(cn in curr.names){
-    new.name <- gsub(" ", "", cn)
-    new.name <- gsub(pattern='[[:punct:]]', replacement = "", x = new.name)
+  # Either read in the parameters from a file or use the default inputs from above.
+  params.list <- checkParameters(params.default, params.input)
+  mapply(assign, names(params.list), params.list, MoreArgs = list(envir = .GlobalEnv))
 
-    DataIn[new.name] <- DataIn[cn]
-    if(new.name != cn){
-      DataIn[cn] <- NULL
-    }
-  }
-  for(p in 1:length(ListOfRCBParameters)){
-    if(typeof(ListOfRCBParameters[[p]]) == 'character'){
-      ListOfRCBParameters[[p]] <- gsub(' ', "", ListOfRCBParameters[[p]])
-      ListOfRCBParameters[[p]] <- gsub('[[:punct:]]', "", ListOfRCBParameters[[p]])
-    }
-  }
+  print(paste0('analyzing ', nrow(DataIn), ' rows of data'))
+  # create unique repId
+  DataIn$holdRepId <- DataIn[params.list$repId]
+  temp <- paste(DataIn[,params.list$repId], DataIn[,params.list$locationId], sep = "_")
+  DataIn[,params.list$repId] <- temp
 
-  # Create an intial list of RCB parameters set to their corresponding defaults.
-  # Call this named list, ListOfIndividualParameters.
-  ListOfIndividualParameters <- list(analysis_type               = analysis_type,
-                                     alpha                       = alpha,
-                                     value  = value,
-                                     subSiteId           = subSiteId,
-                                     factorLevelId   = factorLevelId,
-                                     repId       = repId,
-                                     FactorTypeColumnName        = FactorTypeColumnName,
-                                     SufficientDataThreshold     = SufficientDataThreshold,
-                                     ResponseVariableShouldBeGT0 = ResponseVariableShouldBeGT0)
+  DataIn$holdRepId <- DataIn[,params.list$repId]
+  temp <- paste(DataIn[,params.list$repId],
+                DataIn[,params.list$locationId], sep = "_")
+  DataIn[,params.list$repId] <- temp
 
-  # Either read in the parameters from a file or use the individual inputs from above.
-
-  if(is.null(ListOfRCBParameters)==TRUE){ # A user supplied list of parameters was not given. Therefore use the default individual inputs from above which may have been over written by the user.
-    ListOfRCBParameters <- ListOfIndividualParameters
-  }
-
-  # Check for missing parameters and add them, if needed, with default or individual input values.
-  nloip <- names(ListOfIndividualParameters)
-  CheckNames <- names(ListOfIndividualParameters) %in% names(ListOfRCBParameters) # This is TRUE for each name in names(ListOfIndividualParameters) which is also in names(ListOfSmartQAQCParameters)
-  if(any(CheckNames==FALSE)){
-    wcn <- which(CheckNames==FALSE) # Get the indicies of the missing parameters
-    if(length(wcn)>0){
-      for(jj in wcn){
-        ListOfRCBParameters[[ nloip[jj] ]] <- ListOfIndividualParameters[[ nloip[jj] ]]
-      }
-    }
-  }
-  # Check for missing parameter values.  If there are some,
-  # replace them with the individual input default values.
-  Check4Missing <- sapply(ListOfRCBParameters,function(zx){is.null(zx) | is.na(zx) | is.nan(zx)})
-  if(any(Check4Missing)==TRUE){
-    wcm  <- which(Check4Missing==TRUE) # Get the indicies of the missing parameters values
-    if(length(wcm)>0){
-      for(kk in wcm){ # Loop over the indices of the missing parameters
-        ListOfRCBParameters[[kk]] <- ListOfIndividualParameters[[kk]] # Replace the missing value with the individual default value.
-      }
-    }
-  }
-
-  # Set values of the individual parameters in the code below.
-  # This is where the inputs are actually made available to the DSR code.
-  analysis_type               <- ListOfRCBParameters$analysis_type
-  alpha                       <- ListOfRCBParameters$alpha
-  value  <- ListOfRCBParameters$value
-  subSiteId           <- ListOfRCBParameters$subSiteId
-  factorLevelId   <- ListOfRCBParameters$factorLevelId
-  repId       <- ListOfRCBParameters$repId
-  FactorTypeColumnName        <- ListOfRCBParameters$FactorTypeColumnName
-  SufficientDataThreshold     <- ListOfRCBParameters$SufficientDataThreshold
-  ResponseVariableShouldBeGT0 <- ListOfRCBParameters$ResponseVariableShouldBeGT0
-
-  DataIn$holdRepId <- DataIn[,ListOfRCBParameters$repId]
-  temp <- paste(DataIn[,ListOfRCBParameters$repId],
-                DataIn[,ListOfRCBParameters$locationId], sep = "_")
-  DataIn[,ListOfRCBParameters$repId] <- temp
-
-  obs.name <-  unique(DataIn[,ListOfRCBParameters$questionCode])
-  entry.name <- ListOfRCBParameters$factorLevelId
+  obs.name <-  unique(DataIn[,params.list$questionCode])
+  entry.name <- params.list$factorLevelId
 
   print(paste0('analyzing ', obs.name))
 
   if(length(obs.name) > 1){
     err <- 'multiple question codes detected'
-    Out_return <- list(LSM_TABLE = NA, Deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
+    Out_return <- list(lsmTable = NA, deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
     return(Out_return)
   }
 
-  # Check to see if data cleaning algorithms were run on the input data prior to this routine's call.
-  #
-
-  # if(exists("isDeactivated",where=DataIn)==FALSE){ # Data quality checking algorithms like DSR and smartQAQC create this column.  If it is missing, they were not run.
-  #   DataIn$isDeactivated     <- FALSE  # Create this missing column and set it equal to FALSE indicating all the data are acceptable
-  #   DataIn$reasonDeactivated <- "None" # There is no rason to exclude data.
-  # }
-
-  if(ResponseVariableShouldBeGT0==TRUE){ # In the case IS_DEACTIVTED does not exist, so check the response for negative or zero values if required.
+  # In the case IS_DEACTIVTED does not exist, so check the response for negative or zero values if required.
+  if(positiveValueCheck==TRUE){
     wLE0 <- which(DataIn[,value]<=0)
     if(length(wLE0)>0){
       DataIn$isDeactivated[wLE0] <- TRUE # Change the deactiviation status of these rows
-      DataIn$reasonDeactivated   <- "RCB_Data<=0"
+      DataIn$reasonDeactivated[wLE0]   <- "RCB_Data<=0"
     }
   }
-  # The following named list is used to make all of the variables available to several functions as well as
-  # to the Global environment (see lines 99-101 below)
+  # The following named list is used to make all of the variables available to several functions
   data_fields <- list(
       CROP_OBSRVTN_DETAIL_ID = value,
       FIELD_ID               = subSiteId,
       FACTOR_1               = factorLevelId,
-      REP_ID                 = repId,
-      Factortype_name        = FactorTypeColumnName)
-
-  if(exists("isDeactivated",where=DataIn)){
-    data <- DataIn[DataIn$isDeactivated==FALSE,]
-  }else{
-    data <- DataIn
-    print('deactivation not found')
-  }
-  if(nrow(data)<SufficientDataThreshold){ # This is currently a fixed limit determined by commitee.  It should be based on the number of treatment levels and blocks
-    txt1 <- "Error: there are too few data (n<SufficientDataThreshold) to run an RCB model. Data frame has n = "
+      REP_ID                 = repId)
+  data <- DataIn[DataIn$isDeactivated==FALSE,]
+  # This is currently a fixed limit determined by commitee.  TODO: It should be based on the number of treatment levels and blocks
+  if(nrow(data) < sufficientDataThreshold){
+    txt1 <- "Error: there are too few data (n<sufficientDataThreshold) to run an RCB model. Data frame has n = "
     txt2 <- paste0(txt1,nrow(data))
-    txt3 <- paste0(txt2," rows and SufficientDataThreshold = ")
-    txt4 <- paste0(txt3,SufficientDataThreshold)
+    txt3 <- paste0(txt2," rows and sufficientDataThreshold = ")
+    txt4 <- paste0(txt3,sufficientDataThreshold)
     message(txt4)
     return(DataIn)
   }
@@ -212,7 +153,7 @@ RCB_ModelFittingFunction <- function(DataIn,
   setLicense()
 
   # Check inputs
-  checkAnalysisType(analysis_type)
+  checkAnalysisType(analysisType)
   checkData(data, data_fields)
 
   # Add the data fields to the global environment
@@ -220,16 +161,15 @@ RCB_ModelFittingFunction <- function(DataIn,
          function(x) assign(names(data_fields)[[x]], value = data_fields[[x]], envir = .GlobalEnv))
 
   # Manipulate data
-
   data <- reformatData(data, data_fields)
   # Set fixed and random effects from analysis type
-  setFixedRandomEffects(analysis_type)
-# for timing
+  setFixedRandomEffects(analysisType)
+  # for timing
   time.scale <- ifelse(nrow(data) < 4000, "secs", "mins")
   start      <- Sys.time()
-  message(paste("Running ASReml using analysis type:", analysis_type), appendLF = TRUE )
+  message(paste("Running ASReml using analysis type:", analysisType), appendLF = TRUE )
 
-# Run R-ASReml, capture output
+  # Run R-ASReml, capture output
   RCB_asr  <-  asreml::asreml(
                       fixed     = fixed_formula,
                       random    = random_formula,
@@ -258,68 +198,56 @@ RCB_ModelFittingFunction <- function(DataIn,
                       na.method.Y = "omit",
                       na.method.X = "omit")
 
-
   message("finished in ", round(difftime(Sys.time(), start, units = time.scale[1]), digits = 2), " ", time.scale)
   message("Creating output files...", appendLF = TRUE)
 
   # Out_return$console$modeling <- RCB_asr
 
-  if (analysis_type %in% c('P3','P5') ) {
-  # LS Means
-  Out_return$LSM_TABLE <- lsmAnalysis_r(RCB_asr, data)
-
-  ## ANOVA table
-  Out_return$var_analysis <- ANOVA_output_r(RCB_asr)
-
-  ## add residual tables
-  Out_return$resid <- resid_table(RCB_asr,data)
-  colnames(Out_return$resid) <- c('residuals',FIELD_ID,REP_ID)
-
-  ## add blup table for random effects
-  Out_return$BLUP <- as.matrix(blup_table(RCB_asr,analysis_type))
-  colnames(Out_return$BLUP) <- c('BLUP for random effects')
-
+  if (analysisType %in% c('P3','P5') ) {
+    # LS Means
+    Out_return$lsmTable <- lsmAnalysis_r(RCB_asr, data)
+    ## ANOVA table
+    Out_return$var_analysis <- ANOVA_output_r(RCB_asr)
+    ## add residual tables
+    Out_return$resid <- resid_table(RCB_asr,data)
+    colnames(Out_return$resid) <- c('residuals',FIELD_ID,REP_ID)
+    ## add blup table for random effects
+    Out_return$BLUP <- as.matrix(blup_table(RCB_asr,analysisType))
+    colnames(Out_return$BLUP) <- c('BLUP for random effects')
   }
 
-  if (analysis_type %in% c('P1','P2','P4') ) {
+  if (analysisType %in% c('P1','P2','P4') ) {
+    # to use wald.asreml() only once to save computational time
+    LSM_ALL <- lsmAnalysis(RCB_asr, data, alpha=alpha)
+    # basic LSM table
+    Out_return$lsmTable <- LSM_ALL[[1]]
+    # Degrees of freedom
+    degrees_freedom = LSM_ALL[[2]]  ## a vector including all the fixed effect
 
-  # to use wald.asreml() only once to save computational time
-  LSM_ALL <- lsmAnalysis(RCB_asr, data, alpha=alpha)
-
-  # basic LSM table
-  Out_return$LSM_TABLE <- LSM_ALL[[1]]
-  # Degrees of freedom
-  degrees_freedom = LSM_ALL[[2]]  ## a vector including all the fixed effect
-
-  if(is.na(degrees_freedom[2])){
-    err <- 'failed delta analysis:  undefined degrees of freedom'
-    Out_return <- list(LSM_TABLE = NA, Deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
-    return(Out_return)
-    }
-  del=deltaAnalysis(RCB_asr,alpha=alpha, degrees_freedom[2])
-  # Deltas and p-values
-  Out_return$Deltas <- del[[1]]
-  # Mean Separation Grouping
-  mean_sep_group <- del[[2]]
-
-  ## combine LSM_TABLE and MSG
-  Out_return$LSM_TABLE <- cbind(Out_return$LSM_TABLE,mean_sep_group)
-
-  ## sort by descending order
-  Out_return$LSM_TABLE <- Out_return$LSM_TABLE[order(Out_return$LSM_TABLE$temp.obs.name,decreasing = TRUE),]
-
-  ## ANOVA table
-  Out_return$aov <- LSM_ALL[[3]]
-  Out_return$varcomp <- LSM_ALL[[4]]
-
-  ## add residual tables
-  Out_return$resid <- resid_table(RCB_asr,data)
-  colnames(Out_return$resid) <- c('residuals',FIELD_ID,REP_ID)
-
+    if(is.na(degrees_freedom[2])){
+      err <- 'failed delta analysis:  undefined degrees of freedom'
+      Out_return <- list(lsmTable = NA, deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
+      return(Out_return)
+      }
+    del <- deltaAnalysis(RCB_asr,alpha=alpha, degrees_freedom[2])
+    # deltas and p-values
+    Out_return$deltas <- del[[1]]
+    # Mean Separation Grouping
+    meanSeparationGroup <- del[[2]]
+    ## combine lsmTable and MSG
+    Out_return$lsmTable <- cbind(Out_return$lsmTable,meanSeparationGroup)
+    ## sort by descending order
+    Out_return$lsmTable <- Out_return$lsmTable[order(Out_return$lsmTable$value,decreasing = TRUE),]
+    ## ANOVA table
+    Out_return$anova <- LSM_ALL[[3]]
+    Out_return$varianceComposition <- LSM_ALL[[4]]
+    ## add residual tables
+    # Out_return$resid <- resid_table(RCB_asr,data)
+    # colnames(Out_return$resid) <- c('residuals',FIELD_ID,REP_ID)
  }
 
-  names(Out_return$LSM_TABLE)[which(names(Out_return$LSM_TABLE) == 'temp.entry.name')] <- entry.name
-  names(Out_return$LSM_TABLE)[which(names(Out_return$LSM_TABLE) == 'temp.obs.name')] <- obs.name
+  # names(Out_return$lsmTable)[which(names(Out_return$lsmTable) == 'temp.entry.name')] <- factorLevelId
+  # names(Out_return$lsmTable)[which(names(Out_return$lsmTable) == 'temp.obs.name')] <- value
 
   return(Out_return)
 }
