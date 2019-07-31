@@ -1,1 +1,16 @@
-{"analysisType":["P2"],"alpha":[0.1],"value":["NUM_VALUE"],"subSiteId":["FIELD_NAME"],"factorLevelId":["GERMPLASM_ID"],"repId":["BR_REP_ID"],"locationId":["locationId"],"questionCode":["TRAIT"],"entryId":["entryId"],"isDeactivated":["isDeactivated"],"sufficientDataThreshold":[20],"positiveValueCheck":[true]}
+{
+  "analysisType": "P3",
+  "alpha": 0.1,
+  "value": "NUM_VALUE",
+  "subSiteId": "FIELD_NAME",
+  "factorLevelId": "GERMPLASM_ID",
+  "repId": "BR_REP_ID",
+  "locationId": "locationId",
+  "questionCode": "TRAIT",
+  "isDsrDeactivated": "isDsrDeactivated",
+  "isQaqcDeactivated": "isQaqcDeactivated",
+  "isAnswerDeactivated": "isAnswerDeactivated",
+  "isSetEntryDeactivated": "isSetEntryDeactivated",
+  "sufficientDataThreshold": 20,
+  "positiveValueCheck": true
+}

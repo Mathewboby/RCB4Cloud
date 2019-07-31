@@ -50,7 +50,10 @@
 #' @param repId       a sting giving the column name of the rep ID variable in DataIn
 #' @param locationId
 #' @param questionCode
-#' @param isDeactivated
+#' @param isDsrDeactivated
+#' @param isQaqcDeactivated
+#' @param isAnswerDeactivated
+#' @param isSetEntryDeactivated
 #' @param entryId
 #' @param sufficientDataThreshold     a number giving the lower bound on the number of data values to be analyzed
 #' @param positiveValueCheck a logical. If TRUE, then response variable values <= 0 are treated as missing or deactivated data.
@@ -71,35 +74,25 @@ RCB_ModelFittingFunction <- function(DataIn,
                                        repId                       = "BR_REP_ID",
                                        locationId                  = "locationId",
                                        questionCode                = "TRAIT",
-                                       isDeactivated               = "isDeactivated",
-                                       entryId                     = "entryId",
+                                       isDsrDeactivated            = 'isDsrDeactivated',
+                                       isQaqcDactivated            = 'isQaqcDactivated',
+                                       isAnswerDeactivated         = 'isAnswerDeactivated',
+                                       isSetEntryDeactivated       = 'isSetEntryDeactivated',                                       entryId                     = "entryId",
                                        sufficientDataThreshold     = 20,
                                        positiveValueCheck = TRUE)){
-
-  # handle punctuation in column names
-  # curr.names <- names(DataIn)
-  # for(cn in curr.names){
-  #   new.name <- gsub(" ", "", cn)
-  #   new.name <- gsub(pattern='[[:punct:]]', replacement = "", x = new.name)
-  #
-  #   DataIn[new.name] <- DataIn[cn]
-  #   if(new.name != cn){
-  #     DataIn[cn] <- NULL
-  #   }
-  # }
-  #
-  # for(p in 1:length(params.input)){
-  #   if(typeof(params.input[[p]]) == 'character'){
-  #     params.input[[p]] <- gsub(' ', "", params.input[[p]])
-  #     params.input[[p]] <- gsub('[[:punct:]]', "", params.input[[p]])
-  #   }
-  # }
 
   # Either read in the parameters from a file or use the default inputs from above.
   params.list <- checkParameters(params.default, params.input)
   mapply(assign, names(params.list), params.list, MoreArgs = list(envir = .GlobalEnv))
 
-  print(paste0('analyzing ', nrow(DataIn), ' rows of data'))
+  print(paste0('input ', nrow(DataIn), ' rows'))
+
+  DataIn <- DataIn[(DataIn[,params.list$isQaqcDeactivated]       == FALSE &
+                      DataIn[,params.list$isDsrDeactivated]      == FALSE &
+                      DataIn[,params.list$isAnswerDeactivated]   == FALSE &
+                      DataIn[,params.list$isSetEntryDeactivated] == FALSE),]
+
+  print(paste0('analyzing ', nrow(DataIn), ' rows'))
   # create unique repId
   DataIn$holdRepId <- DataIn[params.list$repId]
   temp <- paste(DataIn[,params.list$repId], DataIn[,params.list$locationId], sep = "_")
