@@ -16,4 +16,3 @@ data.in <- fromJSON('Reference/Data/input.json')
 params.in <- fromJSON('Reference/Data/parameters.json')
 
 results <- RCB_ModelFittingFunction(data.in, params.in)
-f

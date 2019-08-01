@@ -241,7 +241,7 @@ lsmAnalysis_r <- function(RCB_asr, data){
   LSM <- data.frame(
     factorLevelId = RCB_asr$predictions$pvals[[FACTOR_1]],
     value = RCB_asr$predictions$pvals$predicted.value,
-    SE = RCB_asr$predictions$pvals$standard.error
+    standardError = RCB_asr$predictions$pvals$standard.error
   )
 
   ## count N in each Entry level with missing removed.
@@ -249,7 +249,7 @@ lsmAnalysis_r <- function(RCB_asr, data){
   for (i in 1:length(LSM$value)) {
     N[i]=nrow(data[data[,FACTOR_1]==LSM$value[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$value[i],CROP_OBSRVTN_DETAIL_ID]))
   }
-  LSM$N<-N
+  LSM$n<-N
 
 
   ##replace adjusted control name with actual control name
@@ -361,7 +361,7 @@ ANOVA_output_r <- function(asreml.obj){
   }
   row.names(anova_)[j] <- 'residual'
   anova_=anova_[,c(2,5)]
-  colnames(anova_) <- c("variance_estimates","constraint")
+  colnames(anova_) <- c("varianceEstimates","constraint")
   return(anova_)
 }
 

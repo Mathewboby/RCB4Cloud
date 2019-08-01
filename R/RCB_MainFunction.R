@@ -77,7 +77,8 @@ RCB_ModelFittingFunction <- function(DataIn,
                                        isDsrDeactivated            = 'isDsrDeactivated',
                                        isQaqcDactivated            = 'isQaqcDactivated',
                                        isAnswerDeactivated         = 'isAnswerDeactivated',
-                                       isSetEntryDeactivated       = 'isSetEntryDeactivated',                                       entryId                     = "entryId",
+                                       isSetEntryDeactivated       = 'isSetEntryDeactivated',
+                                       entryId                     = "entryId",
                                        sufficientDataThreshold     = 20,
                                        positiveValueCheck = TRUE)){
 
@@ -104,31 +105,21 @@ RCB_ModelFittingFunction <- function(DataIn,
   DataIn[,params.list$repId] <- temp
 
   obs.name <-  unique(DataIn[,params.list$questionCode])
-  entry.name <- params.list$factorLevelId
 
-  print(paste0('analyzing ', obs.name))
+  print(paste0('current question code ', obs.name))
 
   if(length(obs.name) > 1){
     err <- 'multiple question codes detected'
     Out_return <- list(lsmTable = NA, deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
     return(Out_return)
   }
-
-  # In the case IS_DEACTIVTED does not exist, so check the response for negative or zero values if required.
-  if(positiveValueCheck==TRUE){
-    wLE0 <- which(DataIn[,value]<=0)
-    if(length(wLE0)>0){
-      DataIn$isDeactivated[wLE0] <- TRUE # Change the deactiviation status of these rows
-      DataIn$reasonDeactivated[wLE0]   <- "RCB_Data<=0"
-    }
+  if(positiveValueCheck==TRUE & sum(DataIn[,value]<=0) > 1){
+    err <- "RCB_Data<=0"
+    Out_return <- list(lsmTable = NA, deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
+    return(Out_return)
   }
-  # The following named list is used to make all of the variables available to several functions
-  data_fields <- list(
-      CROP_OBSRVTN_DETAIL_ID = value,
-      FIELD_ID               = subSiteId,
-      FACTOR_1               = factorLevelId,
-      REP_ID                 = repId)
-  data <- DataIn[DataIn$isDeactivated==FALSE,]
+
+  data <- DataIn
   # This is currently a fixed limit determined by commitee.  TODO: It should be based on the number of treatment levels and blocks
   if(nrow(data) < sufficientDataThreshold){
     txt1 <- "Error: there are too few data (n<sufficientDataThreshold) to run an RCB model. Data frame has n = "
@@ -144,6 +135,13 @@ RCB_ModelFittingFunction <- function(DataIn,
 
   # Sets the ASReml license path if it is not set already
   setLicense()
+
+  # The following named list is used to make all of the variables available to several functions
+  data_fields <- list(
+    CROP_OBSRVTN_DETAIL_ID = value,
+    FIELD_ID               = subSiteId,
+    FACTOR_1               = factorLevelId,
+    REP_ID                 = repId)
 
   # Check inputs
   checkAnalysisType(analysisType)
@@ -200,13 +198,13 @@ RCB_ModelFittingFunction <- function(DataIn,
     # LS Means
     Out_return$lsmTable <- lsmAnalysis_r(RCB_asr, data)
     ## ANOVA table
-    Out_return$var_analysis <- ANOVA_output_r(RCB_asr)
+    Out_return$varianceAnalysis <- ANOVA_output_r(RCB_asr)
     ## add residual tables
-    Out_return$resid <- resid_table(RCB_asr,data)
-    colnames(Out_return$resid) <- c('residuals',FIELD_ID,REP_ID)
+    # Out_return$residuals <- resid_table(RCB_asr,data)
+    # colnames(Out_return$residuals) <- c('residuals',FIELD_ID,REP_ID)
     ## add blup table for random effects
-    Out_return$BLUP <- as.matrix(blup_table(RCB_asr,analysisType))
-    colnames(Out_return$BLUP) <- c('BLUP for random effects')
+    # Out_return$BLUP <- as.matrix(blup_table(RCB_asr,analysisType))
+    # colnames(Out_return$BLUP) <- c('BLUP for random effects')
   }
 
   if (analysisType %in% c('P1','P2','P4') ) {
@@ -238,9 +236,5 @@ RCB_ModelFittingFunction <- function(DataIn,
     # Out_return$resid <- resid_table(RCB_asr,data)
     # colnames(Out_return$resid) <- c('residuals',FIELD_ID,REP_ID)
  }
-
-  # names(Out_return$lsmTable)[which(names(Out_return$lsmTable) == 'temp.entry.name')] <- factorLevelId
-  # names(Out_return$lsmTable)[which(names(Out_return$lsmTable) == 'temp.obs.name')] <- value
-
   return(Out_return)
 }
