@@ -50,8 +50,8 @@
 #' @param repId       a sting giving the column name of the rep ID variable in DataIn
 #' @param locationId
 #' @param questionCode
-#' @param isDsrDeactivated
-#' @param isQaqcDeactivated
+#' @param isDSRDeactivated
+#' @param isQAQCDeactivated
 #' @param isAnswerDeactivated
 #' @param isSetEntryDeactivated
 #' @param entryId
@@ -74,7 +74,7 @@ RCB_ModelFittingFunction <- function(DataIn,
                                        repId                       = "BR_REP_ID",
                                        locationId                  = "locationId",
                                        questionCode                = "TRAIT",
-                                       isDsrDeactivated            = 'isDsrDeactivated',
+                                       isDSRDeactivated            = 'isDSRDeactivated',
                                        isQaqcDactivated            = 'isQaqcDactivated',
                                        isAnswerDeactivated         = 'isAnswerDeactivated',
                                        isSetEntryDeactivated       = 'isSetEntryDeactivated',
@@ -88,8 +88,8 @@ RCB_ModelFittingFunction <- function(DataIn,
 
   print(paste0('input ', nrow(DataIn), ' rows'))
 
-  DataIn <- DataIn[(DataIn[,params.list$isQaqcDeactivated]       == FALSE &
-                      DataIn[,params.list$isDsrDeactivated]      == FALSE &
+  DataIn <- DataIn[(DataIn[,params.list$isQAQCDeactivated]       == FALSE &
+                      DataIn[,params.list$isDSRDeactivated]      == FALSE &
                       DataIn[,params.list$isAnswerDeactivated]   == FALSE &
                       DataIn[,params.list$isSetEntryDeactivated] == FALSE),]
 
