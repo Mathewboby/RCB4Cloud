@@ -12,7 +12,7 @@ options(digits = 20)
 source('/repos/RCB4Cloud/R/RCB_SupportFunctions.R')
 source('/repos/RCB4Cloud/R/RCB_MainFunction.R')
 
-data.in <- fromJSON('Reference/Data/input.json')
-params.in <- fromJSON('Reference/Data/parameters.json')
+data.in <- fromJSON('Reference/Data/input-rcb-md.json')
+params.in <- fromJSON('Reference/Data/parameters-rcb-md.json')
 
 results <- RCB_ModelFittingFunction(data.in, params.in)
