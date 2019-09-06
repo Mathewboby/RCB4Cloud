@@ -50,8 +50,8 @@
 #' @param repId       a sting giving the column name of the rep ID variable in DataIn
 #' @param locationId
 #' @param questionCode
-#' @param isDSRDeactivated
-#' @param isQAQCDeactivated
+#' @param isDsrDeactivated
+#' @param isQaqcDeactivated
 #' @param isAnswerDeactivated
 #' @param isSetEntryDeactivated
 #' @param entryId
@@ -63,33 +63,15 @@
 #' @export
 
 # Old function name was 'R.ASReml_RCB_Return'
-RCB_ModelFittingFunction <- function(DataIn,
-                                params.input         = NULL,
-                                params.default =
-                                  list(analysisType               = "P2",
-                                       alpha                       = 0.1,
-                                       value                       = "NUM_VALUE",
-                                       subSiteId                   = "FIELD_NAME",
-                                       factorLevelId               = "GERMPLASM_ID",
-                                       repId                       = "BR_REP_ID",
-                                       locationId                  = "locationId",
-                                       questionCode                = "TRAIT",
-                                       isDSRDeactivated            = 'isDSRDeactivated',
-                                       isQaqcDactivated            = 'isQaqcDactivated',
-                                       isAnswerDeactivated         = 'isAnswerDeactivated',
-                                       isSetEntryDeactivated       = 'isSetEntryDeactivated',
-                                       entryId                     = "entryId",
-                                       sufficientDataThreshold     = 20,
-                                       positiveValueCheck = TRUE)){
+RCB_ModelFittingFunction <- function(DataIn, params.input){
 
   # Either read in the parameters from a file or use the default inputs from above.
-  params.list <- checkParameters(params.default, params.input)
+  params.list <- params.input
   mapply(assign, names(params.list), params.list, MoreArgs = list(envir = .GlobalEnv))
-
   print(paste0('input ', nrow(DataIn), ' rows'))
 
-  DataIn <- DataIn[(DataIn[,params.list$isQAQCDeactivated]       == FALSE &
-                      DataIn[,params.list$isDSRDeactivated]      == FALSE &
+  DataIn <- DataIn[(DataIn[,params.list$isQaqcDeactivated]       == FALSE &
+                      DataIn[,params.list$isDsrDeactivated]      == FALSE &
                       DataIn[,params.list$isAnswerDeactivated]   == FALSE &
                       DataIn[,params.list$isSetEntryDeactivated] == FALSE),]
 
@@ -232,9 +214,8 @@ RCB_ModelFittingFunction <- function(DataIn,
     ## ANOVA table
     Out_return$anova <- LSM_ALL[[3]]
     Out_return$varianceComposition <- LSM_ALL[[4]]
-    ## add residual tables
-    # Out_return$resid <- resid_table(RCB_asr,data)
-    # colnames(Out_return$resid) <- c('residuals',FIELD_ID,REP_ID)
- }
+
+  }
+  Out_return[] <- lapply(Out_return, as.character)
   return(Out_return)
 }
