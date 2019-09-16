@@ -216,6 +216,13 @@ RCB_ModelFittingFunction <- function(DataIn, params.input){
     Out_return$varianceComposition <- LSM_ALL[[4]]
 
   }
-  Out_return[] <- lapply(Out_return, as.character)
-  return(Out_return)
+  ##  convert output to strings
+  out.list <- list()
+  for(i in 1:length(Out_return)){
+    curr.df <- as.data.frame(Out_return[[i]])
+    curr.df[] <- lapply(curr.df, as.character)
+    out.list[[i]] <- curr.df
+  }
+  names(out.list) <- names(Out_return)
+  return(out.list)
 }

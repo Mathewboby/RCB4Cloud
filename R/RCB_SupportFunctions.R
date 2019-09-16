@@ -194,16 +194,15 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
       rownames(VAR)[j] <- strsplit(rownames(VAR),'!')[[j]][1]
   }
 
-  rownames(VAR)[j] <- 'residual'
+  rownames(VAR) <- c("subSiteId", "residual")
 
   VAR=VAR[,c(2,5)]
   colnames(VAR) <- c("varianceEstimates","constraint")
 
-
   ## for fix effect ANOVA table
   AOV <- ALL[[1]]
   colnames(AOV) <- c("degreesFreedomNumerator","degreesFreedomDenominator","ssIncremental","ssConditional","margin","probability")
-  rownames(AOV)[1] <- "intercept"
+  rownames(AOV) <- c("factorLevelId", "intercept")
 
   ## for LSM table
   LSM <- data.frame(
