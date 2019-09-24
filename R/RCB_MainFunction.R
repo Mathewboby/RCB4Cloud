@@ -42,7 +42,6 @@
 #'
 #' @param DataIn                      a dataframe with observation data. Column names should match those specified below in the column name arguments.
 #' @param params.input         a named list giving values for the following nine arguments.
-#' @param analysisType               a string specifying the type of analysis to be conducted.
 #' @param alpha                       a number between 0 and 1 specifying the confidence level and comparison significance
 #' @param value  a sting giving the column name of the response variable in DataIn
 #' @param subSiteId           a sting giving the column name of the field ID variable in DataIn
@@ -63,7 +62,7 @@
 #' @export
 
 # Old function name was 'R.ASReml_RCB_Return'
-RCB_ModelFittingFunction <- function(DataIn, params.input){
+RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
 
   # Either read in the parameters from a file or use the default inputs from above.
   params.list <- params.input
