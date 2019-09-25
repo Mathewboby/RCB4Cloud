@@ -202,7 +202,7 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
   ## for fix effect ANOVA table
   AOV <- ALL[[1]]
   colnames(AOV) <- c("degreesFreedomNumerator","degreesFreedomDenominator","ssIncremental","ssConditional","margin","probability")
-  rownames(AOV) <- c("factorLevelId", "intercept")
+  # rownames(AOV) <- c("factorLevelId", "intercept")
 
   ## for LSM table
   LSM <- data.frame(
