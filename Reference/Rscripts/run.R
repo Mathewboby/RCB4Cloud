@@ -15,4 +15,5 @@ source('/repos/RCB4Cloud/R/RCB_MainFunction.R')
 data.in <- fromJSON('Reference/Data/input-rcb-md.json')
 params.in <- fromJSON('Reference/Data/parameters-rcb-md.json')
 
-results <- RCB_ModelFittingFunction(data.in, params.in, analysisType = 'P2')
+results <- RCB_ModelFittingFunction(data.in, params.in, analysisType = 'P4')
+

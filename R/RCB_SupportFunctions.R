@@ -194,7 +194,7 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
       rownames(VAR)[j] <- strsplit(rownames(VAR),'!')[[j]][1]
   }
 
-  rownames(VAR) <- c("subSiteId", "residual")
+  rownames(VAR)[length(rownames(VAR))] <- "residual"
 
   VAR=VAR[,c(2,5)]
   colnames(VAR) <- c("varianceEstimates","constraint")

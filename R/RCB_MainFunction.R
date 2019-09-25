@@ -140,7 +140,6 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
   time.scale <- ifelse(nrow(data) < 4000, "secs", "mins")
   start      <- Sys.time()
   message(paste("Running ASReml using analysis type:", analysisType), appendLF = TRUE )
-
   # Run R-ASReml, capture output
   RCB_asr  <-  asreml::asreml(
                       fixed     = fixed_formula,
@@ -189,6 +188,7 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
   }
 
   if (analysisType %in% c('P1','P2','P4') ) {
+
     # to use wald.asreml() only once to save computational time
     LSM_ALL <- lsmAnalysis(RCB_asr, data, alpha=alpha)
     # basic LSM table
