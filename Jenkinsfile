@@ -7,7 +7,7 @@ pipeline {
     }
 
     parameters {
-        choice(choices: 'non-prod\nprod', description: 'What environment?', name: 'environment')
+        choice(choices: 'non-prod\nprod\ndev', description: 'What environment?', name: 'environment')
     }
 
     stages {
@@ -25,6 +25,14 @@ pipeline {
             }
             steps {
                 sh 'cd docker && ./build.sh prod'
+            }
+        }
+        stage('Development Build') {
+            when {
+                expression { params.environment == 'dev' }
+            }
+            steps {
+                sh 'cd docker && ./build.sh dev'
             }
         }
     }
