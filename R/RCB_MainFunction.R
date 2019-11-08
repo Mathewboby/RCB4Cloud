@@ -195,7 +195,7 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
     Out_return$lsmTable <- LSM_ALL[[1]]
     # Degrees of freedom
     degrees_freedom = LSM_ALL[[2]]  ## a vector including all the fixed effect
-
+print(degrees_freedom)
     if(is.na(degrees_freedom[2])){
       err <- 'failed delta analysis:  undefined degrees of freedom'
       Out_return <- list(lsmTable = NA, deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
@@ -207,12 +207,13 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
     # Mean Separation Grouping
     meanSeparationGroup <- del[[2]]
     ## combine lsmTable and MSG
-    Out_return$lsmTable <- cbind(Out_return$lsmTable,meanSeparationGroup)
+    Out_return$lsmTable <- cbind(Out_return$lsmTable, meanSeparationGroup)
     ## sort by descending order
     Out_return$lsmTable <- Out_return$lsmTable[order(Out_return$lsmTable$value,decreasing = TRUE),]
     ## ANOVA table
     Out_return$anova <- LSM_ALL[[3]]
     Out_return$varianceComposition <- LSM_ALL[[4]]
+    #Out_return$LSD <- del[[3]]
 
   }
   ##  convert output to strings
