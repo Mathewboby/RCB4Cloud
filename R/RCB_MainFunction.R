@@ -195,7 +195,6 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
     Out_return$lsmTable <- LSM_ALL[[1]]
     # Degrees of freedom
     degrees_freedom = LSM_ALL[[2]]  ## a vector including all the fixed effect
-print(degrees_freedom)
     if(is.na(degrees_freedom[2])){
       err <- 'failed delta analysis:  undefined degrees of freedom'
       Out_return <- list(lsmTable = NA, deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
@@ -213,8 +212,7 @@ print(degrees_freedom)
     ## ANOVA table
     Out_return$anova <- LSM_ALL[[3]]
     Out_return$varianceComposition <- LSM_ALL[[4]]
-    #Out_return$LSD <- del[[3]]
-
+    Out_return$leastSignificantDifference <- data.frame(mean=del$LSD)
   }
   ##  convert output to strings
   out.list <- list()

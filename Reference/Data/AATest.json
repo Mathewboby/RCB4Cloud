@@ -1,0 +1,473 @@
+{
+  "lsmTable": [
+    {
+      "factorLevelId": "NQ6870PGJ1",
+      "value": "34.2966666666656",
+      "standardError": "2.2137657183842",
+      "degreesFreedom": "10.1",
+      "n": "9",
+      "lowerConfidenceInterval": "30.2883297119491",
+      "upperConfidenceInterval": "38.3050036213822",
+      "meanSeparationGroup": "b"
+    },
+    {
+      "factorLevelId": "DKC64-54BR",
+      "value": "33.6331401728391",
+      "standardError": "2.24342366549146",
+      "degreesFreedom": "10.1",
+      "n": "8",
+      "lowerConfidenceInterval": "29.57110329658",
+      "upperConfidenceInterval": "37.6951770490983",
+      "meanSeparationGroup": "ab"
+    },
+    {
+      "factorLevelId": "DKC65-60BR",
+      "value": "33.5722222222212",
+      "standardError": "2.2137657183842",
+      "degreesFreedom": "10.1",
+      "n": "9",
+      "lowerConfidenceInterval": "29.5638852675047",
+      "upperConfidenceInterval": "37.5805591769377",
+      "meanSeparationGroup": "ab"
+    },
+    {
+      "factorLevelId": "DKC65-52BR",
+      "value": "33.3644444444434",
+      "standardError": "2.2137657183842",
+      "degreesFreedom": "10.1",
+      "n": "9",
+      "lowerConfidenceInterval": "29.3561074897269",
+      "upperConfidenceInterval": "37.37278139916",
+      "meanSeparationGroup": "ab"
+    },
+    {
+      "factorLevelId": "DKC60-76BR",
+      "value": "32.4699999999984",
+      "standardError": "2.21376571838419",
+      "degreesFreedom": "10.1",
+      "n": "9",
+      "lowerConfidenceInterval": "28.4616630452819",
+      "upperConfidenceInterval": "36.4783369547149",
+      "meanSeparationGroup": "ab"
+    },
+    {
+      "factorLevelId": "NJ6452",
+      "value": "30.0811111111101",
+      "standardError": "2.2137657183842",
+      "degreesFreedom": "10.1",
+      "n": "9",
+      "lowerConfidenceInterval": "26.0727741563936",
+      "upperConfidenceInterval": "34.0894480658266",
+      "meanSeparationGroup": "a"
+    }
+  ],
+  "deltas": [
+    {
+      "head": "DKC60-76BR",
+      "comparison": "DKC60-76BR",
+      "differences": "0"
+    },
+    {
+      "head": "DKC64-54BR",
+      "comparison": "DKC60-76BR",
+      "differences": "1.16314017284073",
+      "probabilityDifferences": "0.580996537434397",
+      "standardErrorDifferences": "2.03984075621434",
+      "degreesFreedom": "10.1",
+      "t": "0.57021126247098",
+      "lowerConfidenceInterval": "-2.5302809588401",
+      "upperConfidenceInterval": "4.85656130452157"
+    },
+    {
+      "head": "DKC65-52BR",
+      "comparison": "DKC60-76BR",
+      "differences": "0.894444444445043",
+      "probabilityDifferences": "0.665269550810592",
+      "standardErrorDifferences": "2.00717692885281",
+      "degreesFreedom": "10.1",
+      "t": "0.445623119510573",
+      "lowerConfidenceInterval": "-2.73983419297437",
+      "upperConfidenceInterval": "4.52872308186445"
+    },
+    {
+      "head": "DKC65-60BR",
+      "comparison": "DKC60-76BR",
+      "differences": "1.10222222222281",
+      "probabilityDifferences": "0.594840629284007",
+      "standardErrorDifferences": "2.00717692885281",
+      "degreesFreedom": "10.1",
+      "t": "0.549140539819165",
+      "lowerConfidenceInterval": "-2.5320564151966",
+      "upperConfidenceInterval": "4.73650085964221"
+    },
+    {
+      "head": "NJ6452",
+      "comparison": "DKC60-76BR",
+      "differences": "-2.38888888888829",
+      "probabilityDifferences": "0.261201275688895",
+      "standardErrorDifferences": "2.00717692885281",
+      "degreesFreedom": "10.1",
+      "t": "-1.1901735490023",
+      "lowerConfidenceInterval": "-6.02316752630769",
+      "upperConfidenceInterval": "1.24538974853112"
+    },
+    {
+      "head": "NQ6870PGJ1",
+      "comparison": "DKC60-76BR",
+      "differences": "1.82666666666724",
+      "probabilityDifferences": "0.383991179794383",
+      "standardErrorDifferences": "2.00717692885281",
+      "degreesFreedom": "10.1",
+      "t": "0.910067588167853",
+      "lowerConfidenceInterval": "-1.80761197075217",
+      "upperConfidenceInterval": "5.46094530408664"
+    },
+    {
+      "head": "DKC60-76BR",
+      "comparison": "DKC64-54BR",
+      "differences": "-1.16314017284073",
+      "probabilityDifferences": "0.580996537434397",
+      "standardErrorDifferences": "2.03984075621434",
+      "degreesFreedom": "10.1",
+      "t": "-0.57021126247098",
+      "lowerConfidenceInterval": "-4.85656130452157",
+      "upperConfidenceInterval": "2.5302809588401"
+    },
+    {
+      "head": "DKC64-54BR",
+      "comparison": "DKC64-54BR",
+      "differences": "0"
+    },
+    {
+      "head": "DKC65-52BR",
+      "comparison": "DKC64-54BR",
+      "differences": "-0.268695728395691",
+      "probabilityDifferences": "0.897789796897743",
+      "standardErrorDifferences": "2.03984075621435",
+      "degreesFreedom": "10.1",
+      "t": "-0.131723874805969",
+      "lowerConfidenceInterval": "-3.96211686007654",
+      "upperConfidenceInterval": "3.42472540328516"
+    },
+    {
+      "head": "DKC65-60BR",
+      "comparison": "DKC64-54BR",
+      "differences": "-0.0609179506179274",
+      "probabilityDifferences": "0.976757350120312",
+      "standardErrorDifferences": "2.03984075621434",
+      "degreesFreedom": "10.1",
+      "t": "-0.0298640717087066",
+      "lowerConfidenceInterval": "-3.75433908229877",
+      "upperConfidenceInterval": "3.63250318106292"
+    },
+    {
+      "head": "NJ6452",
+      "comparison": "DKC64-54BR",
+      "differences": "-3.55202906172902",
+      "probabilityDifferences": "0.111943361978123",
+      "standardErrorDifferences": "2.03984075621434",
+      "degreesFreedom": "10.1",
+      "t": "-1.74132664567458",
+      "lowerConfidenceInterval": "-7.24545019340987",
+      "upperConfidenceInterval": "0.14139206995182"
+    },
+    {
+      "head": "NQ6870PGJ1",
+      "comparison": "DKC64-54BR",
+      "differences": "0.663526493826502",
+      "probabilityDifferences": "0.751604746078376",
+      "standardErrorDifferences": "2.03984075621434",
+      "degreesFreedom": "10.1",
+      "t": "0.325283477058236",
+      "lowerConfidenceInterval": "-3.02989463785434",
+      "upperConfidenceInterval": "4.35694762550734"
+    },
+    {
+      "head": "DKC60-76BR",
+      "comparison": "DKC65-52BR",
+      "differences": "-0.894444444445043",
+      "probabilityDifferences": "0.665269550810592",
+      "standardErrorDifferences": "2.00717692885281",
+      "degreesFreedom": "10.1",
+      "t": "-0.445623119510573",
+      "lowerConfidenceInterval": "-4.52872308186445",
+      "upperConfidenceInterval": "2.73983419297437"
+    },
+    {
+      "head": "DKC64-54BR",
+      "comparison": "DKC65-52BR",
+      "differences": "0.268695728395691",
+      "probabilityDifferences": "0.897789796897743",
+      "standardErrorDifferences": "2.03984075621435",
+      "degreesFreedom": "10.1",
+      "t": "0.131723874805969",
+      "lowerConfidenceInterval": "-3.42472540328516",
+      "upperConfidenceInterval": "3.96211686007654"
+    },
+    {
+      "head": "DKC65-52BR",
+      "comparison": "DKC65-52BR",
+      "differences": "0"
+    },
+    {
+      "head": "DKC65-60BR",
+      "comparison": "DKC65-52BR",
+      "differences": "0.207777777777764",
+      "probabilityDifferences": "0.919578993261427",
+      "standardErrorDifferences": "2.00717692885283",
+      "degreesFreedom": "10.1",
+      "t": "0.10351742030859",
+      "lowerConfidenceInterval": "-3.42650085964167",
+      "upperConfidenceInterval": "3.8420564151972"
+    },
+    {
+      "head": "NJ6452",
+      "comparison": "DKC65-52BR",
+      "differences": "-3.28333333333333",
+      "probabilityDifferences": "0.132624008437369",
+      "standardErrorDifferences": "2.00717692885283",
+      "degreesFreedom": "10.1",
+      "t": "-1.63579666851286",
+      "lowerConfidenceInterval": "-6.91761197075277",
+      "upperConfidenceInterval": "0.350945304086103"
+    },
+    {
+      "head": "NQ6870PGJ1",
+      "comparison": "DKC65-52BR",
+      "differences": "0.932222222222194",
+      "probabilityDifferences": "0.652179549818697",
+      "standardErrorDifferences": "2.00717692885283",
+      "degreesFreedom": "10.1",
+      "t": "0.464444468657276",
+      "lowerConfidenceInterval": "-2.70205641519724",
+      "upperConfidenceInterval": "4.56650085964163"
+    },
+    {
+      "head": "DKC60-76BR",
+      "comparison": "DKC65-60BR",
+      "differences": "-1.10222222222281",
+      "probabilityDifferences": "0.594840629284007",
+      "standardErrorDifferences": "2.00717692885281",
+      "degreesFreedom": "10.1",
+      "t": "-0.549140539819165",
+      "lowerConfidenceInterval": "-4.73650085964221",
+      "upperConfidenceInterval": "2.5320564151966"
+    },
+    {
+      "head": "DKC64-54BR",
+      "comparison": "DKC65-60BR",
+      "differences": "0.0609179506179274",
+      "probabilityDifferences": "0.976757350120312",
+      "standardErrorDifferences": "2.03984075621434",
+      "degreesFreedom": "10.1",
+      "t": "0.0298640717087066",
+      "lowerConfidenceInterval": "-3.63250318106292",
+      "upperConfidenceInterval": "3.75433908229877"
+    },
+    {
+      "head": "DKC65-52BR",
+      "comparison": "DKC65-60BR",
+      "differences": "-0.207777777777764",
+      "probabilityDifferences": "0.919578993261427",
+      "standardErrorDifferences": "2.00717692885283",
+      "degreesFreedom": "10.1",
+      "t": "-0.10351742030859",
+      "lowerConfidenceInterval": "-3.8420564151972",
+      "upperConfidenceInterval": "3.42650085964167"
+    },
+    {
+      "head": "DKC65-60BR",
+      "comparison": "DKC65-60BR",
+      "differences": "0"
+    },
+    {
+      "head": "NJ6452",
+      "comparison": "DKC65-60BR",
+      "differences": "-3.4911111111111",
+      "probabilityDifferences": "0.112308793618023",
+      "standardErrorDifferences": "2.00717692885283",
+      "degreesFreedom": "10.1",
+      "t": "-1.73931408882145",
+      "lowerConfidenceInterval": "-7.12538974853053",
+      "upperConfidenceInterval": "0.14316752630834"
+    },
+    {
+      "head": "NQ6870PGJ1",
+      "comparison": "DKC65-60BR",
+      "differences": "0.72444444444443",
+      "probabilityDifferences": "0.72558900401067",
+      "standardErrorDifferences": "2.00717692885283",
+      "degreesFreedom": "10.1",
+      "t": "0.360927048348685",
+      "lowerConfidenceInterval": "-2.909834192975",
+      "upperConfidenceInterval": "4.35872308186386"
+    },
+    {
+      "head": "DKC60-76BR",
+      "comparison": "NJ6452",
+      "differences": "2.38888888888829",
+      "probabilityDifferences": "0.261201275688895",
+      "standardErrorDifferences": "2.00717692885281",
+      "degreesFreedom": "10.1",
+      "t": "1.1901735490023",
+      "lowerConfidenceInterval": "-1.24538974853112",
+      "upperConfidenceInterval": "6.02316752630769"
+    },
+    {
+      "head": "DKC64-54BR",
+      "comparison": "NJ6452",
+      "differences": "3.55202906172902",
+      "probabilityDifferences": "0.111943361978123",
+      "standardErrorDifferences": "2.03984075621434",
+      "degreesFreedom": "10.1",
+      "t": "1.74132664567458",
+      "lowerConfidenceInterval": "-0.14139206995182",
+      "upperConfidenceInterval": "7.24545019340987"
+    },
+    {
+      "head": "DKC65-52BR",
+      "comparison": "NJ6452",
+      "differences": "3.28333333333333",
+      "probabilityDifferences": "0.132624008437369",
+      "standardErrorDifferences": "2.00717692885283",
+      "degreesFreedom": "10.1",
+      "t": "1.63579666851286",
+      "lowerConfidenceInterval": "-0.350945304086103",
+      "upperConfidenceInterval": "6.91761197075277"
+    },
+    {
+      "head": "DKC65-60BR",
+      "comparison": "NJ6452",
+      "differences": "3.4911111111111",
+      "probabilityDifferences": "0.112308793618023",
+      "standardErrorDifferences": "2.00717692885283",
+      "degreesFreedom": "10.1",
+      "t": "1.73931408882145",
+      "lowerConfidenceInterval": "-0.14316752630834",
+      "upperConfidenceInterval": "7.12538974853053"
+    },
+    {
+      "head": "NJ6452",
+      "comparison": "NJ6452",
+      "differences": "0"
+    },
+    {
+      "head": "NQ6870PGJ1",
+      "comparison": "NJ6452",
+      "differences": "4.21555555555553",
+      "probabilityDifferences": "0.061781837865578",
+      "standardErrorDifferences": "2.00717692885283",
+      "degreesFreedom": "10.1",
+      "t": "2.10024113717014",
+      "lowerConfidenceInterval": "0.581276918136092",
+      "upperConfidenceInterval": "7.84983419297496"
+    },
+    {
+      "head": "DKC60-76BR",
+      "comparison": "NQ6870PGJ1",
+      "differences": "-1.82666666666724",
+      "probabilityDifferences": "0.383991179794383",
+      "standardErrorDifferences": "2.00717692885281",
+      "degreesFreedom": "10.1",
+      "t": "-0.910067588167853",
+      "lowerConfidenceInterval": "-5.46094530408664",
+      "upperConfidenceInterval": "1.80761197075217"
+    },
+    {
+      "head": "DKC64-54BR",
+      "comparison": "NQ6870PGJ1",
+      "differences": "-0.663526493826502",
+      "probabilityDifferences": "0.751604746078376",
+      "standardErrorDifferences": "2.03984075621434",
+      "degreesFreedom": "10.1",
+      "t": "-0.325283477058236",
+      "lowerConfidenceInterval": "-4.35694762550734",
+      "upperConfidenceInterval": "3.02989463785434"
+    },
+    {
+      "head": "DKC65-52BR",
+      "comparison": "NQ6870PGJ1",
+      "differences": "-0.932222222222194",
+      "probabilityDifferences": "0.652179549818697",
+      "standardErrorDifferences": "2.00717692885283",
+      "degreesFreedom": "10.1",
+      "t": "-0.464444468657276",
+      "lowerConfidenceInterval": "-4.56650085964163",
+      "upperConfidenceInterval": "2.70205641519724"
+    },
+    {
+      "head": "DKC65-60BR",
+      "comparison": "NQ6870PGJ1",
+      "differences": "-0.72444444444443",
+      "probabilityDifferences": "0.72558900401067",
+      "standardErrorDifferences": "2.00717692885283",
+      "degreesFreedom": "10.1",
+      "t": "-0.360927048348685",
+      "lowerConfidenceInterval": "-4.35872308186386",
+      "upperConfidenceInterval": "2.909834192975"
+    },
+    {
+      "head": "NJ6452",
+      "comparison": "NQ6870PGJ1",
+      "differences": "-4.21555555555553",
+      "probabilityDifferences": "0.061781837865578",
+      "standardErrorDifferences": "2.00717692885283",
+      "degreesFreedom": "10.1",
+      "t": "-2.10024113717014",
+      "lowerConfidenceInterval": "-7.84983419297496",
+      "upperConfidenceInterval": "-0.581276918136092"
+    },
+    {
+      "head": "NQ6870PGJ1",
+      "comparison": "NQ6870PGJ1",
+      "differences": "0"
+    }
+  ],
+  "anova": [
+    {
+      "degreesFreedomNumerator": "1",
+      "degreesFreedomDenominator": "2",
+      "ssIncremental": "335.5",
+      "ssConditional": "335.5",
+      "margin": " ",
+      "probability": "0.00297097263116197",
+      "_row": "(Intercept)"
+    },
+    {
+      "degreesFreedomNumerator": "5",
+      "degreesFreedomDenominator": "10.1",
+      "ssIncremental": "1.117",
+      "ssConditional": "1.117",
+      "margin": "A",
+      "probability": "0.410000308374304",
+      "_row": "SeedProductName"
+    }
+  ],
+  "varianceComposition": [
+    {
+      "varianceEstimates": "6.9665641973068",
+      "constraint": "Positive",
+      "_row": "FieldName"
+    },
+    {
+      "varianceEstimates": "3.72818463350742",
+      "constraint": "Positive",
+      "_row": "FieldName:SeedProductName"
+    },
+    {
+      "varianceEstimates": "5.07772336159442",
+      "constraint": "Positive",
+      "_row": "FieldName:RepNumber"
+    },
+    {
+      "varianceEstimates": "6.94486198342872",
+      "constraint": "Positive",
+      "_row": "residual"
+    }
+  ],
+  "leastSignificantDifference": [
+    {
+      "Out_return[[i]]": "3.65399280217323"
+    }
+  ]
+}

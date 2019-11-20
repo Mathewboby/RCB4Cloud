@@ -3,7 +3,7 @@
 # Load needed packages
 suppressMessages(library(jsonlite, quietly=TRUE))
 suppressMessages(library(aws.s3,   quietly=TRUE))
-suppressMessages(install.packages('dae',repos = "http://cran.wustl.edu/"))
+devtools::install_version("dae", version = "3.0-23", repos = "https://cran.r-project.org")
 asremlPlusURL <- "http://cran.wustl.edu//src/contrib/Archive/asremlPlus/asremlPlus_2.0-12.tar.gz"
 suppressMessages(install.packages(asremlPlusURL,repos=NULL,type="source"))
 suppressMessages(library(asreml,     quietly=TRUE))

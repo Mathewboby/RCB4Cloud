@@ -186,8 +186,6 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
   ## for degree of freedom
   DDoF_ <- ALL[[1]][,2]
   DDoF <- DDoF_[2]
-  print("sL188 print DDoF_")
-  print(DDoF_)
 
   ## for variance component table
   VAR=summary(asreml.obj)$varcomp
@@ -228,8 +226,6 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
   if (exists("adjusted_control_name", envir = .GlobalEnv)){
     levels(LSM$factorLevelId)[levels(LSM$factorLevelId) == adjusted_control_name] <- control_level
   }
-  print("sL230  DDoF_")
-  print(DDoF_)
   return(list(LSM, DDoF_, AOV, VAR))
 }
 
@@ -288,8 +284,7 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
 
   diffs_out <- asremlPlus::predictiondiffs.asreml( classify = FACTOR_1,
                                        alldiffs.obj = test_diffs ,alpha =alpha )
-  print("sL290 asreml LSD min man and max")
-  print(diffs_out$LSD)
+
   # Fix the potential re-ordering issue
   correct_order_names <- as.character( diffs_out$predictions[,1] )
   rownames( diffs_out$differences ) <- colnames( diffs_out$differences ) <- correct_order_names
@@ -315,7 +310,7 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
   # msg=MSG(treatment=as.character(RCB_asr$predictions$pvals[,1])[order(LSM,decreasing =T)],means=LSM[order(LSM,decreasing =T)],alpha=alpha,pvalue=diffs_out$p.differences,console=F)
   msg=MSG(diffs_out$p.differences,alpha)
 
-  return(list('Delta_table'=out_data,'Mean Separation Grouping'=msg)) #, 'LSD'=diffs_out$LSD))
+  return(list('Delta_table'=out_data,'Mean Separation Grouping'=msg, 'LSD'=diffs_out$LSD$meanLSD))
 }
 
 
