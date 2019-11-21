@@ -42,20 +42,19 @@
 #'
 #' @param DataIn                      a dataframe with observation data. Column names should match those specified below in the column name arguments.
 #' @param params.input         a named list giving values for the following nine arguments.
-#' @param alpha                       a number between 0 and 1 specifying the confidence level and comparison significance
-#' @param value  a sting giving the column name of the response variable in DataIn
-#' @param subSiteId           a sting giving the column name of the field ID variable in DataIn
-#' @param factorLevelId   a sting giving the column name of the treatment variable in DataIn
-#' @param repId       a sting giving the column name of the rep ID variable in DataIn
-#' @param locationId
-#' @param questionCode
-#' @param isDsrDeactivated
-#' @param isQaqcDeactivated
-#' @param isAnswerDeactivated
-#' @param isSetEntryDeactivated
-#' @param entryId
-#' @param sufficientDataThreshold     a number giving the lower bound on the number of data values to be analyzed
-#' @param positiveValueCheck a logical. If TRUE, then response variable values <= 0 are treated as missing or deactivated data.
+# @param alpha                       a number between 0 and 1 specifying the confidence level and comparison significance
+# @param value  a sting giving the column name of the response variable in DataIn
+# @param subSiteId           a sting giving the column name of the field ID variable in DataIn
+# @param factorLevelId   a sting giving the column name of the treatment variable in DataIn
+# @param repId       a sting giving the column name of the rep ID variable in DataIn
+# @param locationId
+# @param questionCode
+# @param isDsrDeactivated
+# @param isQaqcDeactivated
+# @param isAnswerDeactivated
+# @param isSetEntryDeactivated
+# @param entryId
+# @param sufficientDataThreshold     a number giving the lower bound on the number of data values to be analyzed
 #' @return A list with several components for the fit model, if analysisType is "P1", "P2" or "P4", returned list includes delta table, LS table, ANOVA table for fixed effects, variance component table and residual table; if analysisType is "P3" or "P5", returned list includes LS table, variance component table, residual table and BLUP table for factor1
 #'
 # @importFrom asreml asreml - may not need this
@@ -88,17 +87,6 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
   obs.name <-  unique(DataIn[,params.list$questionCode])
 
   print(paste0('current question code ', obs.name))
-
-  if(length(obs.name) > 1){
-    err <- 'multiple question codes detected'
-    Out_return <- list(lsmTable = NA, deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
-    return(Out_return)
-  }
-  if(positiveValueCheck==TRUE & sum(DataIn[,value]<=0) > 1){
-    err <- "RCB_Data<=0"
-    Out_return <- list(lsmTable = NA, deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
-    return(Out_return)
-  }
 
   data <- DataIn
   # This is currently a fixed limit determined by commitee.  TODO: It should be based on the number of treatment levels and blocks
@@ -172,19 +160,11 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
   message("finished in ", round(difftime(Sys.time(), start, units = time.scale[1]), digits = 2), " ", time.scale)
   message("Creating output files...", appendLF = TRUE)
 
-  # Out_return$console$modeling <- RCB_asr
-
   if (analysisType %in% c('P3','P5') ) {
     # LS Means
-    Out_return$lsmTable <- lsmAnalysis_r(RCB_asr, data)
+    Out_return$blupTable <- lsmAnalysis_r(RCB_asr, data)
     ## ANOVA table
     Out_return$varianceAnalysis <- ANOVA_output_r(RCB_asr)
-    ## add residual tables
-    # Out_return$residuals <- resid_table(RCB_asr,data)
-    # colnames(Out_return$residuals) <- c('residuals',FIELD_ID,REP_ID)
-    ## add blup table for random effects
-    # Out_return$BLUP <- as.matrix(blup_table(RCB_asr,analysisType))
-    # colnames(Out_return$BLUP) <- c('BLUP for random effects')
   }
 
   if (analysisType %in% c('P1','P2','P4') ) {
@@ -192,12 +172,12 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
     # to use wald.asreml() only once to save computational time
     LSM_ALL <- lsmAnalysis(RCB_asr, data, alpha=alpha)
     # basic LSM table
-    Out_return$lsmTable <- LSM_ALL[[1]]
+    Out_return$blueTable <- LSM_ALL[[1]]
     # Degrees of freedom
     degrees_freedom = LSM_ALL[[2]]  ## a vector including all the fixed effect
     if(is.na(degrees_freedom[2])){
       err <- 'failed delta analysis:  undefined degrees of freedom'
-      Out_return <- list(lsmTable = NA, deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
+      Out_return <- list(blueTable = NA, deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
       return(Out_return)
       }
     del <- deltaAnalysis(RCB_asr,alpha=alpha, degrees_freedom[2])
@@ -205,10 +185,10 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
     Out_return$deltas <- del[[1]]
     # Mean Separation Grouping
     meanSeparationGroup <- del[[2]]
-    ## combine lsmTable and MSG
-    Out_return$lsmTable <- cbind(Out_return$lsmTable, meanSeparationGroup)
+    ## combine blueTable and MSG
+    Out_return$blueTable <- cbind(Out_return$blueTable, meanSeparationGroup)
     ## sort by descending order
-    Out_return$lsmTable <- Out_return$lsmTable[order(Out_return$lsmTable$value,decreasing = TRUE),]
+    Out_return$blueTable <- Out_return$blueTable[order(Out_return$blueTable$value,decreasing = TRUE),]
     ## ANOVA table
     Out_return$anova <- LSM_ALL[[3]]
     Out_return$varianceComposition <- LSM_ALL[[4]]

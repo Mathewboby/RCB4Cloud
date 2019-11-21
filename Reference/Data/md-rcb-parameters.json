@@ -1,0 +1,16 @@
+{
+  "analysisType": "P1",
+  "alpha": 0.1,
+  "repId": "RepNumber",
+  "value": "ObservationValueNumeric",
+  "subSiteId": "FieldName",
+  "locationId": "locationId",
+  "questionCode": "ObservationNameAbbrev",
+  "factorLevelId": "SeedProductName",
+  "isDsrDeactivated": "isDsrDeactivated",
+  "isQaqcDeactivated": "isQaqcDeactivated",
+  "isAnswerDeactivated": "isAnswerDeactivated",
+  "isSetEntryDeactivated": "isSetEntryDeactivated",
+  "sufficientDataThreshold": 20,
+  "positiveValueCheck": true
+}

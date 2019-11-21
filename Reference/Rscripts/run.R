@@ -4,21 +4,23 @@ suppressMessages(library(jsonlite, quietly=TRUE))
 suppressMessages(library(aws.s3,   quietly=TRUE))
 #suppressMessages(install.packages('dae',repos = "http://cran.wustl.edu/"))
 devtools::install_version("dae", version = "3.0-23", repos = "https://cran.r-project.org")
+suppressMessages(library(asreml,     quietly=TRUE))
 asremlPlusURL <- "http://cran.wustl.edu//src/contrib/Archive/asremlPlus/asremlPlus_2.0-12.tar.gz"
 suppressMessages(install.packages(asremlPlusURL,repos=NULL,type="source"))
-suppressMessages(library(asreml,     quietly=TRUE))
 suppressMessages(library(asremlPlus, quietly=TRUE))
-options(digits = 20)
+#options(digits = 20)
 # Source code to be tested.
 source('/repos/RCB4Cloud/R/RCB_SupportFunctions.R')
 source('/repos/RCB4Cloud/R/RCB_MainFunction.R')
 
 params.in                 <- fromJSON('Reference/Data/parameters-rcb-md.json')
 params.in$sufficientDataThreshold <- 18 # Is 20 but for the sake of the tests below reset to 18.
+
 data.mlmr                 <- fromJSON('Reference/Data/input-rcb-md.json')
 data.mlmr$SeedProductName <- as.factor(data.mlmr$SeedProductName)
 data.mlmr$FieldName       <- as.factor(data.mlmr$FieldName)
 data.mlmr$RepNumber       <- as.factor(data.mlmr$RepNumber)
+
 mlmrcc                    <- complete.cases(data.mlmr[,c("ObservationValueNumeric","FieldName","RepNumber","SeedProductName")])
 mlmrdup                   <- duplicated(data.mlmr[,c("ObservationValueNumeric","FieldName","RepNumber","SeedProductName")])
 data.mlmr <- droplevels(data.mlmr[mlmrcc == TRUE & mlmrdup == FALSE, ])
@@ -42,6 +44,10 @@ length(unique(data.slmr$FieldName))       # returns 1
 length(unique(data.slmr$RepNumber))       # returns 3
 
 ### MLMR model fit (P4)
+params.in$sufficientDataThreshold <- nrow(data.mlmr)
+zp4o <- RCB_ModelFittingFunction(data.mlsr, params.in, analysisType = 'P4')
+zp5o <- RCB_ModelFittingFunction(data.mlsr, params.in, analysisType = 'P5')
+
 resultsmlmr    <- RCB_ModelFittingFunction(data.mlmr, params.in, analysisType = 'P4')
 # MLMR LSD using params.in$alpha (default is 0.1)
 lsdmlmrasreml  <- c(3.634279, 3.693421)
@@ -49,7 +55,7 @@ DDoFmlmr       <- as.numeric(resultsmlmr$deltas$degreesFreedom[is.na(resultsmlmr
 tvalmlmr       <- qt(1-params.in$alpha/2, DDoFmlmr)
 deltaSEmlmr_MinMax <- range(as.numeric(resultsmlmr$deltas$standardErrorDifferences),na.rm=TRUE)
 lsdmlmrcalc        <- tvalmlmr*deltaSEmlmr_MinMax
-round(lsdmlmrasreml - lsdmlmrcalc,3)  # Returns 0 0
+round(lsdmlmrasreml - lsdmlmrcalc, 3)  # Returns 0 0
 lsdTableMLMR <- outer(qt(1 - c(0.2, 0.1, 0.05)/2, DDoFmlmr), deltaSEmlmr_MinMax, "*")
 rownames(lsdTableMLMR) <- c("80%LSD","90%LSD","95%LSD")
 colnames(lsdTableMLMR) <- c("Min","Max")
@@ -73,6 +79,10 @@ CVmlmrRMSELSMean <- sqrt(mlmrMSE)/lsmMean
 c(CVmlmr_SdMean, CVmlmr_RMSEMean, CVmlmrRMSELSMean) # returns 0.15026940 0.08077443 0.08009349
 
 ### MLSR model fit (P2)
+params.in$sufficientDataThreshold <- nrow(data.mlsr)
+zp2o <- RCB_ModelFittingFunction(data.mlsr, params.in, analysisType = 'P2')
+zp3o <- RCB_ModelFittingFunction(data.mlsr, params.in, analysisType = 'P3')
+
 resultsmlsr <- RCB_ModelFittingFunction(data.mlsr, params.in, analysisType = 'P2')
 # MLSR LSD using params.in$alpha (default is 0.1)
 lsdmlsrasreml  <- c(2.712476, 2.712476)
@@ -80,7 +90,7 @@ DDoFmlsr       <- as.numeric(resultsmlsr$deltas$degreesFreedom[is.na(resultsmlsr
 tvalmlsr       <- qt(1-params.in$alpha/2, DDoFmlsr)
 deltaSEmlsr_MinMax <- range(as.numeric(resultsmlsr$deltas$standardErrorDifferences),na.rm=TRUE)
 lsdmlsrcalc        <- tvalmlsr*deltaSEmlsr_MinMax
-round(lsdmlsrasreml - lsdmlsrcalc,3)  # Returns 0 0
+round(lsdmlsrasreml - lsdmlsrcalc, 3)  # Returns 0 0
 lsdTableMLSR <- outer(qt(1 - c(0.2, 0.1, 0.05)/2, DDoFmlsr), deltaSEmlsr_MinMax, "*")
 rownames(lsdTableMLSR) <- c("80%LSD","90%LSD","95%LSD")
 colnames(lsdTableMLSR) <- c("Min","Max")
@@ -228,5 +238,14 @@ anova(zlmSLMRRefit)
 #
 ##
 ###
+dataRM  <- fromJSON("/repos/RCB4Cloud/Reference/Data/md-rcb-input.json")
+paramRM <- fromJSON("/repos/RCB4Cloud/Reference/Data/md-rcb-parameters.json")
 
+rmp4o <- RCB_ModelFittingFunction(dataRM, paramRM, analysisType = 'P4')
+rmp5o <- RCB_ModelFittingFunction(dataRM, paramRM, analysisType = 'P5')
 
+dataJM  <- fromJSON("/repos/RCB4Cloud/Reference/Data/JamanInput.json")$data
+paramJM <- fromJSON("/repos/RCB4Cloud/Reference/Data/JamanParameters.json")
+
+jmp4o <- RCB_ModelFittingFunction(dataJM, paramJM, analysisType = 'P2')
+jmp5o <- RCB_ModelFittingFunction(dataJM, paramJM, analysisType = 'P3')

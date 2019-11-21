@@ -157,8 +157,6 @@ setFixedRandomEffects <- function(analysis_type){
   )
 }
 
-
-
 #' Computes the LS means analysis for model P1, P2 and P4
 #' @param asreml.obj A fitted ASReml object
 #' @param data A dataframe that contains the data used to create the ASReml object
@@ -169,20 +167,10 @@ setFixedRandomEffects <- function(analysis_type){
 
 
 lsmAnalysis <- function(asreml.obj, data, alpha){
-  # residual degrees of freedom
-  # dm <- Matrix::sparse.model.matrix(fixed_formula, data) #sparse design matrix
-  #        n   -               # missing_obs              -              rank(X)
-  # DDoF <- nrow(dm) - Matrix::rankMatrix(x = dm, method = "qr.R")[[1]]
 
-
-
-  ## WARNING: here if you don't specifiy data=data, it will return error, because the "denDF = xx" argument here
-  ##          calls update() in the backgroud to calculate the df for denominator, if you don't specify the "data=data"
-  ##          it will by default search in the global enviroment. With all being said, you need to specify the data name in the local enviroment.
-
+# Calculate lsm results
   ALL=asreml::wald.asreml(asreml.obj, denDF ="default", ssType= "conditional",data=data)
-  # denDF = ("none", "default", "numeric", "algebraic"),
-  # ssType = ("incremental", "conditional")
+
   ## for degree of freedom
   DDoF_ <- ALL[[1]][,2]
   DDoF <- DDoF_[2]
@@ -202,7 +190,6 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
   ## for fix effect ANOVA table
   AOV <- ALL[[1]]
   colnames(AOV) <- c("degreesFreedomNumerator","degreesFreedomDenominator","ssIncremental","ssConditional","margin","probability")
-  # rownames(AOV) <- c("factorLevelId", "intercept")
 
   ## for LSM table
   LSM <- data.frame(
@@ -213,11 +200,11 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
   )
 
   ## count N in each Entry level with missing removed.
-  N<-rep(NA,length(LSM$factorLevelId))
-  for (i in 1:length(LSM$factorLevelId)) {
-    N[i]=nrow(data[data[,FACTOR_1]==LSM$factorLevelId[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$factorLevelId[i],CROP_OBSRVTN_DETAIL_ID]))
-  }
-  LSM$n <- N
+  spdata <- split(data, data[,FACTOR_1])
+  zcnt   <- sapply(spdata, nrow)
+  zisna  <- sapply(spdata, function(zy){sum(is.na(zy))})
+  zdf    <- data.frame(factorLevelId=names(spdata),count=(zcnt-zisna))
+  LSM    <- merge(LSM, zdf, by="factorLevelId")
 
   # create the CI
   LSM$lowerConfidenceInterval <- LSM$value - qt(1 - alpha / 2, DDoF) * LSM$standardError
@@ -244,11 +231,11 @@ lsmAnalysis_r <- function(RCB_asr, data){
   )
 
   ## count N in each Entry level with missing removed.
-  N<-rep(NA,length(LSM$value))
-  for (i in 1:length(LSM$value)) {
-    N[i]=nrow(data[data[,FACTOR_1]==LSM$value[i],])-sum(is.na(data[data[,FACTOR_1]==LSM$value[i],CROP_OBSRVTN_DETAIL_ID]))
-  }
-  LSM$n<-N
+  spdata <- split(data, data[,FACTOR_1])
+  zcnt   <- sapply(spdata, nrow)
+  zisna  <- sapply(spdata, function(zy){sum(is.na(zy))})
+  zdf    <- data.frame(factorLevelId=names(spdata),count=(zcnt-zisna))
+  LSM    <- merge(LSM, zdf, by="factorLevelId")
 
 
   ##replace adjusted control name with actual control name
