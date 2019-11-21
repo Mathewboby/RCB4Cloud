@@ -273,29 +273,26 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
                                        alldiffs.obj = test_diffs ,alpha =alpha )
 
   # Fix the potential re-ordering issue
-  correct_order_names <- as.character( diffs_out$predictions[,1] )
-  rownames( diffs_out$differences ) <- colnames( diffs_out$differences ) <- correct_order_names
+  correct_order_names                 <- as.character( diffs_out$predictions[,1] )
+  rownames( diffs_out$differences )   <- colnames( diffs_out$differences )   <- correct_order_names
   rownames( diffs_out$p.differences ) <- colnames( diffs_out$p.differences ) <- correct_order_names
-  rownames( diffs_out$sed ) <- colnames( diffs_out$sed ) <- correct_order_names
+  rownames( diffs_out$sed )           <- colnames( diffs_out$sed )           <- correct_order_names
 
   # Output the data as a data table
-  out_data <- merge( correct_order_names, correct_order_names )
-  names( out_data ) <- c("head", "comparison")
-  out_data$differences <- as.vector( diffs_out$differences )
-  out_data$probabilityDifferences <- as.vector( diffs_out$p.differences )
+  out_data                          <- merge( correct_order_names, correct_order_names )
+  names( out_data )                 <- c("head", "comparison")
+  out_data$differences              <- as.vector( diffs_out$differences )
+  out_data$probabilityDifferences   <- as.vector( diffs_out$p.differences )
   out_data$standardErrorDifferences <- as.vector( diffs_out$sed )
-  out_data$degreesFreedom <- rep( total_df,nrow(out_data) );
+  out_data$degreesFreedom           <- rep( total_df,nrow(out_data) );
   out_data$degreesFreedom[is.na(out_data[,'probabilityDifferences'])] <- NA
-  out_data$t <- as.vector( diffs_out$differences/diffs_out$sed )
+  out_data$t                       <- as.vector( diffs_out$differences/diffs_out$sed )
   out_data$lowerConfidenceInterval <- out_data$differences - qt(1 - alpha / 2, out_data$degreesFreedom) * out_data$standardErrorDifferences
   out_data$upperConfidenceInterval <- out_data$differences + qt(1 - alpha / 2, out_data$degreesFreedom) * out_data$standardErrorDifferences
 
   ## the diagonal shouldn't be NA, set it as p-value = 1
-  diag(diffs_out$p.differences)=1
-  # MSG
-  # msg=agricolae::orderPvalue(treatment=RCB_asr$predictions$pvals[,1],means=RCB_asr$predictions$pvals[,2],alpha=alpha,pvalue=diffs_out$p.differences,console=F)
-  # msg=MSG(treatment=as.character(RCB_asr$predictions$pvals[,1])[order(LSM,decreasing =T)],means=LSM[order(LSM,decreasing =T)],alpha=alpha,pvalue=diffs_out$p.differences,console=F)
-  msg=MSG(diffs_out$p.differences,alpha)
+  diag(diffs_out$p.differences)    <- 1
+  msg                              <- MSG(diffs_out$p.differences,alpha)
 
   return(list('Delta_table'=out_data,'Mean Separation Grouping'=msg, 'LSD'=diffs_out$LSD$meanLSD))
 }
