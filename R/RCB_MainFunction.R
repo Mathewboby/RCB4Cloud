@@ -76,13 +76,9 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
   print(paste0('analyzing ', nrow(DataIn), ' rows'))
   # create unique repId
   DataIn$holdRepId <- DataIn[params.list$repId]
-  temp <- paste(DataIn[,params.list$repId], DataIn[,params.list$locationId], sep = "_")
+  temp <- paste(DataIn[,params.list$repId], DataIn[,params.list$subSiteId], sep = "_")
   DataIn[,params.list$repId] <- temp
-
-  DataIn$holdRepId <- DataIn[,params.list$repId]
-  temp <- paste(DataIn[,params.list$repId],
-                DataIn[,params.list$locationId], sep = "_")
-  DataIn[,params.list$repId] <- temp
+  DataIn$errorMessage <- ""
 
   obs.name <-  unique(DataIn[,params.list$questionCode])
 
@@ -91,14 +87,19 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
   data <- DataIn
   # This is currently a fixed limit determined by commitee.  TODO: It should be based on the number of treatment levels and blocks
   if(nrow(data) < sufficientDataThreshold){
-    txt1 <- "Error: there are too few data (n<sufficientDataThreshold) to run an RCB model. Data frame has n = "
-    txt2 <- paste0(txt1,nrow(data))
-    txt3 <- paste0(txt2," rows and sufficientDataThreshold = ")
-    txt4 <- paste0(txt3,sufficientDataThreshold)
-    message(txt4)
+    DataIn$errorMessage        <- "Insufficient data"
+    DataIn[,params.list$repId] <- DataIn$holdRepId
+    DataIn$holdRepId           <- NULL
+    DataIn[]                   <- lapply(DataIn, as.character)
     return(DataIn)
   }
-
+  if(length(unique(DataIn[, params.list$factorLevelId]))<2){
+    DataIn[,params.list$repId] <- DataIn$holdRepId
+    DataIn$holdRepId           <- NULL
+    DataIn[]                   <- lapply(DataIn, as.character)
+    DataIn$errorMessage        <- "Single factor level"
+    return(DataIn)
+  }
   # Initialize output variable
   Out_return <- NULL
 
@@ -197,8 +198,8 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
   ##  convert output to strings
   out.list <- list()
   for(i in 1:length(Out_return)){
-    curr.df <- as.data.frame(Out_return[[i]])
-    curr.df[] <- lapply(curr.df, as.character)
+    curr.df       <- as.data.frame(Out_return[[i]])
+    curr.df[]     <- lapply(curr.df, as.character)
     out.list[[i]] <- curr.df
   }
   names(out.list) <- names(Out_return)

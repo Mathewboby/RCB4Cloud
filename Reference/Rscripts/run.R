@@ -247,5 +247,5 @@ rmp5o <- RCB_ModelFittingFunction(dataRM, paramRM, analysisType = 'P5')
 dataJM  <- fromJSON("/repos/RCB4Cloud/Reference/Data/JamanInput.json")$data
 paramJM <- fromJSON("/repos/RCB4Cloud/Reference/Data/JamanParameters.json")
 
-jmp4o <- RCB_ModelFittingFunction(dataJM, paramJM, analysisType = 'P2')
-jmp5o <- RCB_ModelFittingFunction(dataJM, paramJM, analysisType = 'P3')
+jmp2o <- RCB_ModelFittingFunction(dataJM, paramJM, analysisType = 'P2')
+jmp3o <- RCB_ModelFittingFunction(dataJM, paramJM, analysisType = 'P3')
