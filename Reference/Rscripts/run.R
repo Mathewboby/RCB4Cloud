@@ -238,12 +238,52 @@ anova(zlmSLMRRefit)
 #
 ##
 ###
+
+##### Use Randall's data ##############
+#######################################
+
 dataRM  <- fromJSON("/repos/RCB4Cloud/Reference/Data/md-rcb-input.json")
 paramRM <- fromJSON("/repos/RCB4Cloud/Reference/Data/md-rcb-parameters.json")
 
 rmp4o <- RCB_ModelFittingFunction(dataRM, paramRM, analysisType = 'P4')
 rmp5o <- RCB_ModelFittingFunction(dataRM, paramRM, analysisType = 'P5')
 
+blue <- rmp4o$blueTable
+for(k in 2:7){blue[,k] <- as.numeric(blue[,k])}
+bluetValue_ParamAlpha <- qt(1-paramRM$alpha/2, blue$degreesFreedom)
+blueCiHalfWidth       <- bluetValue_ParamAlpha*blue$standardError
+blueLowerCiLimit      <- blue$value - blueCiHalfWidth
+blueUpperCiLimit      <- blue$value + blueCiHalfWidth
+
+blue$mtLowerCiPa <- blueLowerCiLimit
+blue$mtUpperCiPa <- blueUpperCiLimit
+blue <- blue[, c(1:6,9,7,10,8)]  # reorder columns so my confidence intervals estimates are next to those calculated by RCBFittingFunction
+
+dlt                  <- rmp4o$deltas[complete.cases(rmp4o$deltas),]
+for(k in 3:9){dlt[,k] <- as.numeric(dlt[,k])}
+diftValue_ParamAlpha <- qt(1-paramRM$alpha/2, dlt$degreesFreedom)
+difCiHalfWidth       <- diftValue_ParamAlpha*dlt$standardErrorDifferences
+difLowerCiLimit      <- dlt$differences - difCiHalfWidth
+difUpperCiLimit      <- dlt$differences + difCiHalfWidth
+
+dlt$mtLowerCiPa <- difLowerCiLimit
+dlt$mtUpperCiPa <- difUpperCiLimit
+dlt <- dlt[, c(1:7,8,10,9,11)]  # reorder columns so my confidence intervals estimates are next to those calculated by RCBFittingFunction
+names(dlt) <- c("head", "comparison", "difference", "ProbDiffNE0", "diffSe", "degreesFreedom", "tTest_diff/se",
+                "lowerCi", "mtLowerCiPa", "upperCi",  "mtUpperCiPa")
+
+# Calculate the LSD
+lsdDif    <- mean(difCiHalfWidth)
+# c(as.numeric(rmp4o$leastSignificantDifference$mean), lsdDif)
+# round(as.numeric(rmp4o$leastSignificantDifference$mean)-lsdDif, 14)
+lsd       <- rmp4o$leastSignificantDifference
+lsd$mtLsd <- as.character(lsdDif)
+
+outputlist <- list(blueTable=blue, deltaTable=dlt, lsdTable=lsd)
+write_json(outputlist, "/repos/RCB4Cloud/Reference/Data/AlphaCalcDemo.json", pretty=TRUE, auto_unbox=TRUE, digits=12, na='string')
+
+##### Use Jaman's data ##############
+#####################################
 dataJM  <- fromJSON("/repos/RCB4Cloud/Reference/Data/JamanInput.json")$data
 paramJM <- fromJSON("/repos/RCB4Cloud/Reference/Data/JamanParameters.json")
 
