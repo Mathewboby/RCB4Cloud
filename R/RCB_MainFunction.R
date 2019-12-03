@@ -88,7 +88,7 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
 
   if(length(unique(DataIn[, params.list$factorLevelId])) < 2){
     errorMessage        <- "Single factor level"
-    return()
+    return(errorMessage)
   }
 
   # create unique repId
@@ -162,7 +162,7 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
     # LS Means
     Out_return$blupTable <- lsmAnalysis_r(RCB_asr, data)
     ## ANOVA table
-    Out_return$varianceComponents <- ANOVA_output_r(RCB_asr)
+    Out_return$varianceAnalysis <- ANOVA_output_r(RCB_asr)
   }
 
   if (analysisType %in% c('P1','P2','P4') ) {
@@ -189,7 +189,7 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
     Out_return$blueTable <- Out_return$blueTable[order(Out_return$blueTable$value,decreasing = TRUE),]
     ## ANOVA table
     Out_return$anova <- LSM_ALL[[3]]
-    Out_return$varianceComponents <- LSM_ALL[[4]]
+    Out_return$varianceComposition <- LSM_ALL[[4]]
     Out_return$leastSignificantDifference <- data.frame(mean=del$LSD)
   }
   ##  convert output to strings
