@@ -68,38 +68,35 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
   mapply(assign, names(params.list), params.list, MoreArgs = list(envir = .GlobalEnv))
   print(paste0('input ', nrow(DataIn), ' rows'))
 
+  obs.name <-  unique(DataIn[,params.list$questionCode])
+  print(paste0('current question code ', obs.name))
+
+
   DataIn <- DataIn[(DataIn[,params.list$isQaqcDeactivated]       == FALSE &
                       DataIn[,params.list$isDsrDeactivated]      == FALSE &
                       DataIn[,params.list$isAnswerDeactivated]   == FALSE &
                       DataIn[,params.list$isSetEntryDeactivated] == FALSE),]
 
   print(paste0('analyzing ', nrow(DataIn), ' rows'))
+
+  data <- DataIn
+  # This is currently a fixed limit determined by commitee.  TODO: It should be based on the number of treatment levels and blocks
+  if(nrow(data) < sufficientDataThreshold){
+    errorMessage        <- "Insufficient data"
+    return(errorMessage)
+  }
+
+  if(length(unique(DataIn[, params.list$factorLevelId])) < 2){
+    errorMessage        <- "Single factor level"
+    return()
+  }
+
   # create unique repId
   DataIn$holdRepId <- DataIn[params.list$repId]
   temp <- paste(DataIn[,params.list$repId], DataIn[,params.list$subSiteId], sep = "_")
   DataIn[,params.list$repId] <- temp
   DataIn$errorMessage <- ""
 
-  obs.name <-  unique(DataIn[,params.list$questionCode])
-
-  print(paste0('current question code ', obs.name))
-
-  data <- DataIn
-  # This is currently a fixed limit determined by commitee.  TODO: It should be based on the number of treatment levels and blocks
-  if(nrow(data) < sufficientDataThreshold){
-    DataIn$errorMessage        <- "Insufficient data"
-    DataIn[,params.list$repId] <- DataIn$holdRepId
-    DataIn$holdRepId           <- NULL
-    DataIn[]                   <- lapply(DataIn, as.character)
-    return(DataIn)
-  }
-  if(length(unique(DataIn[, params.list$factorLevelId]))<2){
-    DataIn[,params.list$repId] <- DataIn$holdRepId
-    DataIn$holdRepId           <- NULL
-    DataIn[]                   <- lapply(DataIn, as.character)
-    DataIn$errorMessage        <- "Single factor level"
-    return(DataIn)
-  }
   # Initialize output variable
   Out_return <- NULL
 
@@ -165,7 +162,7 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
     # LS Means
     Out_return$blupTable <- lsmAnalysis_r(RCB_asr, data)
     ## ANOVA table
-    Out_return$varianceAnalysis <- ANOVA_output_r(RCB_asr)
+    Out_return$varianceComponents <- ANOVA_output_r(RCB_asr)
   }
 
   if (analysisType %in% c('P1','P2','P4') ) {
@@ -192,7 +189,7 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
     Out_return$blueTable <- Out_return$blueTable[order(Out_return$blueTable$value,decreasing = TRUE),]
     ## ANOVA table
     Out_return$anova <- LSM_ALL[[3]]
-    Out_return$varianceComposition <- LSM_ALL[[4]]
+    Out_return$varianceComponents <- LSM_ALL[[4]]
     Out_return$leastSignificantDifference <- data.frame(mean=del$LSD)
   }
   ##  convert output to strings

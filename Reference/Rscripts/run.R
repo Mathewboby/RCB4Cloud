@@ -3,6 +3,7 @@
 suppressMessages(library(jsonlite, quietly=TRUE))
 suppressMessages(library(aws.s3,   quietly=TRUE))
 #suppressMessages(install.packages('dae',repos = "http://cran.wustl.edu/"))
+install.packages("dplyr")
 devtools::install_version("dae", version = "3.0-23", repos = "https://cran.r-project.org")
 suppressMessages(library(asreml,     quietly=TRUE))
 asremlPlusURL <- "http://cran.wustl.edu//src/contrib/Archive/asremlPlus/asremlPlus_2.0-12.tar.gz"
@@ -44,7 +45,6 @@ length(unique(data.slmr$FieldName))       # returns 1
 length(unique(data.slmr$RepNumber))       # returns 3
 
 ### MLMR model fit (P4)
-params.in$sufficientDataThreshold <- nrow(data.mlmr)
 zp4o <- RCB_ModelFittingFunction(data.mlsr, params.in, analysisType = 'P4')
 zp5o <- RCB_ModelFittingFunction(data.mlsr, params.in, analysisType = 'P5')
 
