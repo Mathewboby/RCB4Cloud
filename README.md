@@ -12,13 +12,32 @@ To do the analysis, only data which is NOT flagged by either DSR or QAQC is used
 
 The output from the module is a list of three to four tables depending on which estimation method was used.
 
-Under BLUE estimation There is a table of the Treatment level mean response with level sample sizes, degrees of freedom, standard errors and confidence intervals.  A similar table of all possible differences between the treatment level mean estimates minus the column od sample sizes.  An analysis-of-variance table for the treatment factor and a table of the variance components estimates are both provided.  The analysis-of-variance table contains the formal statistical test for any significant differences between the treatment levels.  The variance component table contains the estimates of the variances associated with each random term in the model.  For models P1 and P2 this will be two numbers, one for the variance of the blocking factor and one for the residual variance; for model P4, this will contain four numbers: one for subsites, one for reps within subsites, one for treatments by subsite interaction and one for the residual variance.
+Under BLUE estimation 
+There is a table of the Treatment level mean response with level sample sizes, degrees of freedom, standard errors and confidence intervals.  
+    "blueTable": [
+    {
+      "factorLevelId": "SS8027",
+      "value": "24.6367687770914",
+      "standardError": "1.64621386967149",
+      "degreesFreedom": "35.8",
+      "count": "14",
+      "lowerConfidenceInterval": "21.8570595881111",
+      "upperConfidenceInterval": "27.4164779660716",
+      "meanSeparationGroup": "a"
+    },}
+    
 
-Under BLUP estimation, the table of treatment level mean estimates is provided as in the BLUE case but without the degrees-of-freedom, standard errors and confidence intervals.  No table of differences is created nor is there an analysis-of-variance table.  The variance component table also includes a variance estimate for the treatment factor.
+A similar table of all possible differences between the treatment level mean estimates minus the column od sample sizes.  
 
-The input data frame is not returned.
+An analysis-of-variance table for the treatment factor and a table of the variance components estimates are both provided.  The analysis-of-variance table contains the formal statistical test for any significant differences between the treatment levels.  
 
-Note: In Phase I, only three response variables are planned to be spatially adjusted by the RCSM module.  In these cases, the ANOVA module will be run twice, and output generated for both the adjusted and unadjusted data.
+The variance component table contains the estimates of the variances associated with each random term in the model.  For models P1 and P2 this will be two numbers, one for the variance of the blocking factor and one for the residual variance; for model P4, this will contain four numbers: one for subsites, one for reps within subsites, one for treatments by subsite interaction and one for the residual variance.
+
+Under BLUP estimation, 
+
+The table of treatment level mean estimates is provided as in the BLUE case but without the degrees-of-freedom, standard errors and confidence intervals.  No table of differences is created nor is there an analysis-of-variance table.  
+
+The variance component table also includes a variance estimate for the treatment factor.
 
 
 ...
