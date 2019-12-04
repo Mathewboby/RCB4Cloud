@@ -4,11 +4,11 @@ Model fitting is conducted using restricted maximum likelihood or REML for short
 
 To do the analysis, only data which is NOT flagged by either DSR or QAQC is used in the analysis.  There are five possible variations of the RCBD1 model: there are three types of blocking and two estimation methods.  This would produce six combinations of blocking and estimation, but one of the combinations is never used. The five models are selected by giving the input argument, analysistype, one of the following strings, “P1”, “P2”, “P3”, “P4”, and “P5”.
 
-## P1 calls for using BLUE estimation on a single blocking factor RCBD1 model with replicates as the random blocking factor.
-## P2 calls for using BLUE estimation on a single blocking factor RCBD1 model with subsites as the random blocking factor.
-## P3 calls for using BLUP estimation on a single blocking factor RCBD1 model with subsites as the blocking factor. To obtain BLUP estimates, the treatment factor is also treated as a random factor.
-## P4 calls for using BLUE estimation on a two-blocking factor RCBD1 model with both subsites and replicates as the random blocking factors.
-## P5 calls for using BLUP estimation on a two-blocking factor RCBD1 model with both subsites and replicates as the random blocking factors. To obtain BLUP estimates, the treatment factor is also treated as a random factor.
+#### P1 calls for using BLUE estimation on a single blocking factor RCBD1 model with replicates as the random blocking factor.
+#### P2 calls for using BLUE estimation on a single blocking factor RCBD1 model with subsites as the random blocking factor.
+#### P3 calls for using BLUP estimation on a single blocking factor RCBD1 model with subsites as the blocking factor. To obtain BLUP estimates, the treatment factor is also treated as a random factor.
+#### P4 calls for using BLUE estimation on a two-blocking factor RCBD1 model with both subsites and replicates as the random blocking factors.
+#### P5 calls for using BLUP estimation on a two-blocking factor RCBD1 model with both subsites and replicates as the random blocking factors. To obtain BLUP estimates, the treatment factor is also treated as a random factor.
 
 The output from the module is a list of three to four tables depending on which estimation method was used.
 
