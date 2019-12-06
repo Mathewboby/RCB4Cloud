@@ -32,9 +32,9 @@ A similar table of all possible differences between the treatment level mean est
 An analysis-of-variance table for the treatment factor and a table of the variance components estimates are both provided.  The analysis-of-variance table contains the formal statistical test for any significant differences between the treatment levels.
 
 |	     | degreesFreedomNumerator | degreesFreedomDenominator | ssIncremental | ssConditional | margin | probability |
-| ---------- | ----------------------- | ------------------------- | ------------- | ------------- | ------ | ------------ |
+| :----------: | :-----------------------: | :-------------------------: | :-------------: | :-------------: | :------: | :------------: |
 |(Intercept) |	1 | 	2 |	125.2 |	125.2	 |	0.008090887 |
-|Factor	     | 5	 | 29.2 |	0.4101 |	0.4101 |	A	| 0.837816962 |
+|SeedProductName	     | 5	 | 29.2 |	0.4101 |	0.4101 |	A	| 0.837816962 |
 
 
 
