@@ -33,7 +33,7 @@ An analysis-of-variance table for the treatment factor and a table of the varian
 
 |	     | degreesFreedomNumerator | degreesFreedomDenominator | ssIncremental | ssConditional | margin | probability |
 | :----------: | :-----------------------: | :-------------------------: | :-------------: | :-------------: | :------: | :------------: |
-|(Intercept) |	1 | 	2 |	125.2 |	125.2	 |	0.008090887 |
+|(Intercept) |	1 | 	2 |	125.2 |	125.2	| |	0.008090887 |
 |SeedProductName	     | 5	 | 29.2 |	0.4101 |	0.4101 |	A	| 0.837816962 |
 
 
