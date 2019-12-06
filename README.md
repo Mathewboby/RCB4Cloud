@@ -31,9 +31,12 @@ A similar table of all possible differences between the treatment level mean est
 
 An analysis-of-variance table for the treatment factor and a table of the variance components estimates are both provided.  The analysis-of-variance table contains the formal statistical test for any significant differences between the treatment levels.
 
-	| degreesFreedomNumerator | degreesFreedomDenominator | ssIncremental | ssConditional | margin | probability
-(Intercept) |	1 | 	2 |	125.2 |	125.2	 |	0.008090887
-SeedProductName	| 5	 | 29.2 |	0.4101 |	0.4101 |	A	| 0.837816962
+|	     | degreesFreedomNumerator | degreesFreedomDenominator | ssIncremental | ssConditional | margin | probability |
+| ---------- | ----------------------- | ------------------------- | ------------- | ------------- | ------ | ------------ |
+|(Intercept) |	1 | 	2 |	125.2 |	125.2	 |	0.008090887 |
+|Factor	     | 5	 | 29.2 |	0.4101 |	0.4101 |	A	| 0.837816962 |
+
+
 
 The variance component table contains the estimates of the variances associated with each random term in the model.  For models P1 and P2 this will be two numbers, one for the variance of the blocking factor and one for the residual variance; for model P4, this will contain four numbers: one for subsites, one for reps within subsites, one for treatments by subsite interaction and one for the residual variance.
 
