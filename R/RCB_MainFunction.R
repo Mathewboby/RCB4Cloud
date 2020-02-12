@@ -75,6 +75,7 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
   DataIn <- DataIn[(DataIn[,params.list$isQaqcDeactivated]       == FALSE &
                       DataIn[,params.list$isDsrDeactivated]      == FALSE &
                       DataIn[,params.list$isAnswerDeactivated]   == FALSE &
+                      DataIn[,params.list$isPlaceHolder]         == FALSE &
                       DataIn[,params.list$isSetEntryDeactivated] == FALSE),]
 
   print(paste0('analyzing ', nrow(DataIn), ' rows'))
