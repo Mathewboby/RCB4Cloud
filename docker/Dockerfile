@@ -16,11 +16,12 @@ COPY files/Rprofile.site /etc/R/
 
 RUN R -e 'install.packages(c("glue", "withr" ))' && \
     R -e 'withr::with_makevars(c(CXX = "g++ -std=c++11"), install.packages("xml2", verbose = TRUE))' && \
-    R -e 'install.packages("roxygen2")' && \
-    R -e 'install.packages("igraph")' && \
-    R -e 'install.packages("devtools")'
+    R -e 'install.packages(c("roxygen2", "igraph", "devtools"))'
 #moved asremlPlus install to the top, not to redo it every time code updates. 
-RUN R -e 'devtools::install_version("asremlPlus", version="2.0-12", dependencies=TRUE, upgrade = FALSE, repos=c("http://cran.r-project.org", "https://cran.science-at-scale.io"))'
+RUN R -e 'devtools::install_version("dae", \
+    version = "3.0-23", repos = "https://cran.r-project.org")' && \
+    R -e 'devtools::install_version("asremlPlus", version="2.0-12", dependencies=TRUE, upgrade = FALSE, repos=c("http://cran.r-project.org", "https://cran.science-at-scale.io"))'
+RUN R -e 'install.packages("asreml")'
 
 ARG PROJECT=RCB4Cloud
 
