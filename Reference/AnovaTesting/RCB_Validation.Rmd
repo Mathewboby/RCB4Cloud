@@ -1,5 +1,39 @@
+---
+title: "RCBD1 Validation"
+author: "Mitch Toland"
+date: "2/17/2020"
+output: pdf_document
+---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
+## Introduction
+Forty datasets are analyzed using the the phase 1 version of the ANOVA module.  The whole phase 1 version is referred to as RCB since a single treatment factor randomized complete block design is the expermental design and analysis model used.  The name of the function doing the actual fitting of the model to the data is called RCB_ModelFittingFunction.  
+  
+At issue is whether the version deployed in the non-production Velocity environment produces the same results as the development version available in Domino.  Forty dataset run in the non-production environment are used to make the comparison.  The input data, input parameters, and output are read into Domino from S3.  Using the parameters, the input data are reanalyzed in the development environment in Domino.  The estimates from the output means tables are compared with the rsults from the non-production environment to nine decimal places. Also, the analysis type is predicted for each dataset.  Mismatches are counted.  There are three analysis types represented in the forty datasets.  These labeled "P2", "P3" and "P4".  "P3" is the same model as "P2" but with BLUP estimation instead of BLUE estimation.  "P4" uses BLUE estimation.
+
+The results show that the two codes are producing the same results.  
+  
+```{r LoadTheCode}
+suppressMessages(library(jsonlite, quietly=TRUE))
+suppressMessages(library(aws.s3,   quietly=TRUE))
+daeURL <- "http://cran.wustl.edu//src/contrib/Archive/dae/dae_2.7-20.tar.gz"
+suppressMessages(install.packages(daeURL,repos=NULL,type="source"))
+suppressMessages(library(dae, quietly=TRUE))
+suppressMessages(library(dae, quietly = TRUE))
+asremlPlusURL <- "http://cran.wustl.edu//src/contrib/Archive/asremlPlus/asremlPlus_2.0-12.tar.gz"
+suppressMessages(install.packages(asremlPlusURL,repos=NULL,type="source"))
+suppressMessages(library(asreml,     quietly=TRUE))
+suppressMessages(library(asremlPlus, quietly=TRUE))
+
+source('/repos/RCB4Cloud/R/RCB_SupportFunctions.R')
+source('/repos/RCB4Cloud/R/RCB_MainFunction.R')
+```  
+&nbsp;  
+  
+```{r SetUp4ReadingDataAndFittingModels}
 S3BucketName      <- "trait-analytics-np"
 s3AnovaRunPathsDF <- read.csv("/repos/RCB4Cloud/Reference/AnovaTesting/anova-global-19-12-2019.csv")
 s3AnovaRunPaths   <- paste0(s3AnovaRunPathsDF[ ,1])
@@ -18,34 +52,6 @@ s3FileReader <- function(zS3BucketName, zpath0){
   names(s3.data) <- c("anovaInputData","anovaOutputList","anovaParameters")
   return(s3.data)
 }
-
-z3o <- s3FileReader(S3BucketName, s3AnovaRunPaths[1])
-# Need to source from master branch of TADS/RCB4Cloud
-# /repos/RCB4Cloud/R/RCB_MainFunction.R
-# /repos/RCB4Cloud/R/RCB_SupportFunctions.R
-z3o$anovaParameters$isPlaceHolder     <- "isPlaceHolder"
-z3o$anovaInputData$data$isPlaceHolder <- FALSE
-ro3 <- RCB_ModelFittingFunction(z3o$anovaInputData$data,
-                                z3o$anovaParameters,
-                                z3o$anovaInputData$analysisType)  # Can also use z3o$anovaParameters$analysisType
-
-MD_P4data   <- fromJSON("/repos/RCB4Cloud/Reference/AnovaTesting/input-rcb-md.json")
-MD_P4params <- fromJSON("/repos/RCB4Cloud/Reference/AnovaTesting/parameters-rcb-md.json")
-
-MD_P4data$FieldName <- paste0("Field",as.character(MD_P4data$FieldName))  # Originally is a character string number
-MD_P4data$RepNumber <- paste0("Rep",as.character(MD_P4data$RepNumber))    # Originally is an integer
-
-MD_P4data$isPlaceHolder   <- FALSE
-MD_P4params$isPlaceHolder <- "isPlaceHolder"
-
-table(MD_P4data$FieldName, MD_P4data$RepNumber)
-# 1  2  3
-# 0009 18 18 18
-# 0011 18 18 18
-# 0024 18 18 18
-
-rMDo <- RCB_ModelFittingFunction(MD_P4data, MD_P4params, "P4")
-
 
 readFit <- function(zS3BucketName, zAddress){
   zJdat         <- s3FileReader(zS3BucketName, zAddress)
@@ -83,9 +89,6 @@ readFit <- function(zS3BucketName, zAddress){
   }
   return(cbo)
 }
-
-chksa <- unlist(lapply(s3AnovaRunPaths, function(zt){sum(abs(readFit(S3BucketName, zt)))}))
-chkdc <- do.call(rbind,lapply(s3AnovaRunPaths, function(zt){apply(readFit(S3BucketName, zt),2,function(zzz){sum(abs(zzz))})}))
 
 readFitData <- function(zS3BucketName, zAddress){
   zJdat         <- s3FileReader(zS3BucketName, zAddress)
@@ -127,16 +130,46 @@ modelCheck <- function(zS3BucketName, zAddress){
   if(numberOfSubSites == 1 & maxNumberOfReps >  1) {PredictedAnalysisType <- "P1"}
   if(numberOfSubSites >  1 & maxNumberOfReps == 1) {PredictedAnalysisType <- "P2_or_P3"}
   if(numberOfSubSites >  1 & maxNumberOfReps >  1) {PredictedAnalysisType <- "P4_or_P5"}
-  output <- list(AnalysisTypePredicted = PredictedAnalysisType,
-                 AnalysisTypeUsed      = zAnalysisType)
+  output <- list(AnalysisPredicted = PredictedAnalysisType,
+                 AnalysisUsed      = zAnalysisType)
   return(output)
 }
-
+```  
+&nbsp;  
+  
+```{r AnalyzeData}
+#chksa <- unlist(lapply(s3AnovaRunPaths, function(zt){sum(abs(readFit(S3BucketName, zt)))}))
+chkdc <- do.call(rbind,lapply(s3AnovaRunPaths, function(zt){apply(readFit(S3BucketName, zt),2,function(zzz){sum(abs(zzz))})}))
 lapModelCheck   <- lapply(s3AnovaRunPaths, function(zt){modelCheck(S3BucketName, zt)})
 lapModelCheck   <- as.data.frame(do.call(rbind, lapModelCheck))
-colnames(chkdc) <- c("NumMismatchMeans","NumMismatchSE","NumMismatchDF")
+colnames(chkdc) <- c("NumNEMeans","NumNESE","NumNEDF")
 zdfo            <- as.data.frame(cbind(lapModelCheck, chkdc))
-
-####
-####
-#####
+zdfo$AnalysisPredicted <- as.character(zdfo$AnalysisPredicted)
+zdfo$AnalysisUsed      <- as.character(zdfo$AnalysisUsed)
+```  
+&nbsp;  
+  
+As the follwoing table shows the results from teh two computing environments match.  
+  
+The table is printed in four sections to get it to display.  
+  
+```{r ShowResults01}
+print(zdfo[1:10, ])
+```  
+&nbsp;  
+  
+```{r ShowResults02}
+print(zdfo[11:20, ])
+```  
+&nbsp;  
+  
+```{r ShowResults03}
+print(zdfo[21:30, ])
+```  
+&nbsp;  
+  
+```{r ShowResults04}
+print(zdfo[31:40, ])
+```  
+&nbsp;  
+  
