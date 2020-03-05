@@ -41,7 +41,7 @@
 #' and the nine individual input arguments.  This is done to accomodate different function calling methods in other code.
 #'
 #' @param DataIn                      a dataframe with observation data. Column names should match those specified below in the column name arguments.
-#' @param params.input         a named list giving values for the following nine arguments.
+#' @param params.input         a named list giving values for the following 12 arguments.
 # @param alpha                       a number between 0 and 1 specifying the confidence level and comparison significance
 # @param value  a sting giving the column name of the response variable in DataIn
 # @param subSiteId           a sting giving the column name of the field ID variable in DataIn
@@ -54,13 +54,13 @@
 # @param isAnswerDeactivated
 # @param isSetEntryDeactivated
 # @param entryId
-# @param sufficientDataThreshold     a number giving the lower bound on the number of data values to be analyzed
+# @param sufficientDataThreshold: a number giving the lower bound on the number of data values to be analyzed
 #' @return A list with several components for the fit model, if analysisType is "P1", "P2" or "P4", returned list includes delta table, LS table, ANOVA table for fixed effects, variance component table and residual table; if analysisType is "P3" or "P5", returned list includes LS table, variance component table, residual table and BLUP table for factor1
 #'
 # @importFrom asreml asreml - may not need this
 #' @export
 
-# Old function name was 'R.ASReml_RCB_Return'
+# Old function name was called 'R.ASReml_RCB_Return'
 RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
 
   # Either read in the parameters from a file or use the default inputs from above.
