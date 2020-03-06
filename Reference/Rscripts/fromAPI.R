@@ -138,7 +138,7 @@ get_API_Data <- function(zResults){
 }
 
 extractJobIds <- function(jobIdDf, jobIdColumnName){
-  # Intheir raw form, job IDs are strings with invisible characters as their first and
+  # In their raw form, job IDs are strings with invisible characters as their first and
   # last characters. This function takes an input data frame and a column name as a string.
   # It then converts the data frame column into a single vector of character strings, and
   # counts the number of characters in each string.
@@ -149,8 +149,8 @@ extractJobIds <- function(jobIdDf, jobIdColumnName){
   wNonMissing        <- which(numChars >= 1)  # Find which strings have 1 or more characters
   # Extract the actual job ID from each string.
   if(length(wNonMissing) > 0){
-    jobIdsToOutput     <- unlist(lapply(as.list(wNonMissing),
-                                        function(zi){substr(rawJobIds[zi], 2, numChars[zi] - 1)}))
+    jobIdsToOutput <- unlist(lapply(as.list(wNonMissing),
+                                    function(zi){substr(rawJobIds[zi], 2, numChars[zi] - 1)}))
   }else{
     jobIdsToOutput <- NA
   }
@@ -158,7 +158,46 @@ extractJobIds <- function(jobIdDf, jobIdColumnName){
   return(jobIdsToOutput)
 }
 
+lsmTablePrep <- function(zResults){
+  # The following comments show the code trail to getting the data for this function.
+  # The last two lines are what this function does.
+  # anovaGlobalJobData <- read.csv("/repos/RCB4Cloud/Reference/Data/ValidationData/anova_global_job_output_ids.csv")
+  # anovaGlobalJobIds  <- extractJobIds(anovaGlobalJobData, "job_output_id")
+  # aG_results         <- call_API(anovaGlobalJobIds[1], ping_token)
+  # agData01           <- get_API_Data(aG_results)
+  # aglsm              <- as.data.frame(do.call(rbind, lapply(agData01$outputData$leastSquaredMeans, unlist)))  # Table of least-squares means for each level of factorLevelId
+  Data01     <- get_API_Data(zResults)
+  listOfLSMs <- lapply(Data01$outputData$leastSquaredMeans, unlist)
+  lsmDf      <- as.data.frame(do.call(rbind, listOfLSMs))
+  lsmDf[,2:7] <- lapply(2:7, function(zi){as.numeric(as.character(lsmDf[,zi]))})
+  return(lsmDf)
+}
 
+deltasTablePrep <- function(zResults){
+  # The following comments show the code trail to getting the data for this function.
+  # The last two lines are what this function does plus rectify plus rectify output from treatment means minus themselves.
+  # anovaGlobalJobData <- read.csv("/repos/RCB4Cloud/Reference/Data/ValidationData/anova_global_job_output_ids.csv")
+  # anovaGlobalJobIds  <- extractJobIds(anovaGlobalJobData, "job_output_id")
+  # aG_results         <- call_API(anovaGlobalJobIds[1], ping_token)
+  # agData01           <- get_API_Data(aG_results)
+  # agdlt              <- as.data.frame(do.call(rbind, lapply(agData01$outputData$deltas, unlist)))  # Table of least-squares means for each level of factorLevelId
+  Data01       <- get_API_Data(zResults)
+  listOfDeltas <- lapply(Data01$outputData$deltas, unlist)
+  deltaDf      <- as.data.frame(do.call(rbind, listOfDeltas))
+  # Begin rectificaiton of self-differences
+  dltw0 <- which(deltaDf$differences == 0)
+  # Ensure needed columns are numeric
+  n_col <- ncol(deltaDf)
+  deltaDf[,3:n_col] <- lapply(3:n_col, function(zi){as.numeric(as.character(deltaDf[,zi]))})
+  # Correct output from self-differences
+  deltaDf$pValueDifference[dltw0]        <- 1
+  deltaDf$standardErrorDifference[dltw0] <- 0
+  deltaDf$degreesOfFreedom[dltw0]        <- 0
+  deltaDf$tValue[dltw0]                  <- 0
+  deltaDf$lowerConfidenceInterval[dltw0] <- 0
+  deltaDf$upperConfidenceInterval[dltw0] <- 0
+  return(deltaDf)
+}
 
 
 

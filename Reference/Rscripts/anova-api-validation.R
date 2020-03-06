@@ -87,6 +87,9 @@ aldlt$tValue[alw0]                  <- 0
 aldlt$lowerConfidenceInterval[alw0] <- 0
 aldlt$upperConfidenceInterval[alw0] <- 0
 
+aglsmtbl    <- lsmTablePrep(aG_results)
+agdeltastbl <- deltasTablePrep(aG_results)
+
 #
 ##
 ###
