@@ -4,6 +4,14 @@
 # suppressMessages(library(testthat, quietly = TRUE))
 library(lattice)
 library(asreml)
+library(ggplot2)
+daeURL <- "http://cran.wustl.edu//src/contrib/Archive/dae/dae_2.7-20.tar.gz"
+suppressMessages(install.packages(daeURL,repos=NULL,type="source"))
+suppressMessages(library(dae, quietly=TRUE))
+asremlPlusURL <- "http://cran.wustl.edu//src/contrib/Archive/asremlPlus/asremlPlus_2.0-12.tar.gz"
+suppressMessages(install.packages(asremlPlusURL,repos=NULL,type="source"))
+suppressMessages(library(asremlPlus, quietly=TRUE))
+
 
 # Default git repository branch is "Mi-RCB-dev"
 # Use "git chechout master" in the terminal shell to switch to the master branch

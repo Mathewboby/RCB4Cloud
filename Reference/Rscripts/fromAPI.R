@@ -126,6 +126,7 @@ get_API_Data <- function(zResults){
     locationId = "locationId",
     isPlaceHolder = "isPlaceHolder",
     isDsrDeactivated = "isDsrDeactivated",
+    isQaqcDeactivated = "isQaqcDeactivated",
     isAnswerDeactivated = "isAnswerDeactivated",
     isSetEntryDeactivated = "isSetEntryDeactivated",
     alpha                   = 0.10,
@@ -286,22 +287,12 @@ get_API_AnalysisType <- function(API_varCompTable){
 }
 
 aovAPIvsRCB <- function(zResults, ndigits=12){
-  print("mL289")
   apiData         <- get_API_Data(zResults)
-  print("mL291")
   apiVarComp      <- get_API_VarCompTable(zResults)
-  print("mL293")
   apiAnalysisType <- get_API_AnalysisType(apiVarComp)
-  print("mL295")
-  print(paste0("mL296 nrow(apiData$inputData) = ", nrow(apiData$inputData)))
-  print(paste0("mL297 ncol(apiData$inputData) = ", ncol(apiData$inputData)))
-  print(sort(names(apiData$inputData)))
-  print(paste0("mL299 apiAnalysisType = ", apiAnalysisType))
-  print(unlist(apiData$Test_params))
   RCB_Output      <- RCB_ModelFittingFunction(apiData$inputData,
                                               apiData$Test_params,
                                               apiAnalysisType)
-  print("mL299")
   apiLSM     <- get_API_LsmTable(zResults)
   rcbLSM     <- get_RCB_LsmTable(RCB_Output)
   compareLSM <- compareLSM(apiLSM, rcbLSM, ndigits=ndigits)
