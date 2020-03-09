@@ -118,6 +118,7 @@ zmG0          <- sapply(anovaGlobalJobIds,
 zmG           <- as.data.frame(t(zmG0))
 zmG$JobId     <- rownames(zmG)
 rownames(zmG) <- NULL
+write_json(zmG, "/repos/RCB4Cloud/Reference/Data/GlobalDataValidationResults.json", pretty=TRUE, auto_unbox="TRUE", digits=12, dataframe='rows')
 
 #
 ##
