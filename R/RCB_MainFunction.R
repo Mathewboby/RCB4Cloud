@@ -71,28 +71,23 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
   obs.name <-  unique(DataIn[,params.list$questionCode])
   print(paste0('current question code ', obs.name))
 
-print("sL74")
-print(params.list$isQaqcDeactivated)
-print(params.input$isQaqcDeactivated)
 tmp <- as.logical(as.character(DataIn[,params.list$isQaqcDeactivated]))
-#print(tmp)
+
 DataIn[,params.list$isQaqcDeactivated]     <- NULL
 DataIn[,params.list$isQaqcDeactivated]     <- tmp
 DataIn[,params.list$isDsrDeactivated]      <- as.logical(as.character(DataIn[,params.list$isDsrDeactivated]))
 DataIn[,params.list$isAnswerDeactivated]   <- as.logical(as.character(DataIn[,params.list$isAnswerDeactivated]))
 DataIn[,params.list$isPlaceHolder]         <- as.logical(as.character(DataIn[,params.list$isPlaceHolder]))
 DataIn[,params.list$isSetEntryDeactivated] <- as.logical(as.character(DataIn[,params.list$isSetEntryDeactivated]))
-print(sapply(DataIn, class))
-#print(DataIn$isQaqcDeactivated)
-#print(DataIn[, params.list$isQaqcDeactivated])
+
 isRowOK <- (DataIn[,params.list$isQaqcDeactivated]     == FALSE &
             DataIn[,params.list$isDsrDeactivated]      == FALSE &
             DataIn[,params.list$isAnswerDeactivated]   == FALSE &
             DataIn[,params.list$isPlaceHolder]         == FALSE &
             DataIn[,params.list$isSetEntryDeactivated] == FALSE)
-print(table(isRowOK))
+
   DataIn <- DataIn[isRowOK, ]
-print("sL80")
+
   print(paste0('analyzing ', nrow(DataIn), ' rows'))
 
   data <- DataIn

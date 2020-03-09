@@ -174,6 +174,12 @@ get_API_LsmTable <- function(zResults){
   return(lsmDf)
 }
 
+get_RCB_LsmTable <- function(zRcbOutput){
+  rlsm <- zRcbOutput$blueTable
+  rlsm[,2:7] <- lapply(2:7, function(zi){as.numeric(as.character(rlsm[,zi]))})
+  return(rlsm)
+}
+
 get_API_DeltasTable <- function(zResults){
   # The following comments show the code trail to getting the data for this function.
   # The last two lines are what this function does plus rectify plus rectify output from treatment means minus themselves.
@@ -200,75 +206,79 @@ get_API_DeltasTable <- function(zResults){
   return(deltaDf)
 }
 
-
-get_RCB_LsmTable <- function(zRcbOutput){
-  rlsm <- zRcbOutput$blueTable
-  rlsm[,2:7] <- lapply(2:7, function(zi){as.numeric(as.character(rlsm[,zi]))})
-  return(rlsm)
-}
-
 get_RCB_DeltasTable <- function(zRcbOutput){
- deltaDf <- zRcbOutout$deltas
+ deltaDf <- zRcbOutput$deltas
  dltw0   <- which(deltaDf$differences == 0)
  # Ensure needed columns are numeric
  n_col             <- ncol(deltaDf)
  deltaDf[,3:n_col] <- lapply(3:n_col, function(zi){as.numeric(as.character(deltaDf[,zi]))})
  # Correct output from self-differences
- deltaDf$pValueDifference[dltw0]        <- 1
- deltaDf$standardErrorDifference[dltw0] <- 0
- deltaDf$degreesOfFreedom[dltw0]        <- 0
- deltaDf$tValue[dltw0]                  <- 0
- deltaDf$lowerConfidenceInterval[dltw0] <- 0
- deltaDf$upperConfidenceInterval[dltw0] <- 0
+ deltaDf$probabilityDifferences[dltw0]   <- 1
+ deltaDf$standardErrorDifferences[dltw0] <- 0
+ deltaDf$degreesFreedom[dltw0]           <- 0
+ deltaDf$t[dltw0]                        <- 0
+ deltaDf$lowerConfidenceInterval[dltw0]  <- 0
+ deltaDf$upperConfidenceInterval[dltw0]  <- 0
  return(deltaDf)
 }
 
-lsmCompare <- function(zLsm1, zLsm2, ndigits = 12){
-  zcomp        <- lapply(2:7, function(zi){sum(round(abs(zLsm1[, zi]-zLsm2[, zi]), ndigits))})
+lsmCompare <- function(zLsm1, zLsm2, ndigits = 10){
+  zcomp        <- lapply(2:7, function(zi){sum(round(abs(as.numeric(zLsm1[, zi]) -
+                                                         as.numeric(zLsm2[, zi])), ndigits))})
   names(zcomp) <- names(zLsm1)[2:7]
   return(unlist(zcomp))
 }
 
-deltasCompare <- function(zDeltas1, zDeltas2, ndigits = 12){
+deltasCompare <- function(zDeltas1, zDeltas2, ndigits = 10){
   n_cols       <- ncol(zDeltas1)
-  zcomp        <- lapply(2:n_cols, function(zi){sum(round(abs(zDeltas1[, zi]-zDeltas2[, zi]), ndigits))})
-  names(zcomp) <- names(zDeltas1)[2:n_cols]
+  zcomp        <- lapply(3:n_cols, function(zi){sum(round(abs(as.numeric(as.character(zDeltas1[, zi])) -
+                                                              as.numeric(as.character(zDeltas2[, zi]))), ndigits))})
+  names(zcomp) <- names(zDeltas1)[3:n_cols]
   return(unlist(zcomp))
 }
 
 get_API_VarCompTable <- function(zResults){
-  zRawTable        <- zResults$modelOutputs[[1]]$rcbBlue$results$varianceComponents
-  zFinalTable      <- as.data.frame(do.call(rbind, lapply(zRawTable, unlist)))[, c(3,1,2)]
-  zFinalTable[, 2] <- as.numeric(zFinalTable[, 2])
+  zInitialTable    <- zResults$modelOutputs[[1]]$rcbBlue$results$varianceComponents
+  zInitialTable2   <- as.data.frame(do.call(rbind, lapply(zInitialTable, unlist)))
+  zFinalTable      <- zInitialTable2[, c(3,1,2)]
+  zFinalTable[, 2] <- as.numeric(as.character(zFinalTable[, 2]))
   return(zFinalTable)
 }
 
 get_RCB_VarCompTable <- function(zResults){
-  zFinalTable <- zResults$varianceComponents[, c(3,1,2)]
-  zFinalTable <- as.numeric(zFinalTable$varianceEstimates)
+  zInitialTable                   <- zResults$varianceComposition
+  zInitialTable$varianceComponent <- rownames(zInitialTable)
+  rownames(zInitialTable)         <- NULL
+  zFinalTable                     <- zInitialTable[, c(3,1,2)]
+  zFinalTable$varianceEstimates   <- round(as.numeric(zFinalTable$varianceEstimates), 10)
   return(zFinalTable)
 }
 
-varianceCompare <- function(zVarComp1, zVarComp2, ndigits=12){
-  return(sum(round(abs(zVarComp1$varianceEstimates-zVarComp2$varianceEstimates), ndigits)))
+varianceCompare <- function(zVarComp1, zVarComp2, ndigits=10){
+  return(sum(round(abs(as.numeric(zVarComp1$varianceEstimates) -
+                       as.numeric(zVarComp2$varianceEstimates)), ndigits)))
 }
 
 get_API_AovTable <- function(zResults){
-  zRawTable          <- zResults$modelOutputs[[1]]$rcbBlue$results$analysisOfVariance
-  zFinalTable        <- as.data.frame(do.call(rbind, lapply(zRawTable, unlist)))
-  zFinalTable[, 1:5] <- lapply(1:5, function(zi){zFinalTable[, zi]})
+  zRawTable               <- zResults$modelOutputs[[1]]$rcbBlue$results$analysisOfVariance
+  zFinalTable             <- as.data.frame(do.call(rbind, lapply(zRawTable, unlist)))
+  zFinalTable[, c(1:4,6)] <- lapply(c(1:4,6), function(zi){as.numeric(as.character(zFinalTable[, zi]))})
+  rownames(zFinalTable)   <- NULL
   return(zFinalTable)
 }
 
 get_RCB_AovTable <- function(zResults){
-  zFinalTable        <- zResults$anova
-  zFinalTable[, 1:5] <- lapply(1:5, function(zi){as.numeric(zFinalTable[, zi])})
+  zFinalTable             <- zResults$anova
+  zFinalTable[, c(1:4,6)] <- lapply(c(1:4,6), function(zi){as.numeric(zFinalTable[, zi])})
+  zFinalTable$row         <- rownames(zFinalTable)
+  rownames(zFinalTable)   <- NULL
   return(zFinalTable)
 }
 
-aovCompare <- function(zAov1, zAov2, ndigits = 12){
-  zcomp        <- lapply(1:5, function(zi){sum(round(abs(zAov1[, zi]-zAov2[, zi]), ndigits))})
-  names(zcomp) <- names(zAov1)[1:5]
+aovCompare <- function(zAov1, zAov2, ndigits = 10){
+  zcomp        <- lapply(c(1:4,6), function(zi){sum(round(abs(as.numeric(zAov1[, zi]) -
+                                                         as.numeric(zAov2[, zi])), ndigits))})
+  names(zcomp) <- names(zAov1)[c(1:4,6)]
   return(unlist(zcomp))
 }
 
@@ -286,7 +296,7 @@ get_API_AnalysisType <- function(API_varCompTable){
   return(analysisType)
 }
 
-aovAPIvsRCB <- function(zResults, ndigits=12){
+aovAPIvsRCB <- function(zResults, ndigits=10){
   apiData         <- get_API_Data(zResults)
   apiVarComp      <- get_API_VarCompTable(zResults)
   apiAnalysisType <- get_API_AnalysisType(apiVarComp)
@@ -295,22 +305,22 @@ aovAPIvsRCB <- function(zResults, ndigits=12){
                                               apiAnalysisType)
   apiLSM     <- get_API_LsmTable(zResults)
   rcbLSM     <- get_RCB_LsmTable(RCB_Output)
-  compareLSM <- compareLSM(apiLSM, rcbLSM, ndigits=ndigits)
+  compareLSM <- lsmCompare(apiLSM, rcbLSM, ndigits=ndigits)
 
   apiDeltas     <- get_API_DeltasTable(zResults)
   rcbDeltas     <- get_RCB_DeltasTable(RCB_Output)
-  compareDeltas <- compareDeltas(apiDeltas, rcbDeltas, ndigits=ndigits)
+  compareDeltas <- deltasCompare(apiDeltas, rcbDeltas, ndigits=ndigits)
 
-  apiVarComp <- get_API_VarCompTable(zResults)
-  rcbVarComp <- get_RCB_VarCompTable(RCP_Output)
-  compareVarComp <- compareVarComp(apiVarComp, rcbVarComp, ndigits=ndigits)
+  apiVarComp     <- get_API_VarCompTable(zResults)
+  rcbVarComp     <- get_RCB_VarCompTable(RCB_Output)
+  compareVarComp <- varianceCompare(apiVarComp, rcbVarComp, ndigits=ndigits)
 
-  apiAnova <- get_API_AovTable(zResults)
-  rcbAnova <- get_RCB_AovTable(RCB_Output)
-  compareAnova <- compareAnova(apiAnova, rcbAnova, ndigits=ndigits)
+  apiAnova     <- get_API_AovTable(zResults)
+  rcbAnova     <- get_RCB_AovTable(RCB_Output)
+  compareAnova <- aovCompare(apiAnova, rcbAnova, ndigits=ndigits)
 
-  apiLSD <- apiData$outputData$leastSignificantDifference
-  rcbLSD <- RCB_Output$leastSignificantDifference
+  apiLSD     <- as.numeric(apiData$outputData$leastSignificantDifference)
+  rcbLSD     <- as.numeric(RCB_Output$leastSignificantDifference)
   compareLSD <- round(abs(apiLSD-rcbLSD), ndigits)
 
   olst <- list(apiLSM         = apiLSM,
@@ -325,7 +335,7 @@ aovAPIvsRCB <- function(zResults, ndigits=12){
                apiAnova       = apiAnova,
                rcbAnova       = rcbAnova,
                compareAnova   = compareAnova,
-               compareLSD     = c(apiLSD, rcbLSD, compareLSD))
+               compareLSD     = compareLSD)
 
 }
 
