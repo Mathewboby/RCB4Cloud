@@ -20,7 +20,7 @@ source("/repos/RCB4Cloud/R/RCB_MainFunction.R")
 source("/repos/RCB4Cloud/R/RCB_SupportFunctions.R")
 source("/repos/RCB4Cloud/Reference/Rscripts/fromAPI.R")
 
-ping_token = get_ping_token(client_id,client_secret,FALSE)
+ping_token = get_ping_token(client_id, client_secret,FALSE)
 
 #  1Y0ePbjERgputHcELdhVlNhYtgd
 # 123456789012345678901234567890
@@ -59,7 +59,9 @@ c(nrow(anovaGlobalJobData), length(anovaGlobalJobIds))          # reports 2005 1
 c(nrow(anovaLocalJobData), length(anovaLocalJobIds))            # reports 6587 2484
 c(nrow(sMeansBySubsiteJobData), length(sMeansBySubsiteJobIds))  # reports 4101 3924
 c(nrow(sMeansJobData), length(sMeansJobIds))                    # reports 2322   47
-
+# 1YNFDd6VVnNR0wm6hTdfw6yOth7
+# 123456789012345678901234567890
+"1YNFDd6VVnNR0wm6hTdfw6yOth7"
 #test <- compareResults(results)
 
 agData01   <- get_API_Data(aG_results)
@@ -98,6 +100,24 @@ aldlt$upperConfidenceInterval[alw0] <- 0
 aglsmtbl    <- apiLsmTablePrep(aG_results)
 agdeltastbl <- apiDeltasTablePrep(aG_results)
 
+zaG01 <- aovAPIvsRCB(aG_results)
+zaG31 <- aovAPIvsRCB(aG_results31)
+zaL01 <- aovAPIvsRCB(aL_results)
+zaL31 <- aovAPIvsRCB(aL_results31)
+
+zaG01[grep("^compare",names(zaG01))]
+zaG31[grep("^compare",names(zaG31))]
+zaL01[grep("^compare",names(zaL01))]
+zaL31[grep("^compare",names(zaL31))]
+
+sapply(lapply(zaL31[grep("^compare",names(zaL31))], unlist), sum)
+summaryCompare(zaG31)
+
+zmG0          <- sapply(anovaGlobalJobIds,
+                        function(zn){summaryCompare(aovAPIvsRCB(call_API(zn, ping_token)))})
+zmG           <- as.data.frame(t(zmG0))
+zmG$JobId     <- rownames(zmG)
+rownames(zmG) <- NULL
 
 #
 ##

@@ -146,8 +146,10 @@ extractJobIds <- function(jobIdDf, jobIdColumnName){
   # For all non-zero length strings, the 2nd through (nchar -1)th characters are extracted
   # as the actual job ID.
   rawJobIds          <- as.character(jobIdDf[, jobIdColumnName])
+  rawJobIds          <- gsub(rawJobIds, pattern="(", replacement="", fixed=TRUE)
+  rawJobIds          <- gsub(rawJobIds, pattern=")", replacement="", fixed=TRUE)
   numChars           <- nchar(rawJobIds)  # Number of character composing each string
-  wNonMissing        <- which(numChars >= 1)  # Find which strings have 1 or more characters
+  wNonMissing        <- which(numChars == 29)  # Find which strings have 29 characters
   # Extract the actual job ID from each string.
   if(length(wNonMissing) > 0){
     jobIdsToOutput <- unlist(lapply(as.list(wNonMissing),
@@ -337,6 +339,10 @@ aovAPIvsRCB <- function(zResults, ndigits=10){
                compareAnova   = compareAnova,
                compareLSD     = compareLSD)
 
+}
+
+summaryCompare <- function(zAovComp){
+  return( sapply(lapply(zAovComp[grep("^compare",names(zAovComp))], unlist), sum) )
 }
 
 #

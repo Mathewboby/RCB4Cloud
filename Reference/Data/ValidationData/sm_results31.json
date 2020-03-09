@@ -1,0 +1,941 @@
+{
+  "metadata": {
+    "resourceName": "jobs/1Y6rP4RkweHGSlBI7KQK3ncdzG2",
+    "createTime": "2020-02-21T08:30:57Z",
+    "createdBy": "ANALYTICS-TRAIT-ANALYTICS-SVC"
+  },
+  "jobOutputId": "1Y6rP4RkweHGSlBI7KQK3ncdzG2",
+  "status": "COMPLETE",
+  "analysisConfigId": "401b9e43-587f-486a-b08a-782dfe30d2da",
+  "experimentId": "4871",
+  "annotations": {
+    "businessUnit": "Breeding",
+    "jobId": "31918"
+  },
+  "blockId": "4208",
+  "questionCode": "RTLC",
+  "answerFilters": [],
+  "uomCode": "CNT",
+  "jobStartTime": "2020-02-21T08:30:39Z",
+  "jobEndTime": "2020-02-21T08:30:41Z",
+  "modelOutputs": [
+    {
+      "modelOutputId": "1Y6rP2OLxrTDYyUItuhI1QqV3WU",
+      "status": "SUCCESSFUL",
+      "commitHash": "",
+      "resultType": "MEANS",
+      "analysisScope": "GLOBAL",
+      "simpleMeans": {
+        "means": {
+          "global": {
+            "factors": [
+              {
+                "id": "216653",
+                "value": 0
+              },
+              {
+                "id": "216664",
+                "value": 0
+              },
+              {
+                "id": "216659",
+                "value": 0.0029296875
+              },
+              {
+                "id": "216660",
+                "value": 0
+              },
+              {
+                "id": "216656",
+                "value": 0
+              },
+              {
+                "id": "216686",
+                "value": 0
+              },
+              {
+                "id": "216667",
+                "value": 0
+              },
+              {
+                "id": "216689",
+                "value": 0
+              },
+              {
+                "id": "216675",
+                "value": 0
+              },
+              {
+                "id": "216682",
+                "value": 0
+              },
+              {
+                "id": "216678",
+                "value": 0.15625
+              },
+              {
+                "id": "216671",
+                "value": 0
+              },
+              {
+                "id": "216669",
+                "value": 0
+              },
+              {
+                "id": "216658",
+                "value": 0
+              },
+              {
+                "id": "216654",
+                "value": 0
+              },
+              {
+                "id": "216676",
+                "value": 0
+              },
+              {
+                "id": "216687",
+                "value": 0
+              },
+              {
+                "id": "216661",
+                "value": 0
+              },
+              {
+                "id": "216683",
+                "value": 0
+              },
+              {
+                "id": "216665",
+                "value": 0
+              },
+              {
+                "id": "216672",
+                "value": 0
+              },
+              {
+                "id": "216668",
+                "value": 0
+              },
+              {
+                "id": "216681",
+                "value": 0.375
+              },
+              {
+                "id": "216657",
+                "value": 0
+              },
+              {
+                "id": "216679",
+                "value": 0.000518798828125
+              },
+              {
+                "id": "216684",
+                "value": 0
+              },
+              {
+                "id": "216670",
+                "value": 0
+              },
+              {
+                "id": "216673",
+                "value": 0.0029296875
+              },
+              {
+                "id": "216662",
+                "value": 0
+              },
+              {
+                "id": "216674",
+                "value": 0
+              },
+              {
+                "id": "216685",
+                "value": 0
+              },
+              {
+                "id": "216680",
+                "value": 0
+              },
+              {
+                "id": "216688",
+                "value": 0
+              },
+              {
+                "id": "216666",
+                "value": 0
+              },
+              {
+                "id": "216655",
+                "value": 0
+              },
+              {
+                "id": "216652",
+                "value": 0
+              },
+              {
+                "id": "216677",
+                "value": 8.940696716309e-07
+              },
+              {
+                "id": "216663",
+                "value": 0
+              }
+            ],
+            "value": {}
+          },
+          "local": {
+            "subsites": [
+              {
+                "answers": [
+                  "0f3ff2c4-2d17-4cfa-816f-b006288c0fa1",
+                  "97635e58-38f2-4663-b008-e7bb6e8b5380"
+                ],
+                "id": "{eb695800-91df-4902-869c-09bb624a4b43}",
+                "value": {},
+                "controls": [
+                  {
+                    "controlType": "Performance",
+                    "value": {}
+                  }
+                ],
+                "factors": [
+                  {
+                    "id": "216653",
+                    "value": {}
+                  },
+                  {
+                    "id": "216664",
+                    "value": {}
+                  },
+                  {
+                    "id": "216659",
+                    "value": 12
+                  },
+                  {
+                    "id": "216660",
+                    "value": {}
+                  },
+                  {
+                    "id": "216656",
+                    "value": {}
+                  },
+                  {
+                    "id": "216686",
+                    "value": {}
+                  },
+                  {
+                    "id": "216667",
+                    "value": {}
+                  },
+                  {
+                    "id": "216689",
+                    "value": {}
+                  },
+                  {
+                    "id": "216675",
+                    "value": {}
+                  },
+                  {
+                    "id": "216682",
+                    "value": {}
+                  },
+                  {
+                    "id": "216678",
+                    "value": {}
+                  },
+                  {
+                    "id": "216671",
+                    "value": {}
+                  },
+                  {
+                    "id": "216669",
+                    "value": {}
+                  },
+                  {
+                    "id": "216658",
+                    "value": {}
+                  },
+                  {
+                    "id": "216654",
+                    "value": {}
+                  },
+                  {
+                    "id": "216676",
+                    "value": {}
+                  },
+                  {
+                    "id": "216687",
+                    "value": {}
+                  },
+                  {
+                    "id": "216661",
+                    "value": {}
+                  },
+                  {
+                    "id": "216683",
+                    "value": {}
+                  },
+                  {
+                    "id": "216665",
+                    "value": {}
+                  },
+                  {
+                    "id": "216672",
+                    "value": {}
+                  },
+                  {
+                    "id": "216668",
+                    "value": {}
+                  },
+                  {
+                    "id": "216681",
+                    "value": {}
+                  },
+                  {
+                    "id": "216657",
+                    "value": {}
+                  },
+                  {
+                    "id": "216679",
+                    "value": 17
+                  },
+                  {
+                    "id": "216684",
+                    "value": {}
+                  },
+                  {
+                    "id": "216670",
+                    "value": {}
+                  },
+                  {
+                    "id": "216673",
+                    "value": {}
+                  },
+                  {
+                    "id": "216662",
+                    "value": {}
+                  },
+                  {
+                    "id": "216674",
+                    "value": {}
+                  },
+                  {
+                    "id": "216685",
+                    "value": {}
+                  },
+                  {
+                    "id": "216680",
+                    "value": {}
+                  },
+                  {
+                    "id": "216688",
+                    "value": {}
+                  },
+                  {
+                    "id": "216666",
+                    "value": {}
+                  },
+                  {
+                    "id": "216655",
+                    "value": {}
+                  },
+                  {
+                    "id": "216652",
+                    "value": {}
+                  },
+                  {
+                    "id": "216677",
+                    "value": {}
+                  },
+                  {
+                    "id": "216663",
+                    "value": {}
+                  }
+                ],
+                "coefficientOfVariance": {}
+              },
+              {
+                "answers": [
+                  "64e38836-46dc-46ec-aed3-ec378aa7a74d"
+                ],
+                "id": "{714097a3-0268-4a0c-b5cf-e51e6e6ba7cd}",
+                "value": {},
+                "controls": [
+                  {
+                    "controlType": "Performance",
+                    "value": {}
+                  }
+                ],
+                "factors": [
+                  {
+                    "id": "216653",
+                    "value": {}
+                  },
+                  {
+                    "id": "216664",
+                    "value": {}
+                  },
+                  {
+                    "id": "216659",
+                    "value": {}
+                  },
+                  {
+                    "id": "216660",
+                    "value": {}
+                  },
+                  {
+                    "id": "216656",
+                    "value": {}
+                  },
+                  {
+                    "id": "216686",
+                    "value": {}
+                  },
+                  {
+                    "id": "216667",
+                    "value": {}
+                  },
+                  {
+                    "id": "216689",
+                    "value": {}
+                  },
+                  {
+                    "id": "216675",
+                    "value": {}
+                  },
+                  {
+                    "id": "216682",
+                    "value": {}
+                  },
+                  {
+                    "id": "216678",
+                    "value": {}
+                  },
+                  {
+                    "id": "216671",
+                    "value": {}
+                  },
+                  {
+                    "id": "216669",
+                    "value": {}
+                  },
+                  {
+                    "id": "216658",
+                    "value": {}
+                  },
+                  {
+                    "id": "216654",
+                    "value": {}
+                  },
+                  {
+                    "id": "216676",
+                    "value": {}
+                  },
+                  {
+                    "id": "216687",
+                    "value": {}
+                  },
+                  {
+                    "id": "216661",
+                    "value": {}
+                  },
+                  {
+                    "id": "216683",
+                    "value": {}
+                  },
+                  {
+                    "id": "216665",
+                    "value": {}
+                  },
+                  {
+                    "id": "216672",
+                    "value": {}
+                  },
+                  {
+                    "id": "216668",
+                    "value": {}
+                  },
+                  {
+                    "id": "216681",
+                    "value": {}
+                  },
+                  {
+                    "id": "216657",
+                    "value": {}
+                  },
+                  {
+                    "id": "216679",
+                    "value": {}
+                  },
+                  {
+                    "id": "216684",
+                    "value": {}
+                  },
+                  {
+                    "id": "216670",
+                    "value": {}
+                  },
+                  {
+                    "id": "216673",
+                    "value": 12
+                  },
+                  {
+                    "id": "216662",
+                    "value": {}
+                  },
+                  {
+                    "id": "216674",
+                    "value": {}
+                  },
+                  {
+                    "id": "216685",
+                    "value": {}
+                  },
+                  {
+                    "id": "216680",
+                    "value": {}
+                  },
+                  {
+                    "id": "216688",
+                    "value": {}
+                  },
+                  {
+                    "id": "216666",
+                    "value": {}
+                  },
+                  {
+                    "id": "216655",
+                    "value": {}
+                  },
+                  {
+                    "id": "216652",
+                    "value": {}
+                  },
+                  {
+                    "id": "216677",
+                    "value": {}
+                  },
+                  {
+                    "id": "216663",
+                    "value": {}
+                  }
+                ],
+                "coefficientOfVariance": {}
+              },
+              {
+                "answers": [
+                  "d55ac76b-8622-4649-85dc-a7ac601e5e14",
+                  "e63e6408-cd8c-4b70-ba96-74ad17028fed",
+                  "15a3187d-5404-4fa3-9425-b64a6004a44f"
+                ],
+                "id": "{c1e4ca5a-07cd-4d57-9663-34f56529ec80}",
+                "value": {},
+                "controls": [
+                  {
+                    "controlType": "Performance",
+                    "value": {}
+                  }
+                ],
+                "factors": [
+                  {
+                    "id": "216653",
+                    "value": {}
+                  },
+                  {
+                    "id": "216664",
+                    "value": {}
+                  },
+                  {
+                    "id": "216659",
+                    "value": {}
+                  },
+                  {
+                    "id": "216660",
+                    "value": {}
+                  },
+                  {
+                    "id": "216656",
+                    "value": {}
+                  },
+                  {
+                    "id": "216686",
+                    "value": {}
+                  },
+                  {
+                    "id": "216667",
+                    "value": {}
+                  },
+                  {
+                    "id": "216689",
+                    "value": {}
+                  },
+                  {
+                    "id": "216675",
+                    "value": {}
+                  },
+                  {
+                    "id": "216682",
+                    "value": {}
+                  },
+                  {
+                    "id": "216678",
+                    "value": 10
+                  },
+                  {
+                    "id": "216671",
+                    "value": {}
+                  },
+                  {
+                    "id": "216669",
+                    "value": {}
+                  },
+                  {
+                    "id": "216658",
+                    "value": {}
+                  },
+                  {
+                    "id": "216654",
+                    "value": {}
+                  },
+                  {
+                    "id": "216676",
+                    "value": {}
+                  },
+                  {
+                    "id": "216687",
+                    "value": {}
+                  },
+                  {
+                    "id": "216661",
+                    "value": {}
+                  },
+                  {
+                    "id": "216683",
+                    "value": {}
+                  },
+                  {
+                    "id": "216665",
+                    "value": {}
+                  },
+                  {
+                    "id": "216672",
+                    "value": {}
+                  },
+                  {
+                    "id": "216668",
+                    "value": {}
+                  },
+                  {
+                    "id": "216681",
+                    "value": 3
+                  },
+                  {
+                    "id": "216657",
+                    "value": {}
+                  },
+                  {
+                    "id": "216679",
+                    "value": {}
+                  },
+                  {
+                    "id": "216684",
+                    "value": {}
+                  },
+                  {
+                    "id": "216670",
+                    "value": {}
+                  },
+                  {
+                    "id": "216673",
+                    "value": {}
+                  },
+                  {
+                    "id": "216662",
+                    "value": {}
+                  },
+                  {
+                    "id": "216674",
+                    "value": {}
+                  },
+                  {
+                    "id": "216685",
+                    "value": {}
+                  },
+                  {
+                    "id": "216680",
+                    "value": {}
+                  },
+                  {
+                    "id": "216688",
+                    "value": {}
+                  },
+                  {
+                    "id": "216666",
+                    "value": {}
+                  },
+                  {
+                    "id": "216655",
+                    "value": {}
+                  },
+                  {
+                    "id": "216652",
+                    "value": {}
+                  },
+                  {
+                    "id": "216677",
+                    "value": 15
+                  },
+                  {
+                    "id": "216663",
+                    "value": {}
+                  }
+                ],
+                "coefficientOfVariance": {}
+              }
+            ]
+          }
+        },
+        "input": {
+          "data": [
+            {
+              "answerId": "0f3ff2c4-2d17-4cfa-816f-b006288c0fa1",
+              "column": 15,
+              "dsrOverride": false,
+              "geometry": {
+                "coordinates": [
+                  [
+                    [
+                      29.0165306,
+                      -25.8010938
+                    ],
+                    [
+                      29.0165619,
+                      -25.801141
+                    ],
+                    [
+                      29.0165489,
+                      -25.801148
+                    ],
+                    [
+                      29.0165175,
+                      -25.8011009
+                    ],
+                    [
+                      29.0165306,
+                      -25.8010938
+                    ]
+                  ]
+                ],
+                "type": "Polygon"
+              },
+              "harvestedPlotLength": {},
+              "harvestedPlotWidth": {},
+              "isAnswerDeactivated": false,
+              "questionCode": "RTLC",
+              "range": 40,
+              "setEntryId": "3006235",
+              "value": 12
+            },
+            {
+              "answerId": "64e38836-46dc-46ec-aed3-ec378aa7a74d",
+              "column": 78,
+              "dsrOverride": false,
+              "geometry": {
+                "coordinates": [
+                  [
+                    [
+                      28.81669888,
+                      -26.0434352
+                    ],
+                    [
+                      28.81669888,
+                      -26.043381
+                    ],
+                    [
+                      28.8167138,
+                      -26.043381
+                    ],
+                    [
+                      28.8167138,
+                      -26.0434352
+                    ],
+                    [
+                      28.81669888,
+                      -26.0434352
+                    ]
+                  ]
+                ],
+                "type": "Polygon"
+              },
+              "harvestedPlotLength": {},
+              "harvestedPlotWidth": {},
+              "isAnswerDeactivated": false,
+              "questionCode": "RTLC",
+              "range": 16,
+              "setEntryId": "3006553",
+              "value": 12
+            },
+            {
+              "answerId": "d55ac76b-8622-4649-85dc-a7ac601e5e14",
+              "column": 41,
+              "dsrOverride": false,
+              "geometry": {
+                "coordinates": [
+                  [
+                    [
+                      28.86072988,
+                      -25.9831702
+                    ],
+                    [
+                      28.86072988,
+                      -25.983116
+                    ],
+                    [
+                      28.86074784,
+                      -25.983116
+                    ],
+                    [
+                      28.86074784,
+                      -25.9831702
+                    ],
+                    [
+                      28.86072988,
+                      -25.9831702
+                    ]
+                  ]
+                ],
+                "type": "Polygon"
+              },
+              "harvestedPlotLength": {},
+              "harvestedPlotWidth": {},
+              "isAnswerDeactivated": false,
+              "questionCode": "RTLC",
+              "range": 28,
+              "setEntryId": "3006293",
+              "value": 15
+            },
+            {
+              "answerId": "e63e6408-cd8c-4b70-ba96-74ad17028fed",
+              "column": 41,
+              "dsrOverride": false,
+              "geometry": {
+                "coordinates": [
+                  [
+                    [
+                      28.86072988,
+                      -25.9830618
+                    ],
+                    [
+                      28.86072988,
+                      -25.98300759
+                    ],
+                    [
+                      28.86074784,
+                      -25.98300759
+                    ],
+                    [
+                      28.86074784,
+                      -25.9830618
+                    ],
+                    [
+                      28.86072988,
+                      -25.9830618
+                    ]
+                  ]
+                ],
+                "type": "Polygon"
+              },
+              "harvestedPlotLength": {},
+              "harvestedPlotWidth": {},
+              "isAnswerDeactivated": false,
+              "questionCode": "RTLC",
+              "range": 30,
+              "setEntryId": "3006292",
+              "value": 10
+            },
+            {
+              "answerId": "97635e58-38f2-4663-b008-e7bb6e8b5380",
+              "column": 6,
+              "dsrOverride": false,
+              "geometry": {
+                "coordinates": [
+                  [
+                    [
+                      29.0161156,
+                      -25.8002281
+                    ],
+                    [
+                      29.0161469,
+                      -25.8002753
+                    ],
+                    [
+                      29.0161339,
+                      -25.8002824
+                    ],
+                    [
+                      29.0161026,
+                      -25.8002352
+                    ],
+                    [
+                      29.0161156,
+                      -25.8002281
+                    ]
+                  ]
+                ],
+                "type": "Polygon"
+              },
+              "harvestedPlotLength": {},
+              "harvestedPlotWidth": 9,
+              "isAnswerDeactivated": false,
+              "questionCode": "RTLC",
+              "range": 23,
+              "setEntryId": "3006129",
+              "value": 17
+            },
+            {
+              "answerId": "15a3187d-5404-4fa3-9425-b64a6004a44f",
+              "column": 42,
+              "dsrOverride": false,
+              "geometry": {
+                "coordinates": [
+                  [
+                    [
+                      28.86074784,
+                      -25.9830618
+                    ],
+                    [
+                      28.86074784,
+                      -25.98300759
+                    ],
+                    [
+                      28.86076579,
+                      -25.98300759
+                    ],
+                    [
+                      28.86076579,
+                      -25.9830618
+                    ],
+                    [
+                      28.86074784,
+                      -25.9830618
+                    ]
+                  ]
+                ],
+                "type": "Polygon"
+              },
+              "harvestedPlotLength": {},
+              "harvestedPlotWidth": {},
+              "isAnswerDeactivated": false,
+              "questionCode": "RTLC",
+              "range": 30,
+              "setEntryId": "3006289",
+              "value": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "runGroupId": "291aa605-c39d-415c-b5cf-9c7fbe3d86c4"
+}
