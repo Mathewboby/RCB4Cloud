@@ -55,7 +55,7 @@ smbs_results31 <- call_API(sMeansBySubsiteJobIds[31], ping_token)
 sm_results31   <- call_API(sMeansJobIds[31]         , ping_token)
 
 # Compare the number of jobs run to the number of non-missing job IDs
-c(nrow(anovaGlobalJobData), length(anovaGlobalJobIds))          # reports 2005 1630
+c(nrow(anovaGlobalJobData), length(anovaGlobalJobIds))          # reports 2005 1160
 c(nrow(anovaLocalJobData), length(anovaLocalJobIds))            # reports 6587 2484
 c(nrow(sMeansBySubsiteJobData), length(sMeansBySubsiteJobIds))  # reports 4101 3924
 c(nrow(sMeansJobData), length(sMeansJobIds))                    # reports 2322   47
@@ -119,6 +119,21 @@ zmG           <- as.data.frame(t(zmG0))
 zmG$JobId     <- rownames(zmG)
 rownames(zmG) <- NULL
 write_json(zmG, "/repos/RCB4Cloud/Reference/Data/GlobalDataValidationResults.json", pretty=TRUE, auto_unbox="TRUE", digits=12, dataframe='rows')
+
+###########
+zmL0          <- sapply(anovaLocalJobIds,
+                        function(zn){summaryCompare(aovAPIvsRCB(call_API(zn, ping_token)))})
+zmL           <- as.data.frame(t(zmL0))
+zmL$JobId     <- rownames(zmL)
+rownames(zmL) <- NULL
+write_json(zmL, "/repos/RCB4Cloud/Reference/Data/LocalDataValidationResults.json", pretty=TRUE, auto_unbox="TRUE", digits=12, dataframe='rows')
+
+zmL0a          <- sapply(anovaLocalJobIds,
+                        function(zn){summaryCompare(aovAPIvsRCB(call_API(zn, ping_token)))})
+zmLa           <- as.data.frame(t(zmL0a))
+zmLa$JobId     <- rownames(zmLa)
+rownames(zmLa) <- NULL
+write_json(zmLa, "/repos/RCB4Cloud/Reference/Data/LocalDataValidationResultsa.json", pretty=TRUE, auto_unbox="TRUE", digits=12, dataframe='rows')
 
 #
 ##
