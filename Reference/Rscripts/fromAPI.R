@@ -194,7 +194,7 @@ get_API_DeltasTable <- function(zResults){
   listOfDeltas <- lapply(Data01$outputData$deltas, unlist)
   deltaDf      <- as.data.frame(do.call(rbind, listOfDeltas))
   # Begin rectificaiton of self-differences
-  dltw0 <- which(deltaDF$head == deltaDF$comparison)
+  dltw0 <- which(deltaDf$head == deltaDf$comparison)
   # Ensure needed columns are numeric
   n_col <- ncol(deltaDf)
   deltaDf[,3:n_col] <- lapply(3:n_col, function(zi){as.numeric(as.character(deltaDf[,zi]))})
@@ -210,7 +210,7 @@ get_API_DeltasTable <- function(zResults){
 
 get_RCB_DeltasTable <- function(zRcbOutput){
  deltaDf <- zRcbOutput$deltas
- dltw0   <- which(deltaDF$head == deltaDF$comparison)
+ dltw0   <- which(deltaDf$head == deltaDf$comparison)
  # Ensure needed columns are numeric
  n_col             <- ncol(deltaDf)
  deltaDf[,3:n_col] <- lapply(3:n_col, function(zi){as.numeric(as.character(deltaDf[,zi]))})
