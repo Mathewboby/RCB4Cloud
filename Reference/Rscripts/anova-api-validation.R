@@ -128,12 +128,12 @@ zmL$JobId     <- rownames(zmL)
 rownames(zmL) <- NULL
 write_json(zmL, "/repos/RCB4Cloud/Reference/Data/LocalDataValidationResults.json", pretty=TRUE, auto_unbox="TRUE", digits=12, dataframe='rows')
 
-zmL0a          <- sapply(anovaLocalJobIds,
+zmL02          <- sapply(anovaLocalJobIds,
                         function(zn){summaryCompare(aovAPIvsRCB(call_API(zn, ping_token)))})
-zmLa           <- as.data.frame(t(zmL0a))
-zmLa$JobId     <- rownames(zmLa)
-rownames(zmLa) <- NULL
-write_json(zmLa, "/repos/RCB4Cloud/Reference/Data/LocalDataValidationResultsa.json", pretty=TRUE, auto_unbox="TRUE", digits=12, dataframe='rows')
+zmL2           <- as.data.frame(t(zmL02))
+zmL2$JobId     <- rownames(zmL2)
+rownames(zmL2) <- NULL
+write_json(zmL2, "/repos/RCB4Cloud/Reference/Data/LocalDataValidationResults2.json", pretty=TRUE, auto_unbox="TRUE", digits=12, dataframe='rows')
 
 #
 ##
