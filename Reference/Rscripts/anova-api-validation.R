@@ -17,7 +17,8 @@ suppressMessages(library(asremlPlus, quietly=TRUE))
 # Use "git chechout master" in the terminal shell to switch to the master branch
 
 source("/repos/RCB4Cloud/R/RCB_MainFunction.R")
-source("/repos/RCB4Cloud/R/RCB_SupportFunctions.R")
+# source("/repos/RCB4Cloud/R/RCB_SupportFunctions.R")
+source("/repos/RCB4Cloud/Reference/Rscripts/RCB_SupportFunctions.R")
 source("/repos/RCB4Cloud/Reference/Rscripts/fromAPI.R")
 
 ping_token = get_ping_token(client_id, client_secret,FALSE)
@@ -113,7 +114,7 @@ zaL31[grep("^compare",names(zaL31))]
 sapply(lapply(zaL31[grep("^compare",names(zaL31))], unlist), sum)
 summaryCompare(zaG31)
 
-zmG0          <- sapply(anovaGlobalJobIds,
+zmG0          <- sapply(anovaGlobalJobIds[1:3],
                         function(zn){summaryCompare(aovAPIvsRCB(call_API(zn, ping_token)))})
 zmG           <- as.data.frame(t(zmG0))
 zmG$JobId     <- rownames(zmG)
@@ -121,20 +122,54 @@ rownames(zmG) <- NULL
 write_json(zmG, "/repos/RCB4Cloud/Reference/Data/GlobalDataValidationResults.json", pretty=TRUE, auto_unbox="TRUE", digits=12, dataframe='rows')
 
 ###########
-zmL0          <- sapply(anovaLocalJobIds,
-                        function(zn){summaryCompare(aovAPIvsRCB(call_API(zn, ping_token)))})
-zmL           <- as.data.frame(t(zmL0))
-zmL$JobId     <- rownames(zmL)
-rownames(zmL) <- NULL
-write_json(zmL, "/repos/RCB4Cloud/Reference/Data/LocalDataValidationResults.json", pretty=TRUE, auto_unbox="TRUE", digits=12, dataframe='rows')
-
+# zmL0          <- sapply(anovaLocalJobIds,
+#                         function(zn){summaryCompare(aovAPIvsRCB(call_API(zn, ping_token)))})
+# zmL           <- as.data.frame(t(zmL0))
+# zmL$JobId     <- rownames(zmL)
+# rownames(zmL) <- NULL
+# write_json(zmL, "/repos/RCB4Cloud/Reference/Data/LocalDataValidationResults.json", pretty=TRUE, auto_unbox="TRUE", digits=12, dataframe='rows')
+## After changing the code
 zmL02          <- sapply(anovaLocalJobIds,
                         function(zn){summaryCompare(aovAPIvsRCB(call_API(zn, ping_token)))})
 zmL2           <- as.data.frame(t(zmL02))
 zmL2$JobId     <- rownames(zmL2)
 rownames(zmL2) <- NULL
 write_json(zmL2, "/repos/RCB4Cloud/Reference/Data/LocalDataValidationResults2.json", pretty=TRUE, auto_unbox="TRUE", digits=12, dataframe='rows')
+# apply(zmL2[,1:5], 2, sum)
+# compareLSM  compareDeltas compareVarComp   compareAnova     compareLSD
+# 0              0              0              0              0
 
+zsm <- call_API(sMeansJobIds[1], ping_token)
+zd1 <- lapply(zsm$modelOutputs[[1]]$simpleMeans$input$data,
+              function(zx){unlist(zx[c(1,3,7,8,10,11)])})
+zd2                     <- as.data.frame(do.call(rbind, zd1))
+zd2$dsrOverride         <- as.logical( as.character(zd2$dsrOverride        ) )
+zd2$isAnswerDeactivated <- as.logical( as.character(zd2$isAnswerDeactivated) )
+zd2$questionCode        <-             as.character(zd2$questionCode       )
+zd2$value               <- as.numeric( as.character(zd2$value              ) )
+
+zsm21 <- call_API(sMeansJobIds[21], ping_token)
+zd21 <- lapply(zsm21$modelOutputs[[1]]$simpleMeans$input$data,
+              function(zx){unlist(zx[c(1,3,7,8,10,11)])})
+zd22                     <- as.data.frame(do.call(rbind, zd21))
+zd22$dsrOverride         <- as.logical( as.character(zd22$dsrOverride        ) )
+zd22$isAnswerDeactivated <- as.logical( as.character(zd22$isAnswerDeactivated) )
+zd22$questionCode        <-             as.character(zd22$questionCode       )
+zd22$value               <- as.numeric( as.character(zd22$value              ) )
+
+# refresh the ping token and then read in the 47 simple global means data sets which are
+# organized in an odd way.
+ping_token = get_ping_token(client_id, client_secret,FALSE)
+zjl <- lapply(sMeansJobIds, function(zi){call_API(zi, ping_token)})
+
+zsmout <- lapply(1:length(zjl),
+                 function(zi){
+                   as.data.frame(do.call(rbind,
+                                         lapply(zjl[[zi]]$modelOutputs[[1]]$simpleMeans$means$global$factors, unlist)))})
+
+zsmbs1 <- call_API(sMeansBySubsiteJobIds[1], ping_token)
+
+zsmbsData <- do.call(rbind, lapply(zsmbs1$modelOutputs[[1]]$simpleMeans$means$local$subsites[[1]]$factors, unlist))
 #
 ##
 ###
