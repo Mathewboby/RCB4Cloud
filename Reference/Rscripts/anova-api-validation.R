@@ -169,7 +169,13 @@ zsmout <- lapply(1:length(zjl),
 
 zsmbs1 <- call_API(sMeansBySubsiteJobIds[1], ping_token)
 
-zsmbsData <- do.call(rbind, lapply(zsmbs1$modelOutputs[[1]]$simpleMeans$means$local$subsites[[1]]$factors, unlist))
+#zsmbsData <- do.call(rbind, lapply(zsmbs1$modelOutputs[[1]]$simpleMeans$means$local$subsites[[1]]$factors, unlist))
+zsmbsData <- data.frame(do.call(rbind, zsmbs1$modelOutputs[[1]]$simpleMeans$input$data)[, c(1,2,3,7,8,9,10,11)])
+
+zd47 <- data.frame(do.call(rbind, lapply(zjl[[47]]$modelOutputs[[1]]$simpleMeans$means$global$factors, unlist)))
+
+zd47inputData <- data.frame(do.call(rbind, zjl[[47]]$modelOutputs[[1]]$simpleMeans$input$data)[, c(1,2,3,7,8,9,10,11)])
+
 #
 ##
 ###
