@@ -1,5 +1,6 @@
 #' Check that the analysis_type is valid
 #' @param analysis_type A string specifying the type of analysis to be done
+
 checkAnalysisType <- function(analysis_type){
   check.path <- c("P1", "P2", "P3", "P4", "P5")
   if (!(analysis_type %in% check.path) ) {
@@ -9,6 +10,7 @@ checkAnalysisType <- function(analysis_type){
 }
 
 #' Sets the location of the ASReml license file if it does not exist
+
 setLicense <- function(){
   if (Sys.getenv("ASREML_LICENSE_FILE") == "") {
     Sys.setenv("ASREML_LICENSE_FILE" = "/usr/local/asreml3/bin/asreml.lic")
@@ -19,6 +21,7 @@ setLicense <- function(){
 #' @param data A dataframe
 #' @param data_fields A list of column names
 #' @export
+
 checkData <- function(data, data_fields){
   # Check for all required fields in data_fields list
   required_fields <- c ( "CROP_OBSRVTN_DETAIL_ID",
@@ -48,6 +51,7 @@ checkData <- function(data, data_fields){
 #' Reformats data to play nice with ASReml
 #' @inheritParams checkData
 #' @export
+
 reformatData <- function(data, data_fields){
   #keep only needed variables
   dflds     <- unlist(data_fields)
@@ -105,6 +109,7 @@ reformatData <- function(data, data_fields){
 #' Sets the fixed and random formulas based on the analysis type
 #' @inheritParams checkAnalysisType
 #' @export
+
 setFixedRandomEffects <- function(analysis_type){
   ###Specify the fixed, sparse and random formulas:
   switch(analysis_type,
@@ -203,7 +208,7 @@ lsmAnalysis <- function(asreml.obj, data, alpha){
   spdata <- split(data, data[,FACTOR_1])
   zcnt   <- sapply(spdata, nrow)
   zisna  <- sapply(spdata, function(zy){sum(is.na(zy))})
-  zdf    <- data.frame(factorLevelId=names(spdata),count=(zcnt-zisna))
+  zdf    <- data.frame(factorLevelId=names(spdata), count=(zcnt-zisna))
   LSM    <- merge(LSM, zdf, by="factorLevelId")
 
   # create the CI
@@ -226,7 +231,7 @@ lsmAnalysis_r <- function(RCB_asr, data){
 
   LSM <- data.frame(
     factorLevelId = RCB_asr$predictions$pvals[[FACTOR_1]],
-    value = RCB_asr$predictions$pvals$predicted.value,
+    value         = RCB_asr$predictions$pvals$predicted.value,
     standardError = RCB_asr$predictions$pvals$standard.error
   )
 
@@ -234,7 +239,7 @@ lsmAnalysis_r <- function(RCB_asr, data){
   spdata <- split(data, data[,FACTOR_1])
   zcnt   <- sapply(spdata, nrow)
   zisna  <- sapply(spdata, function(zy){sum(is.na(zy))})
-  zdf    <- data.frame(factorLevelId=names(spdata),count=(zcnt-zisna))
+  zdf    <- data.frame(factorLevelId=names(spdata), count=(zcnt-zisna))
   LSM    <- merge(LSM, zdf, by="factorLevelId")
 
 
@@ -253,24 +258,24 @@ lsmAnalysis_r <- function(RCB_asr, data){
 #' @param total_df A number specifying the total degrees of freedom to be used in the p-value computations.
 #' @param alpha A number between 0 and 1 specifying the confidence level
 #' @return A dataframe with columns for head, check, difference between the mean, associated p-value for all combinations of heads and checks, degree of freedom for t-test, test of statistic, lower and upper confidence intervals
-         #### #' @importFrom asremlPlus alldiffs predictiondiffs.asreml
 #' @export
 deltaAnalysis <- function(RCB_asr, alpha, total_df){
 
-  test_diffs <- asremlPlus::alldiffs ( predictions = RCB_asr$predictions$pvals,
-                           sed = RCB_asr$predictions$sed,
-                           tdf = total_df )
+  test_diffs <- alldiffs (predictions = RCB_asr$predictions$pvals,
+                          sed         = RCB_asr$predictions$sed,
+                          tdf         = total_df )
 
   # There is an error/mistake/bug between these two steps. In the above data
   # the factor names can be numeric, but treated as characters and ordered in
   # alphabetic order. When the predictiondiffs.asreml is called, it keeps
-  # the data in thet same order, but renames the rows and columns in purely
+  # the data in that same order, but renames the rows and columns in purely
   # numeric order, thus giving incorrect values in the tables. This can be
   # resolved by renaming the rows/columns using the order of the names in
   # the alldiffs function.
 
-  diffs_out <- asremlPlus::predictiondiffs.asreml( classify = FACTOR_1,
-                                       alldiffs.obj = test_diffs ,alpha =alpha )
+  diffs_out <- predictiondiffs.asreml(classify     = FACTOR_1,
+                                      alldiffs.obj = test_diffs ,
+                                      alpha        = alpha )
 
   # Fix the potential re-ordering issue
   correct_order_names                 <- as.character( diffs_out$predictions[,1] )
@@ -292,9 +297,10 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
 
   ## the diagonal shouldn't be NA, set it as p-value = 1
   diag(diffs_out$p.differences)    <- 1
-  msg                              <- MSG(diffs_out$p.differences,alpha)
-
-  return(list('Delta_table'=out_data,'Mean Separation Grouping'=msg, 'LSD'=diffs_out$LSD$meanLSD))
+  msg                              <- MSG(diffs_out$p.differences, alpha)
+  return(list('Delta_table'              = out_data,
+              'Mean Separation Grouping' = msg,
+              'LSD'                      = diffs_out$LSD$meanLSD))
 }
 
 
@@ -355,7 +361,7 @@ ANOVA_output_r <- function(asreml.obj){
 #' @return A dataframe with residuals align with corresponding location ID and replication ID
 #' @export
 resid_table <- function(asreml.obj,data) {
-  cbind(resid(asreml.obj),data[,FIELD_ID],data[,REP_ID])
+  cbind(resid(asreml.obj), data[,FIELD_ID],data[,REP_ID])
 }
 
 #' Computes the blup for random effects
@@ -410,37 +416,310 @@ MSG <- function(P,alpha) {
   return(temp1)
 }
 
-checkParameters <- function(params.default, params.input){
-  # Create an intial list of RCB parameters set to their corresponding defaults.
-  # Call this named list, params.default.
+# checkParameters <- function(params.default, params.input){
+#   # Create an intial list of RCB parameters set to their corresponding defaults.
+#   # Call this named list, params.default.
+#
+#   # Either read in the parameters from a file or use the individual inputs from above.
+#
+#   if(is.null(params.input)==TRUE){ # A user supplied list of parameters was not given. Therefore use the default individual inputs from above which may have been over written by the user.
+#     params.input <- params.default
+#   }
+#
+#   # Check for missing parameters and add them, if needed, with default or individual input values.
+#   nloip <- names(params.default)
+#   CheckNames <- names(params.default) %in% names(params.input) # This is TRUE for each name in names(params.default) which is also in names(ListOfSmartQAQCParameters)
+#   if(any(CheckNames==FALSE)){
+#     wcn <- which(CheckNames==FALSE) # Get the indicies of the missing parameters
+#     if(length(wcn)>0){
+#       for(jj in wcn){
+#         params.input[[ nloip[jj] ]] <- params.default[[ nloip[jj] ]]
+#       }
+#     }
+#   }
+#   # Check for missing parameter values.  If there are some,
+#   # replace them with the individual input default values.
+#   Check4Missing <- sapply(params.input,function(zx){is.null(zx) | is.na(zx) | is.nan(zx)})
+#   if(any(Check4Missing)==TRUE){
+#     wcm  <- which(Check4Missing==TRUE) # Get the indicies of the missing parameters values
+#     if(length(wcm)>0){
+#       for(kk in wcm){ # Loop over the indices of the missing parameters
+#         params.input[[kk]] <- params.default[[kk]] # Replace the missing value with the individual default value.
+#       }
+#     }
+#   }
+#   return(params.input)
+# }
 
-  # Either read in the parameters from a file or use the individual inputs from above.
+##############################################################################################
+# Add 7 needed asreml functions: asremlPlus::alldiffs and asremlPlus::predictiondiffs.asreml
+# asremlPlus::fac.getinTerm, asremlPlus::getTermVars, asremlPlus::fac.formTerm,
+# asremlPlus::separateFunction, and asremlPlus::rmFunction.
+# This is done in order to avoid having to load the asremlPlus package and its dependencies.
+# This will eliminate version incompatibilities.  This aaproach successfully helped smartQAQC.
+# This makes aour code more self-contained.  The two functions are long but basic.  It is
+# likely these two functions are very mature and not likely to change in the future.
+# These two functions are from asremlPlus_2.0-12.tar.gz, which was last modified 2016-09-16 12:50	417K
+# This package can be found at http://cran.wustl.edu//src/contrib/Archive/asremlPlus.  Note
+# asremlPlus requires the asreml, DAE and ggplot2 to be loaded first.  the Version of dae compatible
+# this version of asremlPlus is 2.7-20.  The following code was used to load all needed package into
+# the environment in which they were used.
+# library(lattice)
+# library(asreml)
+# library(ggplot2)
+# daeURL <- "http://cran.wustl.edu//src/contrib/Archive/dae/dae_2.7-20.tar.gz"
+# suppressMessages(install.packages(daeURL,repos=NULL,type="source"))
+# suppressMessages(library(dae, quietly=TRUE))
+# asremlPlusURL <- "http://cran.wustl.edu//src/contrib/Archive/asremlPlus/asremlPlus_2.0-12.tar.gz"
+# suppressMessages(install.packages(asremlPlusURL,repos=NULL,type="source"))
+# suppressMessages(library(asremlPlus, quietly=TRUE))
+##############################################################################################
 
-  if(is.null(params.input)==TRUE){ # A user supplied list of parameters was not given. Therefore use the default individual inputs from above which may have been over written by the user.
-    params.input <- params.default
+"alldiffs" <- function(predictions, differences = NULL, p.differences = NULL,
+                       sed = NULL, LSD = NULL, backtransforms = NULL,
+                       response = NULL, response.title = NULL,
+                       term = NULL, classify = NULL,
+                       tdf = NULL)
+{ #Check arguments
+  if (!("predicted.value" %in% colnames(predictions)) ||
+      !("standard.error" %in% colnames(predictions)) || !("est.status" %in% colnames(predictions)))
+    warning("Predictions argument does not include the expected column names (e.g. predicted.value)")
+  npred <- nrow(predictions)
+  if ((!is.null(differences) && !("matrix" %in% class(differences))) ||
+      (!is.null(p.differences) && !("matrix" %in% class(p.differences))) ||
+      (!is.null(sed) && !("matrix" %in% class(sed))))
+    warning("At least one of differences, p.differences and sed is not of type matrix")
+  if (!is.null(differences) && !is.null(p.differences) && !is.null(sed))
+  { dimens <- c(nrow(differences), nrow(p.differences), nrow(sed),
+                ncol(differences), ncol(p.differences), ncol(sed))
+  if (any(npred != dimens))
+    stop("At least one of differences, p.differences or sed is not conformable with predictions")
   }
-
-  # Check for missing parameters and add them, if needed, with default or individual input values.
-  nloip <- names(params.default)
-  CheckNames <- names(params.default) %in% names(params.input) # This is TRUE for each name in names(params.default) which is also in names(ListOfSmartQAQCParameters)
-  if(any(CheckNames==FALSE)){
-    wcn <- which(CheckNames==FALSE) # Get the indicies of the missing parameters
-    if(length(wcn)>0){
-      for(jj in wcn){
-        params.input[[ nloip[jj] ]] <- params.default[[ nloip[jj] ]]
-      }
-    }
+  if (!is.null(backtransforms))
+  { if (!("backtransformed.predictions" %in% colnames(backtransforms)))
+    warning("Backtransforms argument does not include a column named backtransformed.predictions")
+    if (npred != nrow(backtransforms))
+      stop("Backtransforms do not contain the same number of rows as the predictions")
   }
-  # Check for missing parameter values.  If there are some,
-  # replace them with the individual input default values.
-  Check4Missing <- sapply(params.input,function(zx){is.null(zx) | is.na(zx) | is.nan(zx)})
-  if(any(Check4Missing)==TRUE){
-    wcm  <- which(Check4Missing==TRUE) # Get the indicies of the missing parameters values
-    if(length(wcm)>0){
-      for(kk in wcm){ # Loop over the indices of the missing parameters
-        params.input[[kk]] <- params.default[[kk]] # Replace the missing value with the individual default value.
-      }
-    }
-  }
-  return(params.input)
+  #ensure diag of sed is NA
+  if (!is.null(sed))
+    diag(sed) <- NA
+  meanLSD <- NULL
+  if (!is.null(LSD))
+    attr(predictions, which = "meanLSD") <- LSD$meanLSD
+  p <- list(predictions = predictions, differences = differences,
+            p.differences = p.differences, sed = sed, LSD = LSD,
+            backtransforms = backtransforms)
+  attr(p, which = "response") <- response
+  attr(p, which = "response.title") <- response.title
+  attr(p, which = "term") <- term
+  attr(p, which = "classify") <- classify
+  attr(p, which = "tdf") <- tdf
+  class(p) <- "alldiffs"
+  return(p)
 }
+
+###########################################################################
+
+"predictiondiffs.asreml" <- function(classify, alldiffs.obj,
+                                     x.num = NULL, x.fac = NULL,
+                                     levels.length = NA,
+                                     pairwise = TRUE, alpha = 0.05,
+                                     inestimable.rm = TRUE)
+  #a function to get a table of asreml predictions and associated statistics
+  #  for all pairwise differences
+{ #Check alldiffs.obj
+  if (!("alldiffs" %in% class(alldiffs.obj)))
+    stop("Alldiffs.obj is not of class alldiffs")
+  if (is.null(alldiffs.obj$predictions))
+    stop("No predictions supplied in alldiffs.obj")
+  if (is.null(alldiffs.obj$sed))
+    stop(paste("No sed supplied in alldiffs.obj \n",
+               "- can obtain using sed=TRUE in predict.asreml"))
+  predictions <- alldiffs.obj$predictions
+  #Retain only estimable predictions
+  which.estim <- (predictions$est.status == "Estimable")
+  if (inestimable.rm & sum(which.estim) != nrow(predictions))
+  { predictions <- predictions[which.estim, ]
+  if (nrow(predictions) == 0)
+    warning("There are no estimable predictions")
+  #Make sure all factors have only observed levels
+  predictions[1:ncol(predictions)] <-
+    lapply(1:ncol(predictions),
+           function(k, data)
+           { if (is.factor(data[[k]]))
+             data[[k]] <- factor(data[[k]])
+           return(data[[k]])
+           }, predictions)
+  alldiffs.obj$predictions <- predictions
+  if (!is.null(alldiffs.obj$sed))
+  { if (inestimable.rm)
+    alldiffs.obj$sed <- alldiffs.obj$sed[which.estim, which.estim]
+  diag(alldiffs.obj$sed) <- NA
+  }
+  #Reset the other components to NULL
+  alldiffs.obj$difference <- NULL
+  alldiffs.obj$p.difference <- NULL
+  alldiffs.obj$LSD <- NULL
+  attr(alldiffs.obj, which = "meanLSD") <- NULL
+  }
+
+  response <- as.character(attr(alldiffs.obj, which = "response"))
+  #Form all pairwise differences, if not present and to be stored
+  if (is.null(alldiffs.obj$differences) & pairwise)
+  {  #determine factors for row and columns name
+    #Make sure no functions in classify
+    factors <- fac.getinTerm(classify, rmfunction = TRUE)
+    classify <- fac.formTerm(factors)
+    nfac <- length(factors)
+    #Check all factors in classify are in predictions
+    if (length(setdiff (factors, names(predictions))) != 0)
+    { if (!is.null(response))
+      stop("For ",response,
+           ", there are factors in the classify argument that do not have columns in alldiffs.obj$predictions")
+      else
+        stop("There are factors in the classify argument that do not have columns in alldiffs.obj$predictions")
+    }
+    #Make sure only one of the numeric and factor that are parallel
+    if ((!is.null(x.num) && x.num %in% factors) && (!is.null(x.fac) && x.fac %in% factors))
+    { k <- match(x.num, names(predictions))
+    predictions <- predictions[, -k]
+    nfac <- nfac - 1
+    }
+    pred.diff <- outer(predictions$predicted.value, predictions$predicted.value, "-")
+    #Generate row and column names as the combinations of the levels of factors
+    if (nfac > 1)
+    { pred.faclist <- vector("list", length=nfac)
+    nclassify <- ncol(predictions) - 3
+    pred.names <- names(predictions)
+    kk <- 0
+    for (k in 1:nclassify)
+    { if (pred.names[k] %in% factors)
+    { kk <- kk + 1
+    pred.faclist[[kk]] <- predictions[[k]]
+    if (is.numeric(pred.faclist[[kk]]))
+      pred.faclist[[kk]] <- factor(pred.faclist[[kk]])
+    names(pred.faclist)[kk] <- pred.names[k]
+    }
+    }
+    pred.faclist <- lapply(pred.faclist, FUN=function(ff){if (is.character(levels(ff)) && !is.na(levels.length))
+      ff <- factor(ff, labels=substr(levels(ff), start=1, stop=levels.length))
+    invisible(ff)})
+    pred.lev <- levels(fac.combine(pred.faclist, combine.levels=TRUE))
+    }
+    else
+    { k <- match(factors[[1]], names(predictions))
+    pred.fac <- predictions[[k]]
+    if (is.numeric(pred.fac))
+      pred.fac <- factor(pred.fac)
+    pred.lev <- levels(pred.fac)
+    if (is.character(pred.lev) && !is.na(levels.length))
+      pred.lev <- substr(pred.lev, start=1, stop=levels.length)
+    }
+    if (nrow(alldiffs.obj$sed) != nrow(pred.diff) |
+        ncol(alldiffs.obj$sed) != ncol(pred.diff))
+      stop("The matrix of pairwise differences and sed are not conformable")
+    if (ncol(alldiffs.obj$sed) != length(pred.lev) | nrow(alldiffs.obj$sed) != length(pred.lev))
+      stop(paste("Dimensions of differences and sed not equal to \n",
+                 "the number of observed levels combinations of the factors"))
+    dimnames(pred.diff) <- list(pred.lev, pred.lev)
+    dimnames(alldiffs.obj$sed) <- list(pred.lev, pred.lev)
+  } else
+  { if (!pairwise)
+  { alldiffs.obj["differences"] <- list(NULL)
+  alldiffs.obj["p.differences"] <- list(NULL)
+  }
+  }
+  #Check if tdf available
+  denom.df <- attr(alldiffs.obj, which = "tdf")
+  if (is.null(denom.df))
+    warning(paste("The degrees of freedom of the t-distribtion are not available in alldiffs.obj\n",
+                  "- p-values and LSDs not calculated"))
+  else
+  { #calculate p-values, if not present
+    if (is.null(alldiffs.obj$p.differences) & pairwise)
+    { p.diff <- abs(pred.diff)/alldiffs.obj$sed
+    p.diff <- 2*pt(p.diff, df = denom.df, lower.tail = FALSE)
+    alldiffs.obj$differences <- pred.diff
+    alldiffs.obj$p.differences <- p.diff
+    }
+    #calculate LSDs, if not present
+    if (is.null(alldiffs.obj$LSD) & pairwise)
+    { t.value = qt(1-alpha/2, denom.df)
+    minLSD <- t.value * min(alldiffs.obj$sed, na.rm = TRUE)
+    maxLSD <- t.value * max(alldiffs.obj$sed, na.rm = TRUE)
+    meanLSD <- t.value * mean(alldiffs.obj$sed, na.rm = TRUE)
+    alldiffs.obj$LSD <- data.frame(minLSD  = minLSD,
+                                   meanLSD = meanLSD,
+                                   maxLSD = maxLSD)
+    attr(alldiffs.obj, which = "meanLSD") <- meanLSD
+    }
+  }
+  return(alldiffs.obj)
+}
+
+##########################################################################################
+
+"fac.getinTerm" <- function(term, rmfunction=FALSE)
+  #function to return the set of factors/variables in a term separated by ':"
+{ if (length(term) != 1)
+  stop("Multiple terms supplied where only one allowed")
+  vars <- unlist(strsplit(term, ":", fixed=TRUE))
+  if (rmfunction)
+    vars <- unlist(lapply(vars, rmFunction))
+  return(vars)
+}
+
+##########################################################################################
+
+"getTermVars" <- function(term)
+  #This function gets the vars in each random term from an asreml termlist
+  #It strips off stuff to the right of an !, provided it is not to the right of
+  #a term starting with R!
+{ if(substr(term, 1, 2) != "R!")  term <- rmTermDescription(term)
+vars <- fac.getinTerm(term)
+return(vars)
+}
+
+##########################################################################################
+
+"fac.formTerm" <- function(factors)
+  #function to form a term from a set of factors/variables in a structure
+{ term <- paste(factors,collapse=":")
+return(term)
+}
+
+##########################################################################################
+
+"separateFunction" <- function(var)
+  #A function to separate the name of a function and the argument to the function
+{ #Remove description, if there is one, from term in an asreml termlist
+  if (length(grep("(", var, fixed=TRUE))!=0)
+  { var <- (strsplit(var, "(", fixed=TRUE) )[[1]]
+  var[2] <- (strsplit(var[2], ")", fixed=TRUE) )[[1]][1]
+  }
+  return(var)
+}
+
+##########################################################################################
+
+"rmFunction" <- function(var, asreml.obj)
+  #A function that returns the variable without any function
+{ var <- separateFunction(var)
+if (length(var)==2)
+{ var <- var[2]
+#Check for further arguments and strip, if found
+if (length(grep(",", var, fixed=TRUE))!=0)
+{ var <- (strsplit(var, ",", fixed=TRUE) )[[1]]
+var <- var[1]
+}
+}
+return(var)
+}
+
+
+
+#
+##
+###
+####
