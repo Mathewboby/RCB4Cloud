@@ -1,0 +1,32 @@
+Loading required package: jsonlite
+Loading required package: methods
+Loading required package: dplyr
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+[1] "running dsr"
+[1] "analyzing 106 rows of data"
+[1] "multi rep option set to global"
+[1] "model type RCB_SR_AF scenario 3"
+[1] "summary of dsr"
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+-8.8559 -0.5049  0.1799 -0.0238  0.5690  3.2541 
+[1] " Number of na dsrs"
+[1] 0
+[1] " Number of na dsr degrees-of-freedom"
+[1] 0
+[1] "summary of dsr"
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+-2.776947 -0.665060  0.214303 -0.003903  0.768258  2.094661 
+[1] " Number of na dsrs"
+[1] 0
+[1] " Number of na dsr degrees-of-freedom"
+[1] 0

@@ -1,0 +1,56 @@
+Warning messages:
+1: replacing previous import by ‘rlang:::=’ when loading ‘dplyr’ 
+2: replacing previous import by ‘rlang::.data’ when loading ‘dplyr’ 
+3: replacing previous import by ‘rlang::as_label’ when loading ‘dplyr’ 
+4: replacing previous import by ‘rlang::as_name’ when loading ‘dplyr’ 
+5: replacing previous import by ‘rlang::dots_n’ when loading ‘dplyr’ 
+6: replacing previous import by ‘rlang::enquo’ when loading ‘dplyr’ 
+7: replacing previous import by ‘rlang::enquos’ when loading ‘dplyr’ 
+8: replacing previous import by ‘rlang::expr’ when loading ‘dplyr’ 
+9: replacing previous import by ‘rlang::sym’ when loading ‘dplyr’ 
+10: replacing previous import by ‘rlang::syms’ when loading ‘dplyr’ 
+Loading required package: lattice
+Checking for license in  /root 
+Licensed to: Monsanto
+Serial Number: 402084150 Expires: 31-jul-2020 (141 days)
+
+Loading required package: Matrix
+Loading required package: jsonlite
+[1] "140 rows of data passed into function."
+[1] "0 rows of data excluded from analysis."
+ASReml: Thu Mar 12 15:54:36 2020
+
+     LogLik         S2      DF      wall     cpu
+   -287.4114     19.7831   139  15:54:46     0.0
+   -272.4261     16.4379   139  15:54:46     0.0
+   -259.4957     13.6600   139  15:54:46     0.0
+   -250.3648     11.7863   139  15:54:46     0.0
+   -246.7590     11.0244   139  15:54:46     0.0
+   -245.4356     10.6864   139  15:54:46     0.0
+   -245.0594     10.5346   139  15:54:46     0.0
+   -245.0000     10.4760   139  15:54:46     0.0
+   -244.9974     10.4629   139  15:54:46     0.0
+   -244.9974     10.4622   139  15:54:46     0.0
+   -244.9974     10.4622   139  15:54:46     0.0
+
+Finished on: Thu Mar 12 15:54:46 2020
+ 
+LogLikelihood Converged 
+ASReml: Thu Mar 12 15:54:46 2020
+
+     LogLik         S2      DF      wall     cpu
+   -274.4271      1.0000   139  15:54:46     0.0
+   -259.3103      1.0000   139  15:54:46     0.0
+   -245.6698      1.0000   139  15:54:46     0.0
+   -236.6242      1.0000   139  15:54:46     0.0
+   -233.7498      1.0000   139  15:54:46     0.0
+   -232.7426      1.0000   139  15:54:46     0.0
+   -232.4741      1.0000   139  15:54:46     0.0
+   -232.4385      1.0000   139  15:54:46     0.0
+   -232.4375      1.0000   139  15:54:46     0.0
+   -232.4375      1.0000   139  15:54:46     0.0
+   -232.4375      1.0000   139  15:54:46     0.0
+
+Finished on: Thu Mar 12 15:54:46 2020
+ 
+LogLikelihood Converged 

@@ -1,0 +1,24 @@
+Loading required package: asremlPlus
+Checking for license in  /root 
+Licensed to: Monsanto
+Serial Number: 402084150 Expires: 31-jul-2020 (141 days)
+
+Loading required package: Matrix
+Warning messages:
+1: replacing previous import by ‘rlang:::=’ when loading ‘dplyr’ 
+2: replacing previous import by ‘rlang::.data’ when loading ‘dplyr’ 
+3: replacing previous import by ‘rlang::as_label’ when loading ‘dplyr’ 
+4: replacing previous import by ‘rlang::as_name’ when loading ‘dplyr’ 
+5: replacing previous import by ‘rlang::dots_n’ when loading ‘dplyr’ 
+6: replacing previous import by ‘rlang::enquo’ when loading ‘dplyr’ 
+7: replacing previous import by ‘rlang::enquos’ when loading ‘dplyr’ 
+8: replacing previous import by ‘rlang::expr’ when loading ‘dplyr’ 
+9: replacing previous import by ‘rlang::sym’ when loading ‘dplyr’ 
+10: replacing previous import by ‘rlang::syms’ when loading ‘dplyr’ 
+[1] "input 94 rows"
+[1] "current question code SC"
+[1] "analyzing 94 rows"
+[1] " Model2: Multi LOC Single REP BLUE"
+Running ASReml using analysis type: P2
+finished in 13.75 secs
+Creating output files...

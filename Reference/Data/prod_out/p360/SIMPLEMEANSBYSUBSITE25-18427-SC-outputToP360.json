@@ -1,0 +1,551 @@
+{
+  "jobEndTime": "2020-03-12T16:06:34Z",
+  "uomCode": "CNT",
+  "answerFilters": [{
+    "questionCode": "SCTYPE",
+    "qandaKey": "2d75f681-0284-43e9-b368-a4ffc41e4195",
+    "value": "FINAL"
+  }],
+  "questionCode": "SC",
+  "annotations": {
+    "businessUnit": "Breeding",
+    "jobId": "25"
+  },
+  "experimentId": "323",
+  "status": "COMPLETE",
+  "modelOutputs": [{
+    "status": "SUCCESSFUL",
+    "resultType": "MEANS",
+    "analysisScope": "LOCAL",
+    "simpleMeans": {
+      "means": {
+        "global": {
+          "factors": [{
+            "id": "127665",
+            "value": 32.0
+          }, {
+            "id": "127530",
+            "value": 42.0
+          }, {
+            "id": "127533",
+            "value": 36.0
+          }, {
+            "id": "127661",
+            "value": 47.0
+          }, {
+            "id": "127672",
+            "value": 44.0
+          }, {
+            "id": "127658",
+            "value": 45.0
+          }, {
+            "id": "127534",
+            "value": 41.0
+          }, {
+            "id": "127673",
+            "value": 46.0
+          }, {
+            "id": "127662",
+            "value": 42.0
+          }, {
+            "id": "127659",
+            "value": 48.0
+          }, {
+            "id": "127535",
+            "value": 31.0
+          }, {
+            "id": "127531",
+            "value": 35.0
+          }, {
+            "id": "127669",
+            "value": 37.0
+          }, {
+            "id": "127670",
+            "value": 43.0
+          }, {
+            "id": "127663",
+            "value": 43.0
+          }, {
+            "id": "127657",
+            "value": 42.0
+          }, {
+            "id": "127668",
+            "value": 37.0
+          }, {
+            "id": "127660",
+            "value": 43.0
+          }, {
+            "id": "127671",
+            "value": 46.0
+          }, {
+            "id": "127664",
+            "value": 44.0
+          }, {
+            "id": "127666",
+            "value": 41.0
+          }, {
+            "id": "127532",
+            "value": 42.0
+          }, {
+            "id": "127656",
+            "value": 43.0
+          }, {
+            "id": "127667",
+            "value": 44.0
+          }]
+        },
+        "local": {
+          "subsites": [{
+            "answers": ["686ce4a5-5a18-4b92-9f74-131ec23968bf", "12caf861-6256-4acd-86e5-5976fba55fd6", "deb80cac-234f-4b45-9522-c2061563b131", "718c85bd-e84e-410a-a14e-76dd6471cf75", "2d20688b-e92b-4dce-acf3-227d1cc7ac6e", "d3a7c6e0-ecde-4ee6-9105-88aa687c82ce", "e939bbd5-3d19-437c-8aff-8474ca7aa831", "321d2998-376b-42b8-b9df-44c0148805fd", "0f19fa40-1681-4fc2-8cfd-8b76ca2a5e9e", "8dcf4554-8d98-423e-a6d0-ae2a6614d4f4", "4f8e1f99-370d-4182-9efb-62dc03ec1af9", "3b69b131-9674-4fe9-b49a-9cbbd9e589f7", "f137373c-823b-4965-ab6a-5518f751205f", "276fec6e-65fe-4c41-bafb-437f4bb5c596", "a9d5e283-3da3-429a-9934-486b58549c88", "e8117269-65e9-412a-8dcd-d663341f6cc4", "b8f82aa8-c2a7-41af-9a4a-6c283b7aa361", "26062939-5039-40d3-827a-f64c9c7d67e5", "ff740c36-0abb-47c6-a8eb-077f3bf0bdce", "658d6a2f-5dd2-4602-9a4c-cd8bf2cca250", "1d951e82-54a8-4e28-afb6-3922ea2f97a7", "e78fabdf-88e8-4526-a4a9-0519e82762fd", "6f3fc822-409b-48a2-a332-5eaa17864264", "4959156d-dfa6-48e9-a6ce-b28c88e74f44"],
+            "id": "{95f7f0a6-568d-4a69-8a29-37d2e733936f}",
+            "factors": [{
+              "id": "127665",
+              "value": 32.0
+            }, {
+              "id": "127530",
+              "value": 42.0
+            }, {
+              "id": "127533",
+              "value": 36.0
+            }, {
+              "id": "127661",
+              "value": 47.0
+            }, {
+              "id": "127672",
+              "value": 44.0
+            }, {
+              "id": "127658",
+              "value": 45.0
+            }, {
+              "id": "127534",
+              "value": 41.0
+            }, {
+              "id": "127673",
+              "value": 46.0
+            }, {
+              "id": "127662",
+              "value": 42.0
+            }, {
+              "id": "127659",
+              "value": 48.0
+            }, {
+              "id": "127535",
+              "value": 31.0
+            }, {
+              "id": "127531",
+              "value": 35.0
+            }, {
+              "id": "127669",
+              "value": 37.0
+            }, {
+              "id": "127670",
+              "value": 43.0
+            }, {
+              "id": "127663",
+              "value": 43.0
+            }, {
+              "id": "127657",
+              "value": 42.0
+            }, {
+              "id": "127668",
+              "value": 37.0
+            }, {
+              "id": "127660",
+              "value": 43.0
+            }, {
+              "id": "127671",
+              "value": 46.0
+            }, {
+              "id": "127664",
+              "value": 44.0
+            }, {
+              "id": "127666",
+              "value": 41.0
+            }, {
+              "id": "127532",
+              "value": 42.0
+            }, {
+              "id": "127656",
+              "value": 43.0
+            }, {
+              "id": "127667",
+              "value": 44.0
+            }],
+            "value": 41.416666666666664,
+            "controls": [{
+              "controlType": "Performance",
+              "value": null
+            }]
+          }]
+        }
+      },
+      "input": {
+        "data": [{
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "686ce4a5-5a18-4b92-9f74-131ec23968bf",
+          "questionCode": "SC",
+          "range": 3,
+          "column": 49,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641347",
+          "value": 42.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78663237, 17.00267406], [80.78657794, 17.00268809], [80.78658377, 17.00270903], [80.7866382, 17.00269501], [80.78663237, 17.00267406]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "12caf861-6256-4acd-86e5-5976fba55fd6",
+          "questionCode": "SC",
+          "range": 3,
+          "column": 47,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641356",
+          "value": 35.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78662653, 17.00265311], [80.78657211, 17.00266714], [80.78657794, 17.00268809], [80.78663237, 17.00267406], [80.78662653, 17.00265311]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "deb80cac-234f-4b45-9522-c2061563b131",
+          "questionCode": "SC",
+          "range": 2,
+          "column": 35,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641345",
+          "value": 42.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78664597, 17.0025134], [80.78659154, 17.00252742], [80.78659737, 17.00254837], [80.7866518, 17.00253434], [80.78664597, 17.0025134]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "718c85bd-e84e-410a-a14e-76dd6471cf75",
+          "questionCode": "SC",
+          "range": 2,
+          "column": 41,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641353",
+          "value": 36.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78666346, 17.00257624], [80.78660904, 17.00259027], [80.78661487, 17.00261122], [80.78666929, 17.00259719], [80.78666346, 17.00257624]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "2d20688b-e92b-4dce-acf3-227d1cc7ac6e",
+          "questionCode": "SC",
+          "range": 3,
+          "column": 51,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641341",
+          "value": 41.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.7866382, 17.00269501], [80.78658377, 17.00270903], [80.7865896, 17.00272998], [80.78664403, 17.00271595], [80.7866382, 17.00269501]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "d3a7c6e0-ecde-4ee6-9105-88aa687c82ce",
+          "questionCode": "SC",
+          "range": 2,
+          "column": 31,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641350",
+          "value": 31.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.7866343, 17.0024715], [80.78657987, 17.00248553], [80.78658571, 17.00250648], [80.78664013, 17.00249245], [80.7866343, 17.0024715]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "e939bbd5-3d19-437c-8aff-8474ca7aa831",
+          "questionCode": "SC",
+          "range": 2,
+          "column": 51,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641361",
+          "value": 43.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78669262, 17.00268098], [80.7866382, 17.00269501], [80.78664403, 17.00271595], [80.78669846, 17.00270192], [80.78669262, 17.00268098]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "321d2998-376b-42b8-b9df-44c0148805fd",
+          "questionCode": "SC",
+          "range": 2,
+          "column": 49,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641338",
+          "value": 42.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78668679, 17.00266003], [80.78663237, 17.00267406], [80.7866382, 17.00269501], [80.78669262, 17.00268098], [80.78668679, 17.00266003]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "0f19fa40-1681-4fc2-8cfd-8b76ca2a5e9e",
+          "questionCode": "SC",
+          "range": 2,
+          "column": 45,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641348",
+          "value": 45.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78667513, 17.00261813], [80.7866207, 17.00263216], [80.78662653, 17.00265311], [80.78668096, 17.00263908], [80.78667513, 17.00261813]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "8dcf4554-8d98-423e-a6d0-ae2a6614d4f4",
+          "questionCode": "SC",
+          "range": 2,
+          "column": 37,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641358",
+          "value": 48.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.7866518, 17.00253434], [80.78659737, 17.00254837], [80.7866032, 17.00256932], [80.78665763, 17.00255529], [80.7866518, 17.00253434]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "4f8e1f99-370d-4182-9efb-62dc03ec1af9",
+          "questionCode": "SC",
+          "range": 3,
+          "column": 41,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641343",
+          "value": 43.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78660904, 17.00259027], [80.78655461, 17.0026043], [80.78656044, 17.00262524], [80.78661487, 17.00261122], [80.78660904, 17.00259027]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "3b69b131-9674-4fe9-b49a-9cbbd9e589f7",
+          "questionCode": "SC",
+          "range": 3,
+          "column": 45,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641357",
+          "value": 47.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.7866207, 17.00263216], [80.78656627, 17.00264619], [80.78657211, 17.00266714], [80.78662653, 17.00265311], [80.7866207, 17.00263216]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "f137373c-823b-4965-ab6a-5518f751205f",
+          "questionCode": "SC",
+          "range": 3,
+          "column": 33,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641342",
+          "value": 42.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78658571, 17.00250648], [80.78653128, 17.00252051], [80.78653711, 17.00254145], [80.78659154, 17.00252742], [80.78658571, 17.00250648]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "276fec6e-65fe-4c41-bafb-437f4bb5c596",
+          "questionCode": "SC",
+          "range": 3,
+          "column": 39,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641354",
+          "value": 43.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.7866032, 17.00256932], [80.78654878, 17.00258335], [80.78655461, 17.0026043], [80.78660904, 17.00259027], [80.7866032, 17.00256932]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "a9d5e283-3da3-429a-9934-486b58549c88",
+          "questionCode": "SC",
+          "range": 2,
+          "column": 53,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641340",
+          "value": 44.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78669846, 17.00270192], [80.78664403, 17.00271595], [80.78664986, 17.0027369], [80.78670429, 17.00272287], [80.78669846, 17.00270192]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "e8117269-65e9-412a-8dcd-d663341f6cc4",
+          "questionCode": "SC",
+          "range": 2,
+          "column": 47,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641351",
+          "value": 32.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78668096, 17.00263908], [80.78662653, 17.00265311], [80.78663237, 17.00267406], [80.78668679, 17.00266003], [80.78668096, 17.00263908]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "b8f82aa8-c2a7-41af-9a4a-6c283b7aa361",
+          "questionCode": "SC",
+          "range": 3,
+          "column": 35,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641359",
+          "value": 41.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78659154, 17.00252742], [80.78653711, 17.00254145], [80.78654294, 17.0025624], [80.78659737, 17.00254837], [80.78659154, 17.00252742]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "26062939-5039-40d3-827a-f64c9c7d67e5",
+          "questionCode": "SC",
+          "range": 3,
+          "column": 53,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641344",
+          "value": 44.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78664403, 17.00271595], [80.7865896, 17.00272998], [80.78659544, 17.00275093], [80.78664986, 17.0027369], [80.78664403, 17.00271595]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "ff740c36-0abb-47c6-a8eb-077f3bf0bdce",
+          "questionCode": "SC",
+          "range": 3,
+          "column": 31,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641355",
+          "value": 37.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78657987, 17.00248553], [80.78652545, 17.00249956], [80.78653128, 17.00252051], [80.78658571, 17.00250648], [80.78657987, 17.00248553]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "658d6a2f-5dd2-4602-9a4c-cd8bf2cca250",
+          "questionCode": "SC",
+          "range": 2,
+          "column": 33,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641339",
+          "value": 37.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78664013, 17.00249245], [80.78658571, 17.00250648], [80.78659154, 17.00252742], [80.78664597, 17.0025134], [80.78664013, 17.00249245]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "1d951e82-54a8-4e28-afb6-3922ea2f97a7",
+          "questionCode": "SC",
+          "range": 3,
+          "column": 43,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641349",
+          "value": 43.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78661487, 17.00261122], [80.78656044, 17.00262524], [80.78656627, 17.00264619], [80.7866207, 17.00263216], [80.78661487, 17.00261122]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "e78fabdf-88e8-4526-a4a9-0519e82762fd",
+          "questionCode": "SC",
+          "range": 2,
+          "column": 43,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641360",
+          "value": 46.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78666929, 17.00259719], [80.78661487, 17.00261122], [80.7866207, 17.00263216], [80.78667513, 17.00261813], [80.78666929, 17.00259719]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "6f3fc822-409b-48a2-a332-5eaa17864264",
+          "questionCode": "SC",
+          "range": 3,
+          "column": 37,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641346",
+          "value": 44.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78659737, 17.00254837], [80.78654294, 17.0025624], [80.78654878, 17.00258335], [80.7866032, 17.00256932], [80.78659737, 17.00254837]]],
+            "type": "Polygon"
+          }
+        }, {
+          "harvestedPlotLength": null,
+          "dsrOverride": false,
+          "answerId": "4959156d-dfa6-48e9-a6ce-b28c88e74f44",
+          "questionCode": "SC",
+          "range": 2,
+          "column": 39,
+          "isAnswerDeactivated": false,
+          "setEntryId": "641352",
+          "value": 46.0,
+          "harvestedPlotWidth": null,
+          "geometry": {
+            "coordinates": [[[80.78665763, 17.00255529], [80.7866032, 17.00256932], [80.78660904, 17.00259027], [80.78666346, 17.00257624], [80.78665763, 17.00255529]]],
+            "type": "Polygon"
+          }
+        }]
+      }
+    }
+  }],
+  "jobStartTime": "2020-03-12T16:06:33Z",
+  "analysisConfigId": "726a49b9-7a71-437a-8ed2-e92cf799382f",
+  "blockId": "2166",
+  "runGroupId": "e780a346-0572-4e78-99d9-0d253c28e1c0"
+}
