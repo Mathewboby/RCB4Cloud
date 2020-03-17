@@ -257,7 +257,7 @@ lsmAnalysis_r <- function(RCB_asr, data){
 #' @export
 deltaAnalysis <- function(RCB_asr, alpha, total_df){
 
-  test_diffs <- asremlPlus::alldiffs ( predictions = RCB_asr$predictions$pvals,
+  test_diffs <- alldiffs ( predictions = RCB_asr$predictions$pvals,   #asremlPlus::alldiffs ( predictions = RCB_asr$predictions$pvals,
                            sed = RCB_asr$predictions$sed,
                            tdf = total_df )
 
@@ -269,7 +269,7 @@ deltaAnalysis <- function(RCB_asr, alpha, total_df){
   # resolved by renaming the rows/columns using the order of the names in
   # the alldiffs function.
 
-  diffs_out <- asremlPlus::predictiondiffs.asreml( classify = FACTOR_1,
+  diffs_out <- predictiondiffs.asreml( classify = FACTOR_1,  #asremlPlus::predictiondiffs.asreml( classify = FACTOR_1,
                                        alldiffs.obj = test_diffs ,alpha =alpha )
 
   # Fix the potential re-ordering issue

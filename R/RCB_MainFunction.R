@@ -69,7 +69,7 @@ RCB_ModelFittingFunction <- function(DataIn, params.input, analysisType){
   print(paste0('input ', nrow(DataIn), ' rows'))
 
   obs.name <-  unique(DataIn[,params.list$questionCode])
-  print(paste0('current question code ', obs.name))
+  print(paste0('current question code is ', obs.name))
 
 tmp <- as.logical(as.character(DataIn[,params.list$isQaqcDeactivated]))
 
@@ -138,9 +138,6 @@ isRowOK <- (DataIn[,params.list$isQaqcDeactivated]     == FALSE &
   start      <- Sys.time()
   message(paste("Running ASReml using analysis type:", analysisType), appendLF = TRUE )
   # Run R-ASReml, capture output
-  print(fixed_formula)
-  print(random_formula)
-  print(FACTOR_1)
   RCB_asr  <-  asreml::asreml(
                       fixed     = fixed_formula,
                       random    = random_formula,

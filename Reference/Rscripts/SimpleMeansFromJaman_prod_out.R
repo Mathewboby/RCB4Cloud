@@ -107,6 +107,9 @@ zmvacbt2 <- aggregate(data=fsdat2, Plot_mean~Ass_col + Treat, function(zx){mean(
 fsdat2$Block     <- as.factor(paste0("Blk", fsdat2$Block))
 fsdat2$Treatment <- as.factor(fsdat2$Treatment)
 fsdat2$repId     <- "r1"
+fsdat2$FIELD_ID  <- fsdat2$Block
+fsdat2$FACTOR_1  <- fsdat2$fsdat2$Treatment
+fsdat2$REP_ID    <- fsdat2$repId
 fsdat2$isPlaceHolder         <- FALSE
 fsdat2$isDsrDeactivated      <- FALSE
 fsdat2$isQaqcDeactivated     <- FALSE
@@ -122,6 +125,10 @@ RCBparams4P2 <- list(
   blockNum      = "Block",
   subSiteId     = "Block",
   factorLevelId = "Treatment",
+  CROP_OBSRVTN_DETAIL_ID = "Plot_mean",
+  FACTOR_1      = "Treatment",
+  FIELD_ID      = "Block",
+  REP_ID        = "repId",
   repId         = "repId",
   locationId    = "Trial",
   questionCode  = "questionCode",
@@ -132,6 +139,10 @@ RCBparams4P2 <- list(
   isSetEntryDeactivated = "isSetEntryDeactivated",
   alpha                   = 0.10,
   sufficientDataThreshold = 14)
+
+library(lattice)
+library(asreml)
+source("/repos/RCB4Cloud/Reference/Rscripts/RCB_SupportFunctionsWithasremlPlus.R")
 
 rcbo <- RCB_ModelFittingFunction(fs2tsp[[1]], RCBparams4P2, "P2")
 

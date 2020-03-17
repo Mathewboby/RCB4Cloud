@@ -18,7 +18,7 @@ suppressMessages(library(asremlPlus, quietly=TRUE))
 
 source("/repos/RCB4Cloud/R/RCB_MainFunction.R")
 # source("/repos/RCB4Cloud/R/RCB_SupportFunctions.R")
-source("/repos/RCB4Cloud/Reference/Rscripts/RCB_SupportFunctions.R")
+source("/repos/RCB4Cloud/Reference/Rscripts/RCB_SupportFunctionsWithasremlPlus.R")
 source("/repos/RCB4Cloud/Reference/Rscripts/fromAPI.R")
 
 ping_token = get_ping_token(client_id, client_secret,FALSE)
