@@ -138,6 +138,9 @@ isRowOK <- (DataIn[,params.list$isQaqcDeactivated]     == FALSE &
   start      <- Sys.time()
   message(paste("Running ASReml using analysis type:", analysisType), appendLF = TRUE )
   # Run R-ASReml, capture output
+  print(fixed_formula)
+  print(random_formula)
+  print(FACTOR_1)
   RCB_asr  <-  asreml::asreml(
                       fixed     = fixed_formula,
                       random    = random_formula,
