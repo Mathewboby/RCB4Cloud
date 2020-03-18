@@ -1,13 +1,12 @@
 library(jsonlite)
 library(readxl)
-library(lattice)
 library(asreml)
 
 source("/repos/RCB4Cloud/R/RCB_MainFunction.R")
 source("/repos/RCB4Cloud/Reference/Rscripts/RCB_SupportFunctionsWithasremlPlus.R")
 
 
-fsdat   <- as.data.frame(read_xlsx("/repos/RCB4Cloud/Reference/Data/prod_out/Statistics - FR08FRAC20THO1 disease + yield.xlsx", sheet="RawPlotData_"))
+# fsdat   <- as.data.frame(read_xlsx("/repos/RCB4Cloud/Reference/Data/prod_out/Statistics - FR08FRAC20THO1 disease + yield.xlsx", sheet="RawPlotData_"))
 fsdat2  <- as.data.frame(read_xlsx("/repos/RCB4Cloud/Reference/Data/prod_out/Statistics - FR08FRAC20 trial series analysis of yield - source data.xlsx", sheet="PLOT_DATA_USED"))
 
 
@@ -50,7 +49,8 @@ RCBparams4P2 <- list(
   alpha                   = 0.10,
   sufficientDataThreshold = 14)
 
-rcbo <- RCB_ModelFittingFunction(fs2tsp[[1]], RCBparams4P2, "P2")
+rcbo   <- RCB_ModelFittingFunction(fs2tsp[[1]], RCBparams4P2, "P2")
+rcboP3 <- RCB_ModelFittingFunction(fs2tsp[[1]], RCBparams4P2, "P3")
 
 rcblo <- lapply(fs2tsp, function(zx){RCB_ModelFittingFunction(zx, RCBparams4P2, "P2")})
 
@@ -72,6 +72,19 @@ RCBparams4P4 <- list(
   sufficientDataThreshold = 14)
 
 rcbP4o <- RCB_ModelFittingFunction(fsdat2, RCBparams4P4, "P4")
+
+rcbo$blueTable
+head(rcbo$deltas)
+dim(rcbo$deltas)
+rcbo$anova
+rcbo$varianceComposition
+rcbo$leastSignificantDifference
+as.numeric(rcbo$leastSignificantDifference)/qt(0.95, 33) * qt(c(0.90, 0.95, 0.975, 0.995), 33)  # 0.80, 0.9, 0.95 and 0.99 LSDs
+as.numeric(rcbo$blueTable$standardError[1])*qtukey(c(0.90, 0.95, 0.975, 0.995),33, 11)  # 0.80, 0.9, 0.95 and 0.99 HSDs
+
+
+rcboP3$blupTable
+rcboP3$varianceAnalysis
 #
 ##
 ###
