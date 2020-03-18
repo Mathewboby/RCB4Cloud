@@ -9,17 +9,6 @@ source("/repos/RCB4Cloud/Reference/Rscripts/RCB_SupportFunctionsWithasremlPlus.R
 # fsdat   <- as.data.frame(read_xlsx("/repos/RCB4Cloud/Reference/Data/prod_out/Statistics - FR08FRAC20THO1 disease + yield.xlsx", sheet="RawPlotData_"))
 fsdat2  <- as.data.frame(read_xlsx("/repos/RCB4Cloud/Reference/Data/prod_out/Statistics - FR08FRAC20 trial series analysis of yield - source data.xlsx", sheet="PLOT_DATA_USED"))
 
-
-zmv     <- mean(fsdat$Value)
-zmvbt   <- aggregate(data=fsdat, Value~         Treat, function(zx){mean(zx, na.rm=TRUE)})
-zmvac   <- aggregate(data=fsdat, Value~AssCol        , function(zx){mean(zx, na.rm=TRUE)})
-zmvacbt <- aggregate(data=fsdat, Value~AssCol + Treat, function(zx){mean(zx, na.rm=TRUE)})
-
-zmv2     <- mean(fsdat2$Plot_mean)
-zmvbt2   <- aggregate(data=fsdat2, Plot_mean~          Treat, function(zx){mean(zx, na.rm=TRUE)})
-zmvac2   <- aggregate(data=fsdat2, Plot_mean~Ass_col        , function(zx){mean(zx, na.rm=TRUE)})
-zmvacbt2 <- aggregate(data=fsdat2, Plot_mean~Ass_col + Treat, function(zx){mean(zx, na.rm=TRUE)})
-
 fsdat2$Block     <- as.factor(paste0("Blk", fsdat2$Block))
 fsdat2$Treatment <- as.factor(fsdat2$Treatment)
 fsdat2$repId     <- "r1"
