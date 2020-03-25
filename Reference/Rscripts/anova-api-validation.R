@@ -114,6 +114,7 @@ zaL31[grep("^compare",names(zaL31))]
 sapply(lapply(zaL31[grep("^compare",names(zaL31))], unlist), sum)
 summaryCompare(zaG31)
 
+#############################################################################################$
 zmG0          <- sapply(anovaGlobalJobIds[1:3],
                         function(zn){summaryCompare(aovAPIvsRCB(call_API(zn, ping_token)))})
 zmG           <- as.data.frame(t(zmG0))
