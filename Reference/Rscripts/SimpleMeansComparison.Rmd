@@ -1,6 +1,31 @@
+---
+title: "Compare API and DEV Simple Means"
+author: "Mitch Toland"
+date: "3/26/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+This report compares the means calculated by Ceres with the value store by Ceres and with the value calculated in the Domino development environment.  The average of the values match the stored mean value.  
+  
+## Caution
+The means being calculated are of the nonzero values only.  This may not be what people want because some datasets have many zeros.  Thus the reported means will be higher than those including the zero-values.
+  
+First the needed software must loaded.  
+  
+```{r LoadTheCode}
 library(jsonlite)
 library(readxl)
+```  
+&nbsp  
+  
+Next, filepathes are created and summary funcitons are defined.  The input json files only have a stored mean value in subsites under local under means.  The global arm of hte json-files have a slightly different structure. Therefore all of the comparisons are based on the local arm of hte json-files.
 
+```{r LinksToDataAndSummaryFunctionDefinitions}
 zdir <- "/repos/RCB4Cloud/Reference/Data/prod_out/p360/"
 lstfls <- list.files("/repos/RCB4Cloud/Reference/Data/prod_out/p360/")
 smFileId   <- c(which(substr(lstfls, 11, 12) == "S8"),
@@ -39,7 +64,12 @@ SMBSsummaryFunc <- function(zi){
            mean(as.numeric(smbsilsmmsf[[1]]$value    , na.rm=TRUE)))
   return(list(means=zms, differences=diff(round(zms, 10))))
 }
-
+```  
+&nbsp  
+  
+Next, run the summary functions on both the global and local json-files.  
+  
+```{r CreateBothLocalAndGlobalMeanComparisons}
 smm        <- as.data.frame(do.call(rbind, lapply(smFileId, function(zi){SMsummaryFunc(zi)$means})))
 names(smm) <- c("LocalMean", "InputDataMean", "FactorValueMean")
 smd        <- as.data.frame(do.call(rbind, lapply(smFileId, function(zi){SMsummaryFunc(zi)$differences})))
@@ -49,14 +79,41 @@ smbsm        <- as.data.frame(do.call(rbind, lapply(smbsFileId, function(zi){SMB
 names(smbsm) <- c("LocalMean", "InputDataMean", "FactorValueMean")
 smbsd        <- as.data.frame(do.call(rbind, lapply(smbsFileId, function(zi){SMBSsummaryFunc(zi)$differences})))
 names(smbsd) <- c("InputMean-LocalMean", "FactorMean_InputMean")
+```  
+&nbsp  
+  
+Finally, the three mean values along with their respective differences are presented for each input data file. The results for the global datasets is given first followed by the results for the local datasets.  
 
-smboth   <- cbind(smm, smd)
-smbsboth <- cbind(smbsm, smbsd)
-
-
-#
-##
-###
-####
+```{r ReportGlobalMeansComparisons1}
+smm
+#smboth   <- cbind(smm, smd)
+#smboth
+```  
+&nbsp  
+  
+```{r ReportGlobalMeansComparisons2}
+smd
+#smboth   <- cbind(smm, smd)
+#smboth
+```  
+&nbsp  
+  
+```{r ReportLocalMeansComparisons1}
+smbsm
+#smbsboth <- cbind(smbsm, smbsd)
+#smbsboth
+```  
+&nbsp  
+  
+```{r ReportLocalMeansComparisons2}
+smbsd
+#smbsboth <- cbind(smbsm, smbsd)
+#smbsboth
+```  
+&nbsp  
+  
+## Conclusion
+Overlooking the exclusion of zero values, the means appear to be calculated correctly.  
+  
 
 
