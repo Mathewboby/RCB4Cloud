@@ -1,0 +1,112 @@
+---
+title: "Comparison of API and DEV Phase I RCBD1 Results"
+author: "Mitch Toland"
+date: "3/25/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+This report compares the results from running two styles of RCBD1 models in two environments: Velocity and development in Domino.  The two styles of models are 'global' and 'local' corresponding to analyzing data as a combined dataset and as several datasets subdivdied out of the whole dataset. There are 1,160 global datasets and 2,484 local datasets.
+
+As will be demonstrated, the results run on the same data in both environemnts are the same.  This illustrates that the Velocity implementation is the same as the devleopment implementation.
+
+To begin the report, needed code and software needs to be loaded.  
+  
+```{r LoadTheCode}
+library(dplyr)
+library(lattice)
+library(asreml)
+
+# Default git repository branch is "Mi-RCB-dev"
+# Use "git chechout master" in the terminal shell to switch to the master branch
+
+source("/repos/RCB4Cloud/R/RCB_MainFunction.R")
+source("/repos/RCB4Cloud/Reference/Rscripts/RCB_SupportFunctionsWithasremlPlus.R")
+source("/repos/RCB4Cloud/Reference/Rscripts/fromAPI.R")
+```  
+&nbsp  
+  
+The next code chunk loads lists of Velocity job IDs.  These job IDs are used to get the needed data from Product 360.  
+  
+```{r GetaTheData}
+# enter P360 access credentials before running get_ping_token
+
+# ping_token = get_ping_token(client_id, client_secret,FALSE)
+
+#  1Y0ePbjERgputHcELdhVlNhYtgd
+# 123456789012345678901234567890
+#
+# All needed job ids are strings 29 characters long similar to the above.  
+# The first and last characters confuse the
+# data quiry, so extract just the 2nd through 28th characters.  However, some job IDs are missing
+# so skip those.  The function, 'extractJobIds', does all of this and is found in fromAPI.R.
+
+anovaGlobalJobData <- read.csv("/repos/RCB4Cloud/Reference/Data/ValidationData/anova_global_job_output_ids.csv")
+anovaGlobalJobIds  <- extractJobIds(anovaGlobalJobData, "job_output_id")
+
+anovaLocalJobData <- read.csv("/repos/RCB4Cloud/Reference/Data/ValidationData/anova_local_job_output_ids.csv")
+anovaLocalJobIds  <- extractJobIds(anovaLocalJobData, "job_output_id")
+
+# Compare the number of jobs run to the number of non-missing job IDs
+# c(nrow(anovaGlobalJobData), length(anovaGlobalJobIds))          # reports 2005 1160
+# c(nrow(anovaLocalJobData), length(anovaLocalJobIds))            # reports 6587 2484
+```  
+&nbsp  
+  
+Three functions are called to get the data from Product 360, extract the relavent pieces, fit a single treatment factor randomized complete block design model (RCBD1) to the input data using the same input parameters, compare the output with the output from Velocity, and then summarize the comparisons across datasets. The three functions are call_API, aovAPIvsRCB, and summaryCompare.  
+  
+# To save time and make it possible for this Rmarkdown to calculate, the precalculated results are read in from a file on disk.
+  
+```{r GlobalReadData_FitModelsAndCompare}
+############# Do global modles ##############################################################
+# zmG0          <- sapply(anovaGlobalJobIds,
+#                         function(zn){suppressMessages(
+#                         summaryCompare(aovAPIvsRCB(call_API(zn, ping_token))))})
+# zmG           <- as.data.frame(t(zmG0))
+# zmG$JobId     <- rownames(zmG)
+# rownames(zmG) <- NULL
+# write_json(zmG, "/repos/RCB4Cloud/Reference/Data/GlobalDataValidationResults.json",pretty=TRUE, auto_unbox="TRUE", digits=12, dataframe='rows')
+zmG <- fromJSON("/repos/RCB4Cloud/Reference/Data/GlobalDataValidationResults.json")
+```  
+&nbsp  
+  
+The sum of the absolute differences between 5 numerical outputs across all 1,160 datasets is used as a measure of discrepency between the outputs from the two environments.  All parts of the outputs are compared.  The following table lists the 5 discrepency measures.  All 5 measures are 0 indicating that the results are the same.  The default amount of rounding is 10 decimal places.  Thus it can be concluded that the results are the same out to 10 decimal places, which is much more than needed in practice.  
+  
+```{r SummarizeGlobalOutputs}
+apply(zmG[, 1:5], 2, sum)
+# compareLSM  compareDeltas compareVarComp   compareAnova     compareLSD
+# 0              0              0              0              0
+```  
+&nbsp  
+  
+# The same process used for the global data is repeated for the local datasets.  
+# Again, the precalculated results are read in from a file on disk.
+  
+```{r LocalReadData_FitModelsAndCompare}
+########### DO localized models #############################################################
+# zmL02          <- sapply(anovaLocalJobIds,
+#                         function(zn){summaryCompare(aovAPIvsRCB(call_API(zn, ping_token)))})
+# zmL2           <- as.data.frame(t(zmL02))
+# zmL2$JobId     <- rownames(zmL2)
+# rownames(zmL2) <- NULL
+# write_json(zmL2, "/repos/RCB4Cloud/Reference/Data/LocalDataValidationResults2.json", pretty=TRUE, auto_unbox="TRUE", digits=12, dataframe='rows')
+zmL2 <- fromJSON("/repos/RCB4Cloud/Reference/Data/LocalDataValidationResults2.json")
+```  
+&nbsp  
+  
+As is the done for the global datasets, the sum of the absolute differences between the 5 numerical outputs is obtained across all 2,484 datasets.  The 5 total discrepencies are all 0, indicating that all parts of the numerical outputs match out to 10 decimal places.  The 5 total discrepencies are given in the table below.  
+  
+```{r SummarizeLocalOutputs}
+apply(zmL2[, 1:5], 2, sum)
+# compareLSM  compareDeltas compareVarComp   compareAnova     compareLSD
+# 0              0              0              0              0
+```  
+&nbsp  
+  
+# Conclusion
+3,644 datasets were analyzed by the same code implemented in two computing environments.  All numbers creted for the output match to 10 decimal places.  Thus it is concluded that the Velocity implementation matches the development code.
+

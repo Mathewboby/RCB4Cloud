@@ -177,6 +177,15 @@ zd47 <- data.frame(do.call(rbind, lapply(zjl[[47]]$modelOutputs[[1]]$simpleMeans
 
 zd47inputData <- data.frame(do.call(rbind, zjl[[47]]$modelOutputs[[1]]$simpleMeans$input$data)[, c(1,2,3,7,8,9,10,11)])
 
+do.call(rbind, lapply(zsm$modelOutputs[[1]]$simpleMeans$means$global$factors, unlist))
+mean(as.numeric(do.call(rbind, lapply(zsm$modelOutputs[[1]]$simpleMeans$means$global$factors, unlist))[,2]))
+zsm$modelOutputs[[1]]$simpleMeans$means$global$value # NULL
+zsm$modelOutputs[[1]]$simpleMeans$means$local$subsites[[1]]$value # NULL
+
+do.call(rbind, lapply(zsmbs1$modelOutputs[[1]]$simpleMeans$means$local$subsites[[1]]$factors, unlist))
+mean(as.numeric(do.call(rbind, lapply(zsmbs1$modelOutputs[[1]]$simpleMeans$means$local$subsites[[1]]$factors, unlist))[,2]))
+zsmbs1$modelOutputs[[1]]$simpleMeans$means$local$subsites[[1]]$value
+
 #
 ##
 ###

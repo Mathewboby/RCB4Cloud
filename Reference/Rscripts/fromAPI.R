@@ -42,7 +42,7 @@ call_API <- function(outputID, access_token){
     )
     #verbose(TRUE,TRUE)
   )
-  print(api_call$status_code)
+  ###print(api_call$status_code)
   if(api_call$status_code==200){return(httr::content(api_call))}
   return(results)
 }
