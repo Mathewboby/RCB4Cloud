@@ -1,0 +1,215 @@
+---
+title: "Investigating Global Simple Means"
+author: "Mitch Toland"
+date: "3/27/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+This report documents perhaps my own lack of understanding of how the json-files are created. The data used are those provided in prod_out/p360.  The analysis is simple means.  I noticed somethings I did not understand.  I think I have figured out why I was thinking 0's were being skipped during averaging (see, Problem: of zeros being skipped during averaging: resolved).   
+  
+Two other issues were with how percentages are being calculated and stored in the 'global' and 'local' forks of the json file (only the mantissa of the floating-point numbers is being manipulated instead of the whole number.); and not being able to identify source data (the input_data structure contains the local_subsites[[1]]_factors data values).  (see, Problem: of fractions being multiplied by varying multipliers to make percentages, and Problem: input_data structure does not contain input data used to get simple means).
+  
+As to whether or not the simple means are correct.  I was able to take a look at this for one overall dataset (18402) for SC.  I was able to reproduce the DSR and ANOVA factorLevelId averages by averaging across the data in four SIMPLEMEANSBYSUBSITE json-files.  This suggests that the by-subsite simple means are working correctly for SC in the case of single measurement per subsite data.
+  
+```{r LoadTheCode}
+library(jsonlite)
+```  
+&nbsp  
+  
+The following code-block gives all of the IO and data manipulations for the results below.  
+  
+```{r GetaTheData}
+sourceDirectory <- "/repos/RCB4Cloud/Reference/Data/prod_out/p360/"
+inputFileName01 <- "SIMPLEMEANS8957-18367-STLP-outputToP360.json"
+sm1        <- fromJSON(paste0(sourceDirectory, inputFileName01))
+sm1Data    <- sm1$modelOutputs$simpleMeans$input$data[[1]][,c(3, 4, 8, 9)]
+sm1gfactor <- sm1$modelOutputs$simpleMeans$means$global$factors[[1]]
+sm1ffactor <- sm1$modelOutputs$simpleMeans$means$local$subsites[[1]]$factors[[1]]
+mergeCombinedGlobalLocalFactorData <- merge(sm1gfactor, sm1ffactor, by='id', all=T)
+
+value.xToValue.yRatio <- mergeCombinedGlobalLocalFactorData$value.y / 
+                         mergeCombinedGlobalLocalFactorData$value.x
+mergeCombinedGlobalLocalFactorData$Multiplier <- paste0(round(value.xToValue.yRatio))
+names(mergeCombinedGlobalLocalFactorData)     <- c("factorLevelId", "Global.value", "Local.value", "Multiplier")
+# Reformat multiplier or ratio between value.x and value.y in 
+which10 <- which(mergeCombinedGlobalLocalFactorData$Multiplier == "1e+10")
+which09 <- which(mergeCombinedGlobalLocalFactorData$Multiplier == "1e+09")
+which08 <- which(mergeCombinedGlobalLocalFactorData$Multiplier == "1e+08")
+which06 <- which(mergeCombinedGlobalLocalFactorData$Multiplier == "1e+06")
+which05 <- which(mergeCombinedGlobalLocalFactorData$Multiplier == "1e+05")
+pc10 <- paste(c(1,rep(0,10)), sep="",collapse="")
+pc09 <- paste(c(1,rep(0, 9)), sep="",collapse="")
+pc08 <- paste(c(1,rep(0, 8)), sep="",collapse="")
+pc06 <- paste(c(1,rep(0, 6)), sep="",collapse="")
+pc05 <- paste(c(1,rep(0, 5)), sep="",collapse="")
+mergeCombinedGlobalLocalFactorData$Multiplier[which10] <- pc10
+mergeCombinedGlobalLocalFactorData$Multiplier[which09] <- pc09
+mergeCombinedGlobalLocalFactorData$Multiplier[which08] <- pc08
+mergeCombinedGlobalLocalFactorData$Multiplier[which06] <- pc06
+mergeCombinedGlobalLocalFactorData$Multiplier[which05] <- pc05
+# Finished reformating
+
+# Load DSR and ANOVA data to compare with simple means by subsites
+inputFileName02      <- "DSR_4757-18402-SC-outputToP360.json"
+inputFileName03      <- "ANOVA_GLOBAL_BLUE_696-18402-SC-outputToP360.json"
+dsrJson              <- fromJSON(paste0(sourceDirectory, inputFileName02))
+globalAnovaJson      <- fromJSON(paste0(sourceDirectory, inputFileName03))
+dsrInputData         <- dsrJson$modelOutputs$dsr$input$data[[1]]
+globalAnovaInputData <- globalAnovaJson$modelOutputs$rcbBlue$input$data[[1]]
+# Check subsite-rep composition of dsrInputData and globalAnovaInputData.
+# They are identical and they are multiple-location-single-rep datasets.
+print("dsrInputData has multiple-loc-single-rep data (mlsr)")
+ table(dsrInputData$subSiteId, dsrInputData$repId)
+#                                       1
+# 4bcb4652-860d-4398-9475-156d15f0a224 36
+# 90ea907c-ce78-41b9-8600-9b86d8846edc 36
+# a35a1343-5b8d-4ee1-a1b8-b546016ab0d8 32
+# e8e9e9e6-028e-427d-8dcd-c18fa24fd9f8 36
+
+ print("globalAnovaInputData has multiple-loc-single-rep data (mlsr)")
+ table(globalAnovaInputData$subSiteId, globalAnovaInputData$repId)
+#                                       1
+# 4bcb4652-860d-4398-9475-156d15f0a224 36
+# 90ea907c-ce78-41b9-8600-9b86d8846edc 36
+# a35a1343-5b8d-4ee1-a1b8-b546016ab0d8 32
+# e8e9e9e6-028e-427d-8dcd-c18fa24fd9f8 36
+
+# Estimate factorLevelId level means across subsites for both data sets.
+factorLevelIdDsrMeans         <- aggregate(value~factorLevelId, 
+                                           data=dsrInputData, 
+                                           function(zx){mean(zx, na.rm=T)})
+factorLevelIdGlobalAnovaMeans <- aggregate(value~factorLevelId, 
+                                           data=globalAnovaInputData, 
+                                           function(zx){mean(zx, na.rm=T)})
+mergeDsrAnovaMeans <- merge(factorLevelIdGlobalAnovaMeans, 
+                            factorLevelIdDsrMeans, 
+                            by = "factorLevelId")
+mergeDsrAnovaMeans$meanDifference <- mergeDsrAnovaMeans$value.y-mergeDsrAnovaMeans$value.x
+
+# Read the subsite data
+inputFileName04 <- "SIMPLEMEANSBYSUBSITE9-18402-SC-outputToP360.json"
+inputFileName05 <- "SIMPLEMEANSBYSUBSITE8-18402-SC-outputToP360.json"
+inputFileName06 <- "SIMPLEMEANSBYSUBSITE3-18402-SC-outputToP360.json"
+inputFileName07 <- "SIMPLEMEANSBYSUBSITE2-18402-SC-outputToP360.json"
+
+smbs9.402    <- fromJSON(paste0(sourceDirectory, inputFileName04))
+id9.402 <- smbs9.402$modelOutputs$simpleMeans$input$data[[1]]
+if9.402 <- smbs9.402$modelOutputs$simpleMeans$means$local$subsites[[1]]$factors[[1]]
+names(if9.402) <- c('id', 'value.ss9')
+
+smbs8.402    <- fromJSON(paste0(sourceDirectory, inputFileName05))
+id8.402 <- smbs8.402$modelOutputs$simpleMeans$input$data[[1]]
+if8.402 <- smbs8.402$modelOutputs$simpleMeans$means$local$subsites[[1]]$factors[[1]]
+names(if8.402) <- c('id', 'value.ss8')
+
+smbs3.402    <- fromJSON(paste0(sourceDirectory, inputFileName06))
+id3.402 <- smbs3.402$modelOutputs$simpleMeans$input$data[[1]]
+if3.402 <- smbs3.402$modelOutputs$simpleMeans$means$local$subsites[[1]]$factors[[1]]
+names(if3.402) <- c('id', 'value.ss3')
+
+smbs2.402    <- fromJSON(paste0(sourceDirectory, inputFileName07))
+id2.402 <- smbs2.402$modelOutputs$simpleMeans$input$data[[1]]
+if2.402 <- smbs2.402$modelOutputs$simpleMeans$means$local$subsites[[1]]$factors[[1]]
+names(if2.402) <- c('id', 'value.ss2')
+
+mergeLocalFactorData23       <- merge(if2.402, if3.402, by='id', all=TRUE)
+mergeLocalFactorData89       <- merge(if8.402, if9.402, by='id', all=TRUE)
+mergeLocalFactorData2389     <- merge(mergeLocalFactorData23, 
+                                      mergeLocalFactorData89, 
+                                      by  = 'id', 
+                                      all = TRUE)
+mergeLocalFactorData2389$ave <- apply(mergeLocalFactorData2389[, 2:5], 
+                                      1, 
+                                      function(zx){mean(zx, na.rm=TRUE)})
+# The average of the 4 subsites' data equals the averages in mergeDsrAnovaMeans 
+# which where calculated from the DSR and ANOVA input datasets.
+mergeMergeMeans <- merge(mergeLocalFactorData2389, 
+                         mergeDsrAnovaMeans, 
+                         by.x = 'id', 
+                         by.y = 'factorLevelId', 
+                         all  = T)
+
+inputFileName08 <- "SIMPLEMEANSBYSUBSITE12-18382-SC-outputToP360.json"
+smbs1           <- fromJSON(paste0(sourceDirectory, inputFileName08))
+smbs1Data       <- smbs1$modelOutputs$simpleMeans$input$data[[1]][,c(3, 4, 8, 9)]
+smbs1gfactor    <- smbs1$modelOutputs$simpleMeans$means$global$factors[[1]]
+smbs1ffactor    <- smbs1$modelOutputs$simpleMeans$means$local$subsites[[1]]$factors[[1]]
+mergeBySubsiteGlobalLocalFactorData <- merge(smbs1gfactor,smbs1ffactor, by='id', all=T)
+
+bySsValue.xToValue.yRatio <- mergeBySubsiteGlobalLocalFactorData$value.y / 
+                             mergeBySubsiteGlobalLocalFactorData$value.x
+mergeBySubsiteGlobalLocalFactorData$Multiplier <- paste0(round(bySsValue.xToValue.yRatio))
+names(mergeBySubsiteGlobalLocalFactorData)     <- c("factorLevelId", "Global.value", "Local.value", "Multiplier")
+
+# Since the global and local factor data match in this case the multiplier is 1 for all rows
+# and as such does not need to be reformatted as was the case in the 'combined' data.
+
+```  
+&nbsp  
+  
+The following table shows the DSR and ANOVA means for factorLevelId are the same.  
+
+```{r DSRANOVACOMP}
+names(mergeDsrAnovaMeans) <- c("factorLvelid", "ANOVAmeans", "DSRmeans", "Difference")
+mergeDsrAnovaMeans
+```  
+&nbsp  
+  
+# Problem: input_data structure does not contain input data used to get simple means
+Within a json-file, data are stored in three places: input_data, global_factors and local_factors.  Underscores are used instead of '$' so Rmarkdown does not interpret them.  More specifically, in the modelOutputs sublist the data are found as follows.
+```{r DataStorageWithinJson}
+
+cat("modelOutputs$simpleMeans$input$data[[1]]", "\n")
+cat("modelOutputs$simpleMeans$means$global$factors[[1]]", "\n")
+cat("modelOutputs$simpleMeans$means$local$subsites[[1]]$factors[[1]]", "\n")
+
+```  
+&nbsp  
+  
+The ...factors[[1]] data are the same for 'local' or 'by subsite' simple means, but they differ for the 'global' or 'across subsites' simple means.  There is also an object in the local json-file under subsites called 'value'.  This value appears to be the average of the non-missing entries in modelOutputs_simpleMeans_means_local_subsites[[1]]_factors[[1]]_value.
+
+Again, the global_factors[[1]] and local_subsites[[1]]_factors appear to contain the same data for local analysis scope but different entries in their respective values columns for global analysis scope.  
+  
+Input_data[[1]]_value contains the same data as in modelOutputs_simpleMeans_means_local_subsites[[1]]_factors[[1]]_value but in a different order.  input_data also contains other data related to deactivations and subsite geolocation.  
+# It would be nice if the 'id' levels in the local_subsites[[1]]_factors[[1]] structure were also in the input_data structure to facilitate data handling and checking.  
+  
+
+# Problem: of fractions being multiplied by varying multipliers to make percentages
+In the global analysis scope results for question code, STLP, which means STand Lodging Percent (I think), the values in modelOutputs_simpleMeans_means_global_factors[[1]] are decimal fractions, but the values in modelOutputs_simpleMeans_means_local_subsites[[1]]_factors[[1]] are decimal numbers greater than one.  
+  
+They look like the global_factor values turned into percentages, but using varying multipliers.  It looks like the the mantissa of the floating-point number was extracted and multiplied by 10.  This is illustrated in the next table.  
+  
+```{r MantissaProblem}
+mergeCombinedGlobalLocalFactorData[1:10, ]
+```  
+  &nbsp  
+    
+# Problem: of zeros being skipped during averaging: resolved.
+  The object, modelOutputs_simpleMeans_means_local_subsites[[1]]_value, appears to be the average of the nonmissing or nonzero values in modelOutputs_simpleMeans_means_local_subsites[[1]]_factors[[1]]_value.  Missing values in modelOutputs_simpleMeans_means_local_subsites[[1]]_factors[[1]]_value are turned into 0's in modelOutputs_simpleMeans_means_global_factors[[1]]_value.  This is what cause me to think zeros were being skipped during averaging.  
+    
+The rollup mean, modelOutputs_simpleMeans_means_local_subsites[[1]]_value, skips the missing values in the 'local' fork of the json file: when compared to the 'global' fork of the file, it looks like the 0's are being excluded, because the NA's in the local fork are being converted to 0's in the 'global' fork.
+  
+# Do the simple means match
+I was only able to check this for one case of the 'local' scope, the data sets with '18402' in there files names.  There are four 'SIMPLEMEANBYSUBSITE...' json-files for question code, 'SC', which is Stand Count and is recorded as an integer.  There are also json-files for DSR and GLOBAL ANOVA with 18402 in there file names.  The subsite data combine to give yield the same averages as calculated from teh DSr and ANOVA data.  This is shown in the next two tables.  
+  
+```{r BySubMerged}
+names(mergeMergeMeans) <- c("factorLevelId", "valueSubsite2", "valueSubsite3", "valueSubsite8", "valueSubsite9", "averageSubsite", "DSRaverage", "ANOVAaverage", "DSRave_ANOVAave")
+mergeMergeMeans[, 1:5]
+```  
+&nbsp  
+  
+```{r TherestOfTheTable}
+mergeMergeMeans[, c(1,6:8)]
+```  
+&nbsp  
+  
+This suggests that the values in the local or by subsite datasets are the values for each individual subsite composing the larger dataset used in DSR and ANOVA.  These individual values will be the average value for their respective subsites.  Thus it seems that the averaging on the local scope is working as intended.  
+  
+I wasn't able to identify the source data for the global simple means and therefore cannot check them.
+
+
