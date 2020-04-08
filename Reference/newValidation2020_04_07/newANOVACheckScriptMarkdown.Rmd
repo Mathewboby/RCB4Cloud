@@ -1,0 +1,149 @@
+---
+title: "ANOVA Validation on New Data"
+author: "Mitch Toland"
+date: "4/8/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+This report documents the comparison of outputs from the RCB analysis-of-variance codes implemented in two environments, Velocity and Development.  There are many changes being made as the Velocity system is being rolled out.  As a result there is a continuing need to ensure codes are producing the correct outputs for each of several statistical modules used by the Velocity system to check data quality, make adjustments to some measurements and to do analyses.  This report addresses the outputs from the RCB module.  In Phase II, the RCB module will be replaced with the ANOVA module.  This is mentioned here because some people have heard of both the RCB and ANOVA modules.  The RCB module is the more limited Phase I implementation of the model fitting and analysis tools.  
+  
+First load needed software.  
+  
+```{r LoadTheCode}
+library(jsonlite)
+library(asreml)
+
+source("/repos/RCB4Cloud/R/RCB_MainFunction.R")
+#source("/repos/RCB4Cloud/R/RCB_SupportFunctions.R") # supperceded by next line of code
+source("/repos/RCB4Cloud/Reference/Rscripts/RCB_SupportFunctionsWithasremlPlus.R")
+source("/repos/RCB4Cloud/Reference/Rscripts/fromAPI.R")
+```  
+&nbsp;  
+  
+Second, get the data.  
+  
+```{r GetaTheData}
+zdir  <- "/repos/RCB4Cloud/Reference/newValidation2020_04_07/"
+zfile <- "ANOVA_GLOBAL_BLUE_845-31555-EHT-outputToP360.json"
+zjsn  <- fromJSON(paste0(zdir, zfile))
+zdat  <- zjsn$modelOutputs$rcbBlue$input$data[[1]]
+zpar  <- zjsn$modelOutputs$rcbBlue$parameters
+zrslt <- zjsn$modelOutputs$rcbBlue$results
+```  
+&nbsp;  
+  
+Third, ensure datatypes are correct as the output is convert to character strings for storage.  
+  
+```{r EnsureDataTypes}
+zdat$factorLevelId         <- as.character(zdat$factorLevelId)
+zdat$isAnswerDeactivated   <- as.logical(zdat$isAnswerDeactivated)
+zdat$isDsrDeactivated      <- as.logical(zdat$isDsrDeactivated)
+zdat$isPlaceHolder         <- as.logical(zdat$isPlaceHolder)
+zdat$isQaqcDeactivated     <- as.logical(zdat$isQaqcDeactivated)
+zdat$isSetEntryDeactivated <- as.logical(zdat$isSetEntryDeactivated)
+zdat$locationId            <- as.character(zdat$locationId)
+zdat$questionCode          <- as.character(zdat$questionCode)
+zdat$repId                 <- as.character(zdat$repId)
+zdat$subSiteId             <- as.character(zdat$subSiteId)
+zdat$value                 <- as.numeric(zdat$value)
+```  
+&nbsp;  
+  
+Fourth, set the parameters.  
+  
+```{r SetInputParameters}
+zpar$factorLevelId         <- "factorLevelId"
+zpar$isAnswerDeactivated   <- "isAnswerDeactivated"
+zpar$isDsrDeactivated      <- "isDsrDeactivated"
+zpar$isPlaceHolder         <- "isPlaceHolder"
+zpar$isQaqcDeactivated     <- "isQaqcDeactivated"
+zpar$isSetEntryDeactivated <- "isSetEntryDeactivated"
+zpar$locationId            <- "locationId"
+zpar$questionCode          <- "questionCode"
+zpar$repId                 <- "repId"
+zpar$subSiteId             <- "subSiteId"
+zpar$value                 <- "value"
+```  
+&nbsp;  
+  
+Fifth, fit the RCB model to the original input data and make summary outputs.  The text echoed below indicates the model is being fit and the correspondinng output is being generated.
+  
+```{r FitTheModel}
+zRCB_Output <- RCB_ModelFittingFunction(zdat, zpar, "P2")
+```  
+&nbsp;  
+  
+Finally, compare the Velocity and development outputs.  
+  
+```{r CompareOutputs}
+zzcmp <- compareAPIandRCBoutputs(zrslt, zRCB_Output, ndigits=10)
+```  
+&nbsp;  
+  
+The next table counts the number of decrepancies between the numerical parts of the tables of least-square mean estimates of the average repsonse for each level of the treatment factor.  
+  
+```{r CompareLSM_Tables}
+zzcmp$compareLSM
+```  
+&nbsp;  
+  
+The next table counts the number of decrepancies between the numerical parts of the tables of deltas or differences between the least-square means which were compared in the previous table.  
+  
+```{r CompareDeltas}
+zzcmp$compareDeltas
+```  
+&nbsp;  
+  
+The next table counts the number of decrepancies between the numerical estimates of the variance components (estimates of the variance associated with blocking factor and the residuals).  
+  
+```{r CompareVarianceComponents}
+zzcmp$compareVarComp
+```  
+&nbsp;  
+  
+The next two tables are the variance component tables from Velocity and the development codes.  
+  
+```{r VelocityVarianceComponentTable}
+zzcmp$apiVarComp
+```  
+&nbsp;  
+  
+```{r DevelopmentVarianceComponentTable}
+zzcmp$rcbVarComp
+```  
+&nbsp;  
+  
+The next table counts the number of decrepancies between the numerical parts of the analysis-of-variance tables associated with the model fits.  
+  
+```{r CompareAOV_Tables}
+zzcmp$compareAnova
+```  
+&nbsp;  
+  
+The next two tables give the analysis-of-variance tables.  Since they are small they can be recited here.  
+  
+```{r VelocityAOV_Table}
+zzcmp$apiAnova
+```  
+&nbsp;  
+  
+```{r DevelopmentAOV_Table}
+zzcmp$rcbAnova
+```  
+&nbsp;  
+  
+The next value is the difference between the estimated LSD-values for the model fits.  
+  
+```{r CompareLSD}
+zzcmp$compareLSD
+```  
+&nbsp;  
+  
+## Conclusion
+Base on the outputs and comparisons above, the Velocity and Development outputs are the same.  
+  

@@ -341,6 +341,60 @@ aovAPIvsRCB <- function(zResults, ndigits=10){
 
 }
 
+compareAPIandRCBoutputs <- function(zResults, RCB_Output, ndigits=10){
+  # apiData         <- get_API_Data(zResults)
+  # apiVarComp      <- get_API_VarCompTable(zResults)
+  # apiAnalysisType <- get_API_AnalysisType(apiVarComp)
+  reorderApiColNames <- c("treatment", "numValue", "standardError", "degreesOfFreedom",
+                   "sampleSize", "lowerConfidenceInterval", "upperConfidenceInterval",
+                   "meanSeparationGroup")
+  apiLSM     <- zResults$leastSquaredMeans[[1]][, reorderApiColNames]
+  rcbLSM     <- get_RCB_LsmTable(RCB_Output)
+  compareLSM <- lsmCompare(apiLSM, rcbLSM, ndigits=ndigits)
+
+  apiDeltasColOrder <- c("head", "comparison", "differences", "standardErrorDifference",
+                         "lowerConfidenceInterval", "upperConfidenceInterval",
+                           "tValue", "degreesOfFreedom", "pValueDifference")
+  rcbDeltasColOrder <- c("head", "comparison", "differences", "standardErrorDifferences",
+                         "lowerConfidenceInterval", "upperConfidenceInterval",
+                         "t", "degreesFreedom", "probabilityDifferences")
+  apiDeltas     <- as.data.frame(do.call(cbind, lapply(zResults$deltas[[1]][, apiDeltasColOrder], as.numeric)))
+  rcbDeltas     <- as.data.frame(do.call(cbind, lapply(RCB_Output$deltas[, rcbDeltasColOrder], as.numeric)))
+  compareDeltas <- apply(round(apiDeltas[, 3:9] - rcbDeltas[, 3:9], ndigits), 2, function(zx){sum(zx, na.rm=TRUE)})
+  #compareDeltas <- deltasCompare(apiDeltas, rcbDeltas, ndigits=ndigits)
+
+  apiVarComp     <- zResults$varianceComponents[[1]][, c(3,1,2)]
+  rcbVarComp     <- RCB_Output$varianceComposition
+  rcbVarComp$row <- rownames(rcbVarComp)
+  rcbVarComp           <- rcbVarComp[, c(3,1,2)]
+  rownames(rcbVarComp) <- NULL
+  compareVarComp       <- varianceCompare(apiVarComp, rcbVarComp, ndigits=ndigits)
+
+  apiAnova     <- do.call(cbind, lapply(zResults$analysisOfVariance[[1]][, c(5, 2, 7, 4, 6)], as.numeric))
+  rcbAnova     <- do.call(cbind, lapply(RCB_Output$anova[, c(1:4, 6)], as.numeric))
+  compareAnova <- apply(round(apiAnova - rcbAnova, ndigits), 2, function(zx){sum(zx, na.rm=TRUE)})
+  #compareAnova <- aovCompare(apiAnova, rcbAnova, ndigits=8)
+
+  apiLSD     <- as.numeric(zResults$leastSignificantDifference)
+  rcbLSD     <- as.numeric(RCB_Output$leastSignificantDifference[1])
+  compareLSD <- round(abs(apiLSD-rcbLSD), ndigits)
+
+  olst <- list(apiLSM         = apiLSM,
+               rcbLSM         = rcbLSM,
+               compareLSM     = compareLSM,
+               apiDeltas      = apiDeltas,
+               rcbDeltas      = rcbDeltas,
+               compareDeltas  = compareDeltas,
+               apiVarComp     = apiVarComp,
+               rcbVarComp     = rcbVarComp,
+               compareVarComp = compareVarComp,
+               apiAnova       = apiAnova,
+               rcbAnova       = rcbAnova,
+               compareAnova   = compareAnova,
+               compareLSD     = compareLSD)
+
+}
+
 summaryCompare <- function(zAovComp){
   return( sapply(lapply(zAovComp[grep("^compare",names(zAovComp))], unlist), sum) )
 }
