@@ -4,6 +4,7 @@ set -e
 PROJ_REPO="https://github.platforms.engineering/TADS/RCB4Cloud.git"
 PROJECT="RCB4Cloud"
 ENVIRONMENT=$1
+DEVBRANCH="Phase2-ANOVA-dev"
 
 if [[ -d ${PROJECT} ]] ; then
     rm -rf ${PROJECT}
@@ -26,7 +27,7 @@ if [[ "${ENVIRONMENT}" == "prod" ]] ; then
     docker push docker-registry.science-at-scale.io/rcb:prod
 elif [[ "${ENVIRONMENT}" == "dev" ]] ; then
     echo "Dev image"
-    git clone --single-branch --branch Mi-RCB-dev ${PROJ_REPO}
+    git clone --single-branch --branch ${DEVBRANCH} ${PROJ_REPO}
     tar --exclude 'Reference' -czf ${PROJECT}.tgz ${PROJECT}
 
     docker build -t rcb .
