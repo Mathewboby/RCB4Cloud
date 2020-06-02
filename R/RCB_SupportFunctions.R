@@ -386,7 +386,75 @@ blup_table <- function(asreml.obj,analysis_type) {
 #' @importFrom igraph simplify graph.data.frame maximal.cliques
 #' @export
 
-MSG <- function(P,alpha) {
+MSG <- function(symmetric_matrix_of_difference_p.values, alpha_level) {
+  # Given a symmetric matrix of difference p-values and an alpha-level find all the groups of differences (called cliques)
+  # which are ALL not significantly different from each other pairwise.  A clique is a group of node points in an
+  # undirected graph which are all connected to each other.  In a statistical testing context, these are statistics,
+  # such as means, which are ALL not different from each other when compared pairwise. There are NO statistics which are
+  # equal to some but not all of the other statistics in the clique.  The p-values are interpreted as the importance,
+  # strength or length of the graph edges connecting the pairs of statistics.  Thresholding the p-values at the alpha-level
+  # creates a binary image whose true points are treated as the nodes in an undirected graph. The blobs or clusters of TRUE
+  # points make up cliques and the maximal cliques are the cliques which cannot be made larger by adding additional points.
+  # This algorithm does rest upon the assumption that thresholding the matrix p-values at the alpha-level does not create
+  # a binary image at or near a state of percolation.
+
+  # Since a statistic is equal to itself, the p-value of the comparison is 1.0.  However, in this funtion
+  # graph-theoretic methods are used to cluster statistics which are not significantly different from each other.
+  # The p-values arranged into a grid are the edge lengths between the statistics represented by the rows
+  # and columns.  The diagonal of such a grid or matrix would logically be 1.0, but the methods used here
+  # will remove all loop-edges or edges between a statistic and itself to produce a simple graph.
+  # Setting the diagonal elements to zero will remove the need to remove loop edges.  Then the only edges
+  # needing removal will be the multiple-edges, edges having the same end points or pairs of nodes connected
+  # by more than one edge.
+
+  diag(symmetric_matrix_of_difference_p.values) <- 1
+
+  # threshold the p-values and multiply by 2 to create the adjacency matrix.
+  # The row and column coordinates of the edges longer than alpha define the
+  # adjacency graph, which is considered an undirected graph.
+
+  pValue_adjacency_matrix  <- 2*(symmetric_matrix_of_difference_p.values > alpha_level)
+
+  column_names_of_input_matrix <- colnames(symmetric_matrix_of_difference_p.values)
+  nrows_pvalue_matrix          <- nrow(symmetric_matrix_of_difference_p.values)
+  # The rows and columns of the adjacency matrix need to have names
+  if(is.null(column_names_of_input_matrix) == TRUE){
+    column_names_of_input_matrix <- sortable_string_integers(nrows_pvalue_matrix, prefix="T")
+  }
+  rownames(pValue_adjacency_matrix) <- colnames(pValue_adjacency_matrix) <- column_names_of_input_matrix
+
+  pValue_adjacency_matrixG     <- igraph::graph_from_adjacency_matrix(pValue_adjacency_matrix, mode='undirected')  # Igraph form of adjacency matrix
+  simplified_adjacency_matrixG <- igraph::simplify(pValue_adjacency_matrixG)  # Remove loops and multiple edges
+  cliq_node_names0             <- igraph::maximal.cliques(simplified_adjacency_matrixG)  # Find all maximal cliques
+  cliq_node_names              <- lapply(cliq_node_names0, function(zi){column_names_of_input_matrix[zi]})
+
+  # The maximal cliques are clusters of large connected edges (non-significant differences) such that all
+  # of the nodes represented in the clique are connected to all of the other nodes in the clique by just one edge.
+  # From a statistical comparison point of view, a maximal clique is a collection of statistics which are all
+  # considered to be the same as each other.  Every member of the clique is equal to every other member of
+  # the clique.  Statistics which are the same as some but not all of the members of the clique are excluded.
+
+  # Create the letters for marking the mean separation grouping.  These are the potential clique names.
+  zOutput      <- rep("",nrows_pvalue_matrix)
+  clique_names <- c(letters, LETTERS, paste(letters,'.',sep=''), paste(LETTERS,'.',sep=''))
+
+  # Check which list number contains this column name
+  column_name_in_clique_checker <- function(clique_names){column_names_of_input_matrix[ind] %in% clique_names}
+  for_loop_range                <- 1:nrows_pvalue_matrix
+  for (ind in for_loop_range){
+    column_name_is_in_clique            <- sapply(cliq_node_names, column_name_in_clique_checker)  # Returns a logical vector
+    indices_of_cliques_with_column_name <- which(column_name_is_in_clique == TRUE)  # Vector of indices of TRUE cases
+
+    if(length(indices_of_cliques_with_column_name) > 0){
+      zOutput[ind] <- paste0(clique_names[indices_of_cliques_with_column_name], collapse = "")  # Combine the clique names of the cliques containing the p-value matric column name
+    }else{
+      zOutput[ind] <- "_"
+    }
+  }
+  return(zOutput)
+}
+
+MSG_original <- function(P,alpha) {
   a <- P
   b <- which(a>alpha,arr.ind = TRUE)
   top <- data.frame(N1=b[,1],N2=b[,2])
