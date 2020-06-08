@@ -90,9 +90,8 @@ isRowOK <- (DataIn[,params.list$isQaqcDeactivated]     == FALSE &
 
   print(paste0('analyzing ', nrow(DataIn), ' rows'))
 
-  data <- DataIn
   # This is currently a fixed limit determined by commitee.  TODO: It should be based on the number of treatment levels and blocks
-  if(nrow(data) < sufficientDataThreshold){
+  if(nrow(DataIn) < sufficientDataThreshold){
     errorMessage        <- "Insufficient data"
     return(errorMessage)
   }
@@ -103,10 +102,30 @@ isRowOK <- (DataIn[,params.list$isQaqcDeactivated]     == FALSE &
   }
 
   # create unique repId
-  DataIn$holdRepId <- DataIn[params.list$repId]
-  temp <- paste(DataIn[,params.list$repId], DataIn[,params.list$subSiteId], sep = "_")
+  DataIn$holdRepId           <- DataIn[params.list$repId]
+  temp                       <- paste(DataIn[,params.list$repId],
+                                      DataIn[,params.list$subSiteId], sep = "_")
   DataIn[,params.list$repId] <- temp
-  DataIn$errorMessage <- ""
+  DataIn$errorMessage        <- ""
+
+  Treatment_Factor_Names  <- params.input$factorLevelId
+  Treatment_Factor_Number <- 1
+
+  # In previous versions there were alignment issues with treatment level names, due to sorting of results by treatment factor level names.
+  # However, the outcome of these sorts are not always predictable.  Converting the treatment factors to character vectors
+  # and then into R-factor vectors did not fix the problem.  So far it has been found that relabeling
+  # the treatment levels with names that sort in a predictable manner eliminates the problem.  Therefore,
+  # the treatment level names are temporarily replaced with these more sortable names and then the original names
+  # are put back in the output at the end of the function.
+  treatment_abbreviations  <- "T"  # Initialize factor identifying prefixes for the treatment level names
+  nchar_abbreviation       <-  1
+
+  treatment_factor_as_a_factor         <- as.factor(as.character(DataIn[, Treatment_Factor_Names[1]]))
+  old_names                            <- levels(treatment_factor_as_a_factor)
+  levels(treatment_factor_as_a_factor) <- sortable_string_integers(nlevels(treatment_factor_as_a_factor),
+                                                                   prefix = treatment_abbreviations[1])
+  DataIn[, Treatment_Factor_Names[1] ] <- NULL  # Remove the orginal vector
+  DataIn[, Treatment_Factor_Names[1] ] <- treatment_factor_as_a_factor   # Insert the replacement vector
 
   # Initialize output variable
   Out_return <- NULL
@@ -123,18 +142,18 @@ isRowOK <- (DataIn[,params.list$isQaqcDeactivated]     == FALSE &
 
   # Check inputs
   checkAnalysisType(analysisType)
-  checkData(data, data_fields)
+  checkData(DataIn, data_fields)
 
   # Add the data fields to the global environment
   lapply(seq_along(data_fields),
          function(x) assign(names(data_fields)[[x]], value = data_fields[[x]], envir = .GlobalEnv))
 
   # Manipulate data
-  data <- reformatData(data, data_fields)
+  data <- reformatData(DataIn, data_fields)
   # Set fixed and random effects from analysis type
   setFixedRandomEffects(analysisType)
   # for timing
-  time.scale <- ifelse(nrow(data) < 4000, "secs", "mins")
+  time.scale <- ifelse(nrow(DataIn) < 4000, "secs", "mins")
   start      <- Sys.time()
   message(paste("Running ASReml using analysis type:", analysisType), appendLF = TRUE )
   # Run R-ASReml, capture output
@@ -142,7 +161,7 @@ isRowOK <- (DataIn[,params.list$isQaqcDeactivated]     == FALSE &
                       fixed     = fixed_formula,
                       random    = random_formula,
                       tolerance = 1E-10,
-                      data      = data,
+                      data      = DataIn,
                       predict   = list(classify    = paste(FACTOR_1),
                                         present    = list(),
                                         ignore     = character(0),
@@ -160,8 +179,8 @@ isRowOK <- (DataIn[,params.list$isQaqcDeactivated]     == FALSE &
                                         aliased    = FALSE,
                                         estimable  = FALSE,
                                         xform      = list()),
-                      workspace  = 1000 * 1e6 / 8, # approximately 125 million bytes
-                      pworkspace = 1000 * 1e6 / 8, # approximately 125 million bytes
+                      workspace  = 125 * 1e6, # approximately 125 million bytes
+                      pworkspace = 125 * 1e6, # approximately 125 million bytes
                       trace      = FALSE,
                       na.method.Y = "omit",
                       na.method.X = "omit")
@@ -171,7 +190,7 @@ isRowOK <- (DataIn[,params.list$isQaqcDeactivated]     == FALSE &
 
   if (analysisType %in% c('P3','P5') ) {
     # LS Means
-    Out_return$blupTable <- lsmAnalysis_r(RCB_asr, data)
+    Out_return$blupTable <- lsmAnalysis_r(RCB_asr, DataIn)
     ## ANOVA table
     Out_return$varianceAnalysis <- ANOVA_output_r(RCB_asr)
   }
@@ -179,28 +198,58 @@ isRowOK <- (DataIn[,params.list$isQaqcDeactivated]     == FALSE &
   if (analysisType %in% c('P1','P2','P4') ) {
 
     # to use wald.asreml() only once to save computational time
-    LSM_ALL <- lsmAnalysis(RCB_asr, data, alpha=alpha)
+    LSM_ALL <- lsmAnalysis(RCB_asr, DataIn, alpha=alpha)
+
     # basic LSM table
     Out_return$blueTable <- LSM_ALL[[1]]
+    Out_return$blueTable$factorLevelId <- as.factor(as.character(Out_return$blueTable$factorLevelId))
+
+    # Restore original treatment factor level names
+    levels(Out_return$blueTable$factorLevelId) <- old_names
+
     # Degrees of freedom
     degrees_freedom = LSM_ALL[[2]]  ## a vector including all the fixed effect
     if(is.na(degrees_freedom[2])){
       err <- 'failed delta analysis:  undefined degrees of freedom'
       Out_return <- list(blueTable = NA, deltas = NA, aov = NA, varcomp = NA, resid = NA, errorMessage = err)
       return(Out_return)
-      }
-    del <- deltaAnalysis(RCB_asr,alpha=alpha, degrees_freedom[2])
+    }
+
+    del <- deltaAnalysis(RCB_asr, alpha=alpha, degrees_freedom[2])
+
     # deltas and p-values
     Out_return$deltas <- del[[1]]
+
+    # Restore original treatment factor level names
+    Out_return$deltas$head               <- as.factor(as.character(Out_return$deltas$head))
+    Out_return$deltas$comparison         <- as.factor(as.character(Out_return$deltas$comparison))
+    levels(Out_return$deltas$head)       <- old_names
+    levels(Out_return$deltas$comparison) <- old_names
+    # Round off results to 10 decimal places
+    Out_return$deltas$differences              <- round(Out_return$deltas$differences, 10)
+    Out_return$deltas$probabilityDifferences   <- round(Out_return$deltas$probabilityDifferences, 10)
+    Out_return$deltas$standardErrorDifferences <- round(Out_return$deltas$standardErrorDifferences, 10)
+    Out_return$deltas$t                        <- round(Out_return$deltas$t, 10)
+    Out_return$deltas$lowerConfidenceInterval  <- round(Out_return$deltas$lowerConfidenceInterval, 10)
+    Out_return$deltas$upperConfidenceInterval  <- round(Out_return$deltas$upperConfidenceInterval, 10)
+
     # Mean Separation Grouping
     meanSeparationGroup <- del[[2]]
+
     ## combine blueTable and MSG
     Out_return$blueTable <- cbind(Out_return$blueTable, meanSeparationGroup)
+
     ## sort by descending order
-    Out_return$blueTable <- Out_return$blueTable[order(Out_return$blueTable$value,decreasing = TRUE),]
+    Out_return$blueTable <- Out_return$blueTable[order(Out_return$blueTable$value, decreasing = TRUE),]
+    # Round off results to 10 decimal places
+    Out_return$blueTable$value                   <- round(Out_return$blueTable$value, 10)
+    Out_return$blueTable$standardError           <- round(Out_return$blueTable$standardError, 10)
+    Out_return$blueTable$lowerConfidenceInterval <- round(Out_return$blueTable$lowerConfidenceInterval, 10)
+    Out_return$blueTable$upperConfidenceInterval <- round(Out_return$blueTable$upperConfidenceInterval, 10)
+
     ## ANOVA table
-    Out_return$anova <- LSM_ALL[[3]]
-    Out_return$varianceComposition <- LSM_ALL[[4]]
+    Out_return$anova                      <- LSM_ALL[[3]]
+    Out_return$varianceComposition        <- LSM_ALL[[4]]
     Out_return$leastSignificantDifference <- data.frame(mean=del$LSD)
   }
   ##  convert output to strings
