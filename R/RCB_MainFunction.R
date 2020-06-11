@@ -201,11 +201,16 @@ isRowOK <- (DataIn[,params.list$isQaqcDeactivated]     == FALSE &
     LSM_ALL <- lsmAnalysis(RCB_asr, DataIn, alpha=alpha)
 
     # basic LSM table
-    Out_return$blueTable <- LSM_ALL[[1]]
-    Out_return$blueTable$factorLevelId <- as.factor(as.character(Out_return$blueTable$factorLevelId))
+    Out_return$blueTable                       <- LSM_ALL[[1]]
 
     # Restore original treatment factor level names
-    levels(Out_return$blueTable$factorLevelId) <- old_names
+    Out_return$blueTable$factorLevelId <- as.factor(as.character(Out_return$blueTable$factorLevelId))
+    # levels(Out_return$blueTable$factorLevelId) <- old_names
+    factorLevelIdAsNumeric             <- as.numeric(Out_return$blueTable$factorLevelId)
+    factorLevelIdAsCharacter           <- old_names[factorLevelIdAsNumeric]
+    Out_return$blueTable$factorLevelId <- NULL
+    Out_return$blueTable$factorLevelId <- factorLevelIdAsCharacter
+    Out_return$blueTable               <- Out_return$blueTable[, c(7,1:6)]
 
     # Degrees of freedom
     degrees_freedom = LSM_ALL[[2]]  ## a vector including all the fixed effect
@@ -233,11 +238,8 @@ isRowOK <- (DataIn[,params.list$isQaqcDeactivated]     == FALSE &
     Out_return$deltas$lowerConfidenceInterval  <- round(Out_return$deltas$lowerConfidenceInterval, 10)
     Out_return$deltas$upperConfidenceInterval  <- round(Out_return$deltas$upperConfidenceInterval, 10)
 
-    # Mean Separation Grouping
-    meanSeparationGroup <- del[[2]]
-
-    ## combine blueTable and MSG
-    Out_return$blueTable <- cbind(Out_return$blueTable, meanSeparationGroup)
+    # Add the Mean Separation Grouping to the BLUE table
+    Out_return$blueTable$meanSeparationGroup <- del[[2]]
 
     ## sort by descending order
     Out_return$blueTable <- Out_return$blueTable[order(Out_return$blueTable$value, decreasing = TRUE),]
