@@ -5,6 +5,7 @@ PROJ_REPO="https://github.platforms.engineering/TADS/RCB4Cloud.git"
 PROJECT="RCB4Cloud"
 ENVIRONMENT=$1
 DEVBRANCH="Phase2-ANOVA-dev"
+MITCHDEVBRANCH="Phase2AnovaDevSummary"
 
 if [[ -d ${PROJECT} ]] ; then
     rm -rf ${PROJECT}
@@ -25,6 +26,7 @@ if [[ "${ENVIRONMENT}" == "prod" ]] ; then
     docker build -t rcb .
     docker tag rcb:latest docker-registry.science-at-scale.io/rcb:prod
     docker push docker-registry.science-at-scale.io/rcb:prod
+
 elif [[ "${ENVIRONMENT}" == "dev" ]] ; then
     echo "Dev image"
     git clone --single-branch --branch ${DEVBRANCH} ${PROJ_REPO}
@@ -33,6 +35,15 @@ elif [[ "${ENVIRONMENT}" == "dev" ]] ; then
     docker build -t rcb .
     docker tag rcb:latest docker-registry.science-at-scale.io/rcb:dev
     docker push docker-registry.science-at-scale.io/rcb:dev
+
+elif [[ "${ENVIRONMENT}" == "md" ]] ; then
+    echo "Mitch Dev image"
+    git clone --single-branch --branch ${MITCHDEVBRANCH} ${PROJ_REPO}
+    tar --exclude 'Reference' -czf ${PROJECT}.tgz ${PROJECT}
+
+    docker build -t rcb .
+    docker tag rcb:latest docker-registry.science-at-scale.io/rcb:dev-mitch
+    docker push docker-registry.science-at-scale.io/rcb:dev-mitch
 
 else 
     echo "Non-prod image"
