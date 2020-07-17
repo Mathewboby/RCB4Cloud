@@ -1,4 +1,4 @@
-SERVER asreml-license-server-1.science-at-scale.io VM_UUID=i-da95bd5c 6983 HEARTBEAT_INTERVAL=10
-SERVER asreml-license-server-2.science-at-scale.io VM_UUID=i-f653d60e 6983 HEARTBEAT_INTERVAL=10
-SERVER asreml-license-server-3.science-at-scale.io VM_UUID=i-db95bd5d 6983 HEARTBEAT_INTERVAL=10
+SERVER asreml-license-server-4.science-at-scale.io VM_UUID=i-02758ce9fbbb7b3e9 6983 HEARTBEAT_INTERVAL=10
+SERVER asreml-license-server-5.science-at-scale.io VM_UUID=i-058ce2a6063344a08 6983 HEARTBEAT_INTERVAL=10
+SERVER asreml-license-server-6.science-at-scale.io VM_UUID=i-0edbe33142a9355f8 6983 HEARTBEAT_INTERVAL=10
 USE_SERVER
