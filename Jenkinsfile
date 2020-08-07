@@ -44,9 +44,4 @@ pipeline {
             }
         }
     }
-    post {
-        success {
-            sh 'docker image rm rcb:latest'
-        }
-    }
 }
