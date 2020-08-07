@@ -39,9 +39,9 @@ elif [[ "${ENVIRONMENT}" == "dev" ]] ; then
     git clone --single-branch --branch ${DEVBRANCH} ${PROJ_REPO}
     tar --exclude 'Reference' -czf ${PROJECT}.tgz ${PROJECT}
 
-    docker build -t ${DEVBRANCH} .
-    docker push ${DEVBRANCH}
-    docker rmi ${DEVBRANCH}
+    docker build -t ${DEVIMAGE} .
+    docker push ${DEVIMAGE}
+    docker rmi ${DEVIMAGE}
 
 elif [[ "${ENVIRONMENT}" == "md" ]] ; then
     echo "Mitch Dev image"
