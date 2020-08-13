@@ -48,7 +48,7 @@ elif [[ "${ENVIRONMENT}" == "md" ]] ; then
     git clone --single-branch --branch ${MITCHDEVBRANCH} ${PROJ_REPO}
     tar --exclude 'Reference' -czf ${PROJECT}.tgz ${PROJECT}
 
-    docker built -t docker-registry.science-at-scale.io/rcb:dev-mitch .
+    docker build -t docker-registry.science-at-scale.io/rcb:dev-mitch .
     docker push docker-registry.science-at-scale.io/rcb:dev-mitch
     docker rmi docker-registry.science-at-scale.io/rcb:dev-mitch
 
